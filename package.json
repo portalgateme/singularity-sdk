@@ -1,0 +1,57 @@
+{
+  "name": "@thesingularitynetwork/mm-sdk",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.1",
+  "description": "⚒️ An Market Maker SDK for interacting with the Singularity Network's contracts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": "https://github.com/portalgateme/darkpool-v1-mm-sdk.git",
+  "keywords": [
+    "singularity",
+    "ethereum"
+  ],
+  "module": "dist/mm-sdk.esm.js",
+  "scripts": {
+    "build": "tsdx build",
+    "start": "tsdx watch",
+    "test": "tsdx test",
+    "prepublishOnly": "tsdx build"
+  },
+  "dependencies": {
+    "@ethersproject/abi": "^5.0.12",
+    "@ethersproject/solidity": "^5.0.9",
+    "@thesingularitynetwork/darkpool-v1-proof": "^0.1.23",
+    "@uniswap/permit2-sdk": "^1.2.0",
+    "@uniswap/v3-periphery": "^1.4.4",
+    "@uniswap/v3-sdk": "^3.11.0",
+    "axios": "^1.6.8",
+    "ethers": "^6.12.0",
+    "lodash": "^4.17.21",
+    "tiny-invariant": "^1.1.0",
+    "tiny-warning": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "tsdx": "^0.14.1"
+  },
+  "resolutions": {
+    "regenerator-runtime": "^0.14.1"
+  },
+  "resolutionsComments": {
+    "regenerator-runtime": "Fixes https://github.com/facebook/regenerator/pull/480. It can be removed when `tsdx` updates their dependencies."
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true
+  }
+}
