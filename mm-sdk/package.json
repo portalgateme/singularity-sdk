@@ -24,6 +24,7 @@
     "prepublishOnly": "tsdx build"
   },
   "dependencies": {
+    "@curvefi/api": "^2.58.9",
     "@ethersproject/abi": "^5.0.12",
     "@ethersproject/solidity": "^5.0.9",
     "@thesingularitynetwork/darkpool-v1-proof": "^0.1.23",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.25",
+    "@types/lodash": "^4.17.4",
     "tsdx": "^0.14.1"
   },
   "resolutions": {

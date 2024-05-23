@@ -122,7 +122,11 @@ export class CurveAddLiquidityService extends BaseRelayerService<CurveAddLiquidi
             poolFlag: BigInt(poolFlag),
             booleanFlag,
             minMintAmount: context.request.minExpectedOutAmount,
-            outNotePartial: context.outPartialNote,
+            outNotePartial: {
+                rho: context.outPartialNote.rho,
+                footer: context.outPartialNote.footer,
+                address: context.outPartialNote.asset,
+            },
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
         });
