@@ -1,11 +1,11 @@
 {
-  "name": "@thesingularitynetwork/mm-sdk",
+  "name": "@thesingularitynetwork/infra-sdk",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "version": "0.0.1",
-  "description": "⚒️ An Market Maker SDK for interacting with the Singularity Network's contracts",
+  "description": "⚒️ SDK for integration with privacy infrastructure of Singularity Network ",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -16,7 +16,7 @@
     "singularity",
     "ethereum"
   ],
-  "module": "dist/mm-sdk.esm.js",
+  "module": "dist/infra-sdk.esm.js",
   "scripts": {
     "build": "tsdx build",
     "start": "tsdx watch",
@@ -24,13 +24,9 @@
     "prepublishOnly": "tsdx build"
   },
   "dependencies": {
-    "@curvefi/api": "2.54.9",
     "@ethersproject/abi": "^5.0.12",
     "@ethersproject/solidity": "^5.0.9",
     "@thesingularitynetwork/darkpool-v1-proof": "^0.1.23",
-    "@uniswap/permit2-sdk": "^1.2.0",
-    "@uniswap/v3-periphery": "^1.4.4",
-    "@uniswap/v3-sdk": "^3.11.0",
     "axios": "^1.6.8",
     "ethers": "^6.12.0",
     "lodash": "^4.17.21",

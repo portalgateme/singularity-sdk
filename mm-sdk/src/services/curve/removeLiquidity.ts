@@ -11,6 +11,7 @@ import { hexlify32, isAddressEquals } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { getBooleanFlag, getPoolFlag, getPoolType } from "../defi/curveUtil";
+import { DarkpoolError } from "../../entities";
 
 export interface CurveRemoveLiquidityRequest {
     inNote: Note;
@@ -30,7 +31,7 @@ class CurveRemoveLiquidityContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set request(request: CurveRemoveLiquidityRequest) {
+    set request(request: CurveRemoveLiquidityRequest | undefined) {
         this._request = request;
     }
 
@@ -38,7 +39,7 @@ class CurveRemoveLiquidityContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: CurveRemoveLiquidityProofResult) {
+    set proof(proof: CurveRemoveLiquidityProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -46,7 +47,7 @@ class CurveRemoveLiquidityContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNotes(outPartialNotes: PartialNote[]) {
+    set outPartialNotes(outPartialNotes: PartialNote[] | undefined) {
         this._outPartialNotes = outPartialNotes;
     }
 
@@ -174,7 +175,7 @@ export class CurveRemoveLiquidityService extends BaseRelayerService<CurveRemoveL
         return relayerPathConfig[Action.CURVE_LP_DEPOSIT];
     }
 
-    protected async postExecute(context: CurveRemoveLiquidityContext): Promise<Note[]> {
+    protected async postExecute(context: CurveRemoveLiquidityContext): Promise<{ outNotes: Note[], lpTokenChangeNote: Note | undefined }> {
         if (!context || !context.request || !context.tx || !context.outPartialNotes || !context.signature || !context.merkleRoot || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
@@ -197,18 +198,18 @@ export class CurveRemoveLiquidityService extends BaseRelayerService<CurveRemoveL
                 }
             }
 
+            let lpTokenChangeNote = undefined;
+
             if (outPut.length > 4 && outPut[4].amount != BigInt(0)) {
-                const lpTokenChangeNote = await recoverNoteWithFooter(
+                lpTokenChangeNote = await recoverNoteWithFooter(
                     context.outPartialNotes[4].rho,
                     context.outPartialNotes[4].asset,
                     BigInt(outPut[4].amount),
                     context.signature,
                 )
-
-                outNotes.push(lpTokenChangeNote);
             }
 
-            return outNotes;
+            return { outNotes, lpTokenChangeNote };
         }
     }
 
@@ -226,8 +227,8 @@ export class CurveRemoveLiquidityService extends BaseRelayerService<CurveRemoveL
                 if (event) {
                     for (let i = 0; i < 5; i++) {
                         outPuts.push({
-                            note: event.args['notesOut'][i],
-                            amount: event.args['amountsOut'][i],
+                            note: event.args[3][i],
+                            amount: event.args[2][i],
                         })
                     }
                 }

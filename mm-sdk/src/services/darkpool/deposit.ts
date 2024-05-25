@@ -5,6 +5,7 @@ import { BaseContext, BaseContractService } from "../BaseService";
 import { darkPool } from "../../darkpool";
 import { ethers } from "ethers";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json'
+import { DarkpoolError } from "../../entities";
 
 
 class DepositContext extends BaseContext {
@@ -16,7 +17,7 @@ class DepositContext extends BaseContext {
         super(signature);
     }
 
-    set note(note: Note) {
+    set note(note: Note | undefined) {
         this._note = note;
     }
 
@@ -24,7 +25,7 @@ class DepositContext extends BaseContext {
         return this._note;
     }
 
-    set address(address: string) {
+    set address(address: string | undefined) {
         this._address = address;
     }
 
@@ -32,7 +33,7 @@ class DepositContext extends BaseContext {
         return this._address;
     }
 
-    set proof(proof: DepositProofResult) {
+    set proof(proof: DepositProofResult | undefined) {
         this._proof = proof;
     }
 

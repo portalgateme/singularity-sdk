@@ -3,6 +3,8 @@ import { ethers } from 'ethers'
 import { CURVE_POOL, CurvePoolConfig, POOL_TYPE } from '../../config/curveConfig'
 import { Token } from '../../entities/token'
 import { darkPool } from '../../darkpool'
+import { DarkpoolError } from '../../entities'
+// import { PoolTemplate } from '@curvefi/api/lib/pools'
 
 export async function initCurve(rpcUrl: string, chainId: number) {
     await curve.init(
@@ -57,72 +59,67 @@ export function getPoolType(pool: CurvePoolConfig, isWrapped: boolean) {
     return poolType
 }
 
-export async function getWithdrawEstimateForAll(
-    pool: CurvePoolConfig,
-    lpTokenAmount: number,
-    isWrapped: boolean,
-) {
-    const curvePool = curve.getPool(pool.id)
-    if (curvePool) {
-        console.log(curvePool)
-        const estimated = isWrapped
-            ? await curvePool.withdrawWrappedExpected(lpTokenAmount)
-            : await curvePool.withdrawExpected(lpTokenAmount)
+// export async function getWithdrawEstimateForAll(
+//     pool: CurvePoolConfig,
+//     lpTokenAmount: number,
+//     isWrapped: boolean,
+// ) {
+//     const curvePool:PoolTemplate = curve.getPool(pool.id)
+//     if (curvePool) {
+//         console.log(curvePool)
+//         const estimated = isWrapped
+//             ? await curvePool?.withdrawWrappedExpected(lpTokenAmount)
+//             : await curvePool?.withdrawExpected(lpTokenAmount)
 
-        console.log(estimated)
+//         console.log(estimated)
 
-        let estimatedBigInt: bigint[] = []
-        if (isWrapped) {
-            pool.wrappedDecimals.forEach((decimals, i) => {
-                estimatedBigInt.push(
-                    ethers.parseUnits(estimated[i], decimals),
-                )
-            })
-        } else {
-            pool.underlyingDecimals.forEach((decimals, i) => {
-                estimatedBigInt.push(
-                    ethers.parseUnits(estimated[i], decimals),
-                )
-            })
-        }
+//         let estimatedBigInt: bigint[] = []
+//         if (isWrapped) {
+//             pool.wrappedDecimals.forEach((decimals, i) => {
+//                 estimatedBigInt.push(
+//                     ethers.parseUnits(estimated[i], decimals),
+//                 )
+//             })
+//         } else {
+//             pool.underlyingDecimals.forEach((decimals, i) => {
+//                 estimatedBigInt.push(
+//                     ethers.parseUnits(estimated[i], decimals),
+//                 )
+//             })
+//         }
 
-        return estimatedBigInt
-    } else {
-        throw new Error('Pool not found ' + pool.name)
-    }
-}
+//         return estimatedBigInt
+//     } else {
+//         throw new Error('Pool not found ' + pool.name)
+//     }
+// }
 
-export async function getWithdrawEstimateForOneCoin(
-    pool: CurvePoolConfig,
-    lpTokenAmount: number,
-    isWrapped: boolean,
-    coinIndex: number,
-) {
-    const curvePool = curve.getPool(pool.id)
-    if (curvePool) {
-        const estimated = isWrapped
-            ? await curvePool.withdrawOneCoinWrappedExpected(lpTokenAmount, coinIndex)
-            : await curvePool.withdrawOneCoinExpected(lpTokenAmount, coinIndex)
+// export async function getWithdrawEstimateForOneCoin(
+//     pool: CurvePoolConfig,
+//     lpTokenAmount: number,
+//     isWrapped: boolean,
+//     coinIndex: number,
+// ) {
+//     const curvePool = curve.getPool(pool.id)
+//     if (curvePool) {
+//         const estimated = isWrapped
+//             ? await curvePool.withdrawOneCoinWrappedExpected(lpTokenAmount, coinIndex)
+//             : await curvePool.withdrawOneCoinExpected(lpTokenAmount, coinIndex)
 
-        if (isWrapped) {
-            return ethers.parseUnits(estimated, pool.underlyingDecimals[coinIndex])
-        } else {
-            return ethers.parseUnits(estimated, pool.wrappedDecimals[coinIndex])
-        }
-    } else {
-        throw new Error('Pool not found ' + pool.name)
-    }
-}
+//         if (isWrapped) {
+//             return ethers.parseUnits(estimated, pool.underlyingDecimals[coinIndex])
+//         } else {
+//             return ethers.parseUnits(estimated, pool.wrappedDecimals[coinIndex])
+//         }
+//     } else {
+//         throw new Error('Pool not found ' + pool.name)
+//     }
+// }
 
 export function isPlainPool(pool: CurvePoolConfig) {
     return pool.isPlain
 }
 
-
-export function getCurveMainPools() {
-    return curve.getPoolList()
-    // return curve.getMainPoolList();
-}
 
 export function getCurvePoolData(lpToken: string): CurvePoolConfig | undefined {
     if (CURVE_POOL[darkPool.chainId] === undefined) {
@@ -156,24 +153,24 @@ export async function getMultiExchangeOutputAndArgs(
     return { output, parsedOutput, args }
 }
 
-export async function getAddLiquidityExpectedOutput(
-    poolId: string,
-    coinAmounts: number[],
-    isWrapped: boolean
-) {
-    const pool = curve.getPool(poolId)
-    if (isWrapped) {
-        return await pool.depositWrappedExpected(coinAmounts)
-    } else {
-        return await pool.depositExpected(coinAmounts)
-    }
-}
+// export async function getAddLiquidityExpectedOutput(
+//     poolId: string,
+//     coinAmounts: number[],
+//     isWrapped: boolean
+// ) {
+//     const pool = curve.getPool(poolId)
+//     if (isWrapped) {
+//         return await pool.depositWrappedExpected(coinAmounts)
+//     } else {
+//         return await pool.depositExpected(coinAmounts)
+//     }
+// }
 
-export async function getRemoveLiquidityExpectedOutput(
-    poolAddress: string,
-    lpTokenAmounts: number,
-) {
-    const pool = curve.getPool(poolAddress)
-    return await pool.withdrawExpected(lpTokenAmounts)
-}
+// export async function getRemoveLiquidityExpectedOutput(
+//     poolAddress: string,
+//     lpTokenAmounts: number,
+// ) {
+//     const pool = curve.getPool(poolAddress)
+//     return await pool.withdrawExpected(lpTokenAmounts)
+// }
 

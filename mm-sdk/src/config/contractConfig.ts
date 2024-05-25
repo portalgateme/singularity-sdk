@@ -1,21 +1,19 @@
 import { ChainId } from "./chain"
 
-export type HexData = `0x${string}`
-
 export type ContractConfiguartion = {
-    priceOracle: HexData
-    ethAddress: HexData
-    nativeWrapper: HexData
-    complianceManager: HexData
-    merkleTreeOperator: HexData
-    darkpoolAssetManager: HexData
+    priceOracle: string
+    ethAddress: string
+    nativeWrapper: string
+    complianceManager: string
+    merkleTreeOperator: string
+    darkpoolAssetManager: string
     drakpoolSubgraphUrl: string
     uniswapConfig: {
-        swapRouterAddress: HexData
-        quoterContractAddress: HexData
-        wrappedNativeTokenAddress: HexData
-        v3PosNftAddress: HexData
-        factoryAddress: HexData
+        swapRouterAddress: string
+        quoterContractAddress: string
+        wrappedNativeTokenAddress: string
+        v3PosNftAddress: string
+        factoryAddress: string
         subgraphUrl: string
     }
 }

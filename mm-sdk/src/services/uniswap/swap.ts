@@ -9,6 +9,7 @@ import { hexlify32, isAddressEquals } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
+import { DarkpoolError } from "../../entities";
 
 export interface UniswapSingleSwapRequest {
     inNote: Note;
@@ -26,7 +27,7 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set request(request: UniswapSingleSwapRequest) {
+    set request(request: UniswapSingleSwapRequest | undefined) {
         this._request = request;
     }
 
@@ -34,7 +35,7 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: UniswapSingleSwapProofResult) {
+    set proof(proof: UniswapSingleSwapProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -42,7 +43,7 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNote(outPartialNote: PartialNote) {
+    set outPartialNote(outPartialNote: PartialNote | undefined) {
         this._outPartialNote = outPartialNote;
     }
 
@@ -129,7 +130,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
 
             const outNote = await recoverNoteWithFooter(
                 context.outPartialNote.rho,
-                context.outPartialNote.asset,
+                processedOutAsset,
                 BigInt(amountOut),
                 context.signature,
             )
@@ -148,7 +149,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
             if (log) {
                 const event = iface.parseLog(log)
                 if (event) {
-                    return [event.args['amountOut'], event.args['noteCommitmentOut']]
+                    return [event.args[1], event.args[4]]
                 }
             }
         }

@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { Relayer } from './entities/relayer';
 import { ContractConfiguartion, contractConfig } from './config/contractConfig';
 import { ChainId } from './config/chain';
+import { DarkpoolError } from './entities';
 
 class DarkPool {
     provider: ethers.JsonRpcProvider;

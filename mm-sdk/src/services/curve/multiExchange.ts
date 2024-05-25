@@ -9,6 +9,7 @@ import { Token } from "../../entities/token";
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
+import { DarkpoolError } from "../../entities";
 
 export interface CurveMultiExchangeRequest {
     inNote: Note;
@@ -30,7 +31,7 @@ class CurveMultiExchangeContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set request(request: CurveMultiExchangeRequest) {
+    set request(request: CurveMultiExchangeRequest | undefined) {
         this._request = request;
     }
 
@@ -38,7 +39,7 @@ class CurveMultiExchangeContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: CurveMultiExchangeProofResult) {
+    set proof(proof: CurveMultiExchangeProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -46,7 +47,7 @@ class CurveMultiExchangeContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNote(outPartialNote: PartialNote) {
+    set outPartialNote(outPartialNote: PartialNote | undefined) {
         this._outPartialNote = outPartialNote;
     }
 
@@ -142,7 +143,7 @@ export class CurveMultiExchangeService extends BaseRelayerService<CurveMultiExch
         }
     }
 
-    private async getOutAmount(tx: string) {
+    private async getOutAmount(tx: string) : Promise<string[]>{
         const iface = new ethers.Interface(CurveMultiExchangeAssetManagerAbi.abi)
         const receipt = await darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
@@ -152,11 +153,11 @@ export class CurveMultiExchangeService extends BaseRelayerService<CurveMultiExch
             if (log) {
                 const event = iface.parseLog(log)
                 if (event) {
-                    return [event.args['amountOut'], event.args['noteOut']]
+                    return [event.args[2] as string, event.args[3] as string];
                 }
             }
         }
 
-        return [null, null]
+        throw new DarkpoolError('Not able to find CurveExchange event in the receipt');
     }
 }

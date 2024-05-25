@@ -10,7 +10,6 @@ import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
 import { CurvePoolConfig } from "../../config/curveConfig";
 import { getBooleanFlag, getPoolFlag, getPoolType } from "../defi/curveUtil";
-import { DarkpoolError } from "../../entities";
 
 export interface CurveAddLiquidityRequest {
     inNote1: Note | null;
@@ -31,7 +30,7 @@ class CurveAddLiquidityContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set request(request: CurveAddLiquidityRequest | undefined) {
+    set request(request: CurveAddLiquidityRequest) {
         this._request = request;
     }
 
@@ -39,7 +38,7 @@ class CurveAddLiquidityContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: CurveAddLiquidityProofResult | undefined) {
+    set proof(proof: CurveAddLiquidityProofResult) {
         this._proof = proof;
     }
 
@@ -47,7 +46,7 @@ class CurveAddLiquidityContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNote(outPartialNote: PartialNote | undefined) {
+    set outPartialNote(outPartialNote: PartialNote) {
         this._outPartialNote = outPartialNote;
     }
 
@@ -186,7 +185,7 @@ export class CurveAddLiquidityService extends BaseRelayerService<CurveAddLiquidi
         return relayerPathConfig[Action.CURVE_LP_DEPOSIT];
     }
 
-    protected async postExecute(context: CurveAddLiquidityContext): Promise<Note> {
+    protected async postExecute(context: CurveAddLiquidityContext): Promise<Note[]> {
         if (!context || !context.request || !context.tx || !context.outPartialNote || !context.signature || !context.merkleRoot || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
@@ -202,26 +201,25 @@ export class CurveAddLiquidityService extends BaseRelayerService<CurveAddLiquidi
                 context.signature,
             )
 
-            return outNote;
+            return [outNote];
         }
     }
 
-    private async getLPtokenAndAmount(tx: string): Promise<string[]> {
+    private async getLPtokenAndAmount(tx: string) {
         const iface = new ethers.Interface(CurveAddLiquidityAssetManagerAbi.abi)
         const receipt = await darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             const log = receipt.logs.find(
-                (log) => log.topics[0] === 'CurveAddLiquidity',
+                (log) => log.topics[0] === 'DefiIntegration',
             )
             if (log) {
                 const event = iface.parseLog(log)
-
                 if (event) {
-                    return [event.args[2] as string, event.args[3] as string]
+                    return [event.args['amountOut'], event.args['noteOut']]
                 }
             }
         }
 
-        throw new DarkpoolError('Not able to find CurveAddLiquidity event in the receipt');
+        return [null, null]
     }
 }

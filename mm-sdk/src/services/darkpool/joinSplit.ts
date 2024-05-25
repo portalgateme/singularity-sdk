@@ -5,6 +5,7 @@ import { darkPool } from "../../darkpool";
 import { hexlify32, isAddressEquals } from "../../utils/util";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
+import { DarkpoolError } from "../../entities";
 
 
 class JoinSplitContext extends BaseContext{
@@ -18,7 +19,7 @@ class JoinSplitContext extends BaseContext{
         super(signature);
     }
 
-    set inNote1(note: Note) {
+    set inNote1(note: Note | undefined) {
         this._inNote1 = note;
     }
 
@@ -26,7 +27,7 @@ class JoinSplitContext extends BaseContext{
         return this._inNote1;
     }
 
-    set inNote2(note: Note) {
+    set inNote2(note: Note | undefined) {
         this._inNote2 = note;
     }
 
@@ -34,7 +35,7 @@ class JoinSplitContext extends BaseContext{
         return this._inNote2;
     }
 
-    set outNote1(note: Note) {
+    set outNote1(note: Note | undefined) {
         this._outNote1 = note;
     }
 
@@ -42,7 +43,7 @@ class JoinSplitContext extends BaseContext{
         return this._outNote1;
     }
 
-    set outNote2(note: Note) {
+    set outNote2(note: Note | undefined) {
         this._outNote2 = note;
     }
 
@@ -50,7 +51,7 @@ class JoinSplitContext extends BaseContext{
         return this._outNote2;
     }
 
-    set proof(proof: JoinSplitProofResult) {
+    set proof(proof: JoinSplitProofResult | undefined) {
         this._proof = proof;
     }
 

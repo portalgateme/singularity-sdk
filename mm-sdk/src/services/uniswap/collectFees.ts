@@ -9,6 +9,7 @@ import { Token } from "../../entities/token";
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
+import { DarkpoolError } from "../../entities";
 
 export interface UniswapCollectFeesRequest {
     inNote: NftNote;
@@ -31,7 +32,7 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
         return this._request;
     }
 
-    public set request(value: UniswapCollectFeesRequest) {
+    public set request(value: UniswapCollectFeesRequest | undefined) {
         this._request = value;
     }
 
@@ -39,7 +40,7 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    public set proof(value: UniswapCollectFeesProofResult) {
+    public set proof(value: UniswapCollectFeesProofResult | undefined) {
         this._proof = value;
     }
 
@@ -47,7 +48,7 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
         return this._outPartialNote1;
     }
 
-    public set outPartialNote1(value: PartialNote) {
+    public set outPartialNote1(value: PartialNote | undefined) {
         this._outPartialNote1 = value;
     }
 
@@ -55,12 +56,12 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
         return this._outPartialNote2;
     }
 
-    public set outPartialNote2(value: PartialNote) {
+    public set outPartialNote2(value: PartialNote | undefined) {
         this._outPartialNote2 = value;
     }
 }
 
-export class UniswapAddLiquidityService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest> {
+export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest> {
     constructor() {
         super();
     }
@@ -173,7 +174,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapCollec
             if (log) {
                 const event = iface.parseLog(log)
                 if (event) {
-                    return event.args['amounts']
+                    return event.args[2]
                 }
             }
         }

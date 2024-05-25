@@ -5,6 +5,7 @@ import { hexlify32, isAddressEquals } from "../../utils/util";
 import { multiGetMerklePathAndRoot } from "../merkletree";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json'
 import { BaseContext, BaseContractService } from "../BaseService";
+import { DarkpoolError } from "../../entities";
 
 
 class JoinContext extends BaseContext{
@@ -17,7 +18,7 @@ class JoinContext extends BaseContext{
         super(signature);
     }
 
-    set inNote1(note: Note) {
+    set inNote1(note: Note | undefined) {
         this._inNote1 = note;
     }
 
@@ -25,7 +26,7 @@ class JoinContext extends BaseContext{
         return this._inNote1;
     }
 
-    set inNote2(note: Note) {
+    set inNote2(note: Note | undefined) {
         this._inNote2 = note;
     }
 
@@ -33,7 +34,7 @@ class JoinContext extends BaseContext{
         return this._inNote2;
     }
 
-    set outNote(note: Note) {
+    set outNote(note: Note | undefined) {
         this._outNote = note;
     }
 
@@ -41,7 +42,7 @@ class JoinContext extends BaseContext{
         return this._outNote;
     }
 
-    set proof(proof: JoinProofResult) {
+    set proof(proof: JoinProofResult | undefined) {
         this._proof = proof;
     }
 

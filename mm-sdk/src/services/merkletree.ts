@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { darkPool } from '../darkpool';
 import { mimc_bn254 } from '../utils/mimc';
 import { hexlify32, isHexEquals } from '../utils/util';
+import { DarkpoolError } from '../entities';
 
 const DOMAIN_SEPARATOR_LEAF = 0n;
 

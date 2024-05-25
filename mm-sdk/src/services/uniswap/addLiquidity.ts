@@ -1,4 +1,4 @@
-import { Note, PartialNftNote, PartialNote, UniswapAddLiquidProofResult, createPartialNftNote, createPartialNote, generateUniswapAddLiquidityProof, recoverNftNote, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
+import { NftNote, Note, PartialNftNote, PartialNote, UniswapAddLiquidProofResult, createPartialNftNote, createPartialNote, generateUniswapAddLiquidityProof, recoverNftNote, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
@@ -8,6 +8,7 @@ import { UniswapAddLiquidityRelayerRequest } from "../../entities/relayerRequest
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
+import { DarkpoolError } from "../../entities";
 
 export interface UniswapAddLiquidityRequest {
     inNote1: Note;
@@ -32,7 +33,7 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set request(request: UniswapAddLiquidityRequest) {
+    set request(request: UniswapAddLiquidityRequest | undefined) {
         this._request = request;
     }
 
@@ -40,7 +41,7 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: UniswapAddLiquidProofResult) {
+    set proof(proof: UniswapAddLiquidProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -48,7 +49,7 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNftNote(outPartialNftNote: PartialNftNote) {
+    set outPartialNftNote(outPartialNftNote: PartialNftNote | undefined) {
         this._outPartialNftNote = outPartialNftNote;
     }
 
@@ -56,7 +57,7 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
         return this._outPartialNftNote;
     }
 
-    set outPartialChangeNote1(outPartialChangeNote1: PartialNote) {
+    set outPartialChangeNote1(outPartialChangeNote1: PartialNote | undefined) {
         this._outPartialChangeNote1 = outPartialChangeNote1;
     }
 
@@ -64,7 +65,7 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
         return this._outPartialChangeNote1;
     }
 
-    set outPartialChangeNote2(outPartialChangeNote2: PartialNote) {
+    set outPartialChangeNote2(outPartialChangeNote2: PartialNote | undefined) {
         this._outPartialChangeNote2 = outPartialChangeNote2;
     }
 
@@ -82,7 +83,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
         return darkPool.contracts.uniswapConfig.v3PosNftAddress;
     }
 
-    public async prepare(request: UniswapAddLiquidityRequest, signature: string): Promise<{ context: UniswapAddLiquidityContext, outPartialNotes: PartialNote[] }> {
+    public async prepare(request: UniswapAddLiquidityRequest, signature: string): Promise<{ context: UniswapAddLiquidityContext, outPartialNotes: PartialNote[], outPartialNftNote: PartialNftNote }> {
         const outPartialNftNote = await createPartialNftNote(this.getV3PosAddress(), signature);
         const outPartialChangeNote1 = await createPartialNote(request.inNote1.asset, signature);
         const outPartialChangeNote2 = await createPartialNote(request.inNote2.asset, signature);
@@ -93,7 +94,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
         context.outPartialChangeNote1 = outPartialChangeNote1;
         context.outPartialChangeNote2 = outPartialChangeNote2;
 
-        return { context, outPartialNotes: [outPartialNftNote, outPartialChangeNote1, outPartialChangeNote2] };
+        return { context, outPartialNotes: [outPartialChangeNote1, outPartialChangeNote2], outPartialNftNote };
     }
 
     public async generateProof(context: UniswapAddLiquidityContext): Promise<void> {
@@ -175,7 +176,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
         return relayerPathConfig[Action.UNISWAP_LP_DEPOSIT];
     }
 
-    protected async postExecute(context: UniswapAddLiquidityContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapAddLiquidityContext): Promise<{ outNotes: Note[], outNftNote: NftNote }> {
         if (!context
             || !context.request
             || !context.tx
@@ -220,13 +221,12 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
             }
 
             let results = [];
-            results.push(nftNote);
             if (changeNote1)
                 results.push(changeNote1);
             if (changeNote2)
                 results.push(changeNote2);
 
-            return results;
+            return { outNftNote: nftNote, outNotes: results };
         }
     }
 
@@ -241,9 +241,9 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
                 const event = iface.parseLog(log)
                 if (event) {
                     return [
-                        event.args['tokenId'],
-                        event.args['changeAmounts'],
-                        event.args['changeNoteCommitments'],
+                        event.args[0],
+                        event.args[3],
+                        event.args[4],
                     ]
                 }
             }

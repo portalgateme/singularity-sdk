@@ -6,6 +6,7 @@ import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
+import { DarkpoolError } from "../../entities";
 
 
 class WithdrawContext extends BaseRelayerContext {
@@ -17,7 +18,7 @@ class WithdrawContext extends BaseRelayerContext {
         super(relayer, signature);
     }
 
-    set note(note: Note) {
+    set note(note: Note | undefined) {
         this._note = note;
     }
 
@@ -25,7 +26,7 @@ class WithdrawContext extends BaseRelayerContext {
         return this._note;
     }
 
-    set recipient(recipient: string) {
+    set recipient(recipient: string | undefined) {
         this._recipient = recipient;
     }
 
@@ -33,7 +34,7 @@ class WithdrawContext extends BaseRelayerContext {
         return this._recipient;
     }
 
-    set proof(proof: WithdrawProofResult) {
+    set proof(proof: WithdrawProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -98,7 +99,9 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
         return relayerPathConfig[Action.WITHDRAW];
     }
 
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async postExecute(context: WithdrawContext): Promise<Note[]> {
+        console.log(context.tx);
         return [];
     }
 }

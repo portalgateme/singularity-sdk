@@ -9,6 +9,7 @@ import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
+import { DarkpoolError } from "../../entities";
 
 export interface UniswapRemoveLiquidityRequest {
     inNote: NftNote;
@@ -33,7 +34,7 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
         return this._request;
     }
 
-    public set request(value: UniswapRemoveLiquidityRequest) {
+    public set request(value: UniswapRemoveLiquidityRequest | undefined) {
         this._request = value;
     }
 
@@ -41,7 +42,7 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    public set proof(value: UniswapRemoveLiquidProofResult) {
+    public set proof(value: UniswapRemoveLiquidProofResult | undefined) {
         this._proof = value;
     }
 
@@ -49,7 +50,7 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
         return this._outPartialNote1;
     }
 
-    public set outPartialNote1(value: PartialNote) {
+    public set outPartialNote1(value: PartialNote | undefined) {
         this._outPartialNote1 = value;
     }
 
@@ -57,12 +58,12 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
         return this._outPartialNote2;
     }
 
-    public set outPartialNote2(value: PartialNote) {
+    public set outPartialNote2(value: PartialNote | undefined) {
         this._outPartialNote2 = value;
     }
 }
 
-export class UniswapAddLiquidityService extends BaseRelayerService<UniswapRemoveLiquidityContext, UniswapRemoveLiquidityRelayerRequest> {
+export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRemoveLiquidityContext, UniswapRemoveLiquidityRelayerRequest> {
     constructor() {
         super();
     }
@@ -185,7 +186,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapRemove
             if (log) {
                 const event = iface.parseLog(log)
                 if (event) {
-                    return event.args['amounts']
+                    return event.args[2]
                 }
             }
         }

@@ -17,7 +17,7 @@ export class BaseContext {
         return this._signature;
     }
 
-    set merkleRoot(merkleRoot: string) {
+    set merkleRoot(merkleRoot: string | undefined) {
         this._merkleRoot = merkleRoot;
     }
 
@@ -25,7 +25,7 @@ export class BaseContext {
         return this._merkleRoot;
     }
 
-    set tx(tx: string) {
+    set tx(tx: string | undefined) {
         this._tx = tx;
     }
 
@@ -69,7 +69,7 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
 
     protected abstract getRelayerPath(): string;
 
-    protected abstract postExecute(context: T): Promise<Note[]>;
+    protected abstract postExecute(context: T): Promise<any>;
 
     async execute(context: T): Promise<string> {
         const relayerRequest = await this.getRelayerRequest(context);
