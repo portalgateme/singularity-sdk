@@ -109,3 +109,18 @@ export type UniswapSwapRelayerRequest = BaseRelayerRequest & {
     refund: string,
     poolFee: string,
 }
+
+
+export type DefiInfraRelayerRequest = BaseRelayerRequest & {
+    inNoteType: number
+    inNullifiers: string[]
+    inAssets: string[]
+    inAmounts: string[]
+    contractAddress: string
+    defiParameters: string
+    outNoteType: number
+    outAssets: string[]
+    outNoteFooters: string[]
+    relayer: string
+    gasRefund: string[]
+}

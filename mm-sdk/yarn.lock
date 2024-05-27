@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aztec/bb.js@0.26.3":
-  version "0.26.3"
-  resolved "https://registry.yarnpkg.com/@aztec/bb.js/-/bb.js-0.26.3.tgz#a148c3c8b35d78a92568f2f7ce9c05a8de4ead22"
-  integrity sha512-iZXQyjVVgDYQt77IggxC1MUZDBd68Q9aXepclq1kv4Ube1wllmlZ3+NGKZx/ma8yd24ytYGtIx/7kY8L4SbdkQ==
+"@aztec/bb.js@0.35.1":
+  version "0.35.1"
+  resolved "https://registry.yarnpkg.com/@aztec/bb.js/-/bb.js-0.35.1.tgz#df011e3e3168a5f631617072fd4bba40b4bde9a9"
+  integrity sha512-EWBDxj7fY7p4BP9zhVoHPmCd+h0HFBCy02DhI3p/CkgbuXHMy1wb0aIxJyQDzi+z7FrA6QME4SOzIx//ITRCCA==
   dependencies:
     comlink "^4.4.1"
     commander "^10.0.1"
@@ -1608,48 +1608,48 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
   integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
 
-"@noir-lang/acvm_js@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/acvm_js/-/acvm_js-0.41.0.tgz#7636ac018e26271c113309cd8883d95aa661ac2a"
-  integrity sha512-/FST2lHKOpe/US6UFtTYSJZFtmvTjTtW7zBkcp1VaEn00SqezJszuwv9oQOfVz7F59LBL3b4+JFi5oIHlzef0g==
+"@noir-lang/acvm_js@0.44.0":
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/acvm_js/-/acvm_js-0.44.0.tgz#3d3eb9ae3540c1374a155d403a8fc9cb36a674b7"
+  integrity sha512-nt0PBQj5XL2LbvXhfA0Ce9a+R6JXn4OY3peRdPo0p35QN3qb67WZqQlN4/7c1SLWKYdImkt8/d/KXWnqCal0HQ==
 
-"@noir-lang/backend_barretenberg@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/backend_barretenberg/-/backend_barretenberg-0.25.0.tgz#4f4abf5bbdcb5d88fa4dbb29f68eddb513a3070c"
-  integrity sha512-Dipgpc1DmxLAtB4CEXwOQw8EA/DLqALD+F3cezwuo4vCiB+pvALaUBTDSco6TP1VINRzelzWvUL5BIEoEAlByQ==
+"@noir-lang/backend_barretenberg@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/backend_barretenberg/-/backend_barretenberg-0.28.0.tgz#7fa68d0bec0a461f1d5ce9652c0c9d9914ebc424"
+  integrity sha512-kx61bBMfiyNwawM7L4+BcZMzHGp4Y/6W8Wt+XG73Jk4ozo8JWGuxTjbWzBCMr/pl+uWRFLsuFY6IRoMESySEMA==
   dependencies:
-    "@aztec/bb.js" "0.26.3"
-    "@noir-lang/types" "0.25.0"
+    "@aztec/bb.js" "0.35.1"
+    "@noir-lang/types" "0.28.0"
     fflate "^0.8.0"
 
-"@noir-lang/noir_js@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/noir_js/-/noir_js-0.25.0.tgz#7ff8f0ffc2d1fe0e180156b2c2131374b0d544be"
-  integrity sha512-hCfTfM6QU7s2ZC8rxf0JEm+7bHIsLnH1FHsw7W2cQB9g69U4HBs0cY7Sc8XUHPpabxQ8VC1kcNTsoQwDvocF0g==
+"@noir-lang/noir_js@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/noir_js/-/noir_js-0.28.0.tgz#a991622c9e841cffc0b0d3b2963d3805b90a724b"
+  integrity sha512-gWb627jbt5azd6QM8CZqivEn35yF/Nnz4KWA3C99ZulJpTNDRNW7QBV3fC3RNv/Orl/a3an82WLrf5Vf8ymakg==
   dependencies:
-    "@noir-lang/acvm_js" "0.41.0"
-    "@noir-lang/noirc_abi" "0.25.0"
-    "@noir-lang/types" "0.25.0"
+    "@noir-lang/acvm_js" "0.44.0"
+    "@noir-lang/noirc_abi" "0.28.0"
+    "@noir-lang/types" "0.28.0"
 
-"@noir-lang/noir_wasm@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/noir_wasm/-/noir_wasm-0.25.0.tgz#20641eba0c99583e13cbd77d0a1d82f409edb4b9"
-  integrity sha512-S8x3E9q+UqtvkLO76IDr2f6st8/3VihtHDioR+TwI10SO2LkKssq1QLNLAyrE0P8BFjZNHlcchbSjOylKDQp9A==
+"@noir-lang/noir_wasm@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/noir_wasm/-/noir_wasm-0.28.0.tgz#bc051ff9acfcdbc88fa84133b6c772bc84fa2625"
+  integrity sha512-tx17pB9ZxbO3iFWedvMSIFM4YwVIpUegl+BeTDD7bZTUl8Z0izACnNtpammQ6aDNL24NY02/di3HwANRISxpHg==
   dependencies:
-    "@noir-lang/types" "0.25.0"
+    "@noir-lang/types" "0.28.0"
     pako "^2.1.0"
 
-"@noir-lang/noirc_abi@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/noirc_abi/-/noirc_abi-0.25.0.tgz#098eea2bf65a0a2dc180041330c26a089c39709c"
-  integrity sha512-uoNfRgGP9qAfovZKrtfZIE6cKCH2OiuKrsCRvNvSxx2Nv57sN93YYpKF+g1726Y6d/a5vxbxP6z5+uvoEALkDw==
+"@noir-lang/noirc_abi@0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/noirc_abi/-/noirc_abi-0.28.0.tgz#fd6daf248fb6bf1a4be6927b1200319f59444e74"
+  integrity sha512-fVM5XlOXl+21PScvUF21AaAn8HnZrc1dUUkFhQOLSZet41SpfRuE3+01IsDo9Ka+3G0pddJl5ttbYX/A+hA1nQ==
   dependencies:
-    "@noir-lang/types" "0.25.0"
+    "@noir-lang/types" "0.28.0"
 
-"@noir-lang/types@0.25.0", "@noir-lang/types@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@noir-lang/types/-/types-0.25.0.tgz#e05843ba2850e222c2c1e7b1ed5634460bfa7c9f"
-  integrity sha512-kt1R0vd/J116Q8dTZt3iIEg4d17wzvXOHmw5HbfYbWnFbepA8AlAneEDpYusmZoTwFcxqPKiZu45aUrezFd+kQ==
+"@noir-lang/types@0.28.0", "@noir-lang/types@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@noir-lang/types/-/types-0.28.0.tgz#f8df15b251d323a5656aac943dabbeac277d41f4"
+  integrity sha512-8QdtXtvqvZ7cHQS/EtcTuUilN29zDCZ21V1THSdzmTxZVesXpaHoZdsoeuuvpsj3Qzemfvsk28LWNRNr7U1MUw==
 
 "@openzeppelin/contracts@3.4.1-solc-0.7-2":
   version "3.4.1-solc-0.7-2"
@@ -1725,19 +1725,19 @@
   dependencies:
     type-detect "4.0.8"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.1.23":
-  version "0.1.23"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.1.23.tgz#acf65fcccb7a38b55cc78cab504e505d1bff5777"
-  integrity sha512-xd6k3CzdzOobMHbnL/nxDLVI7B4jfwt2d5RWEtltQgYk8HgzDvJDYvxTAWzDBcL1z/CnMaeazoVpV7xGdtyyPg==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.1.tgz#c116a30401188b9d71c8ca1b697eaf19cecdbfe9"
+  integrity sha512-ev5d9eRMGi0FfxvBNd1yT5oTG8nfu29Eyn9udBtGhHYI3ofQLuRffzr9RAGe1Gwb2FfNWEXzSdDfyFXKDGSRaA==
   dependencies:
     "@aztec/bb.js" "^0.30.0"
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/bignumber" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@noir-lang/backend_barretenberg" "^0.25.0"
-    "@noir-lang/noir_js" "^0.25.0"
-    "@noir-lang/noir_wasm" "^0.25.0"
-    "@noir-lang/types" "^0.25.0"
+    "@noir-lang/backend_barretenberg" "^0.28.0"
+    "@noir-lang/noir_js" "^0.28.0"
+    "@noir-lang/noir_wasm" "^0.28.0"
+    "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
 "@types/babel__core@^7.1.7":

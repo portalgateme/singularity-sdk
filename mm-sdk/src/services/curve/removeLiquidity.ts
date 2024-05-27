@@ -74,8 +74,6 @@ export class CurveRemoveLiquidityService extends BaseRelayerService<CurveRemoveL
                     asset: ethers.ZeroAddress
                 });
             }
-            const outPartialNote = await createPartialNote(request.outAssets[i], signature);
-            outPartialNotes.push(outPartialNote);
         }
 
         const outPartialLpChangeNote = await createPartialNote(request.pool.lpToken, signature);
