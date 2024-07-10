@@ -4,13 +4,16 @@ import { ContractConfiguartion, contractConfig } from './config/contractConfig';
 import { ChainId } from './config/chain';
 import { DarkpoolError } from './entities';
 
-class DarkPool {
-    provider: ethers.JsonRpcProvider;
+export class DarkPool {
+    signer: ethers.Signer;
+    provider: ethers.Provider;
     chainId: number;
     relayers: Relayer[];
     contracts: ContractConfiguartion;
 
     constructor() {
+        // @ts-ignore
+        this.signer = null;
         // @ts-ignore
         this.provider = null;
         this.chainId = ChainId.MAINNET;
@@ -19,14 +22,17 @@ class DarkPool {
     }
 
     async init(
-        rpcUrl: string,
+        signer: ethers.Signer,
         chainId: number,
         relayers: Relayer[],
         contracts?: ContractConfiguartion
     ) {
-        this.provider = new ethers.JsonRpcProvider(rpcUrl);
+        this.signer = signer;
         this.chainId = chainId;
         this.relayers = relayers;
+
+        // @ts-ignore
+        this.provider = signer.provider;
 
         if (contracts) {
             this.contracts = contracts;

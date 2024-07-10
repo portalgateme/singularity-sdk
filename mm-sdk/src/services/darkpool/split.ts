@@ -97,8 +97,7 @@ export class SplitService extends BaseContractService<SplitContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const provider = darkPool.provider;
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, provider);
+        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, darkPool.signer);
         const tx = await contract.split(
             context.merkleRoot,
             context.proof.inNoteNullifier,

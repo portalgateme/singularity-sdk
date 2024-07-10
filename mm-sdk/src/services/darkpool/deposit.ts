@@ -71,8 +71,8 @@ export class DepositService extends BaseContractService<DepositContext> {
         if (!context || !context.note || !context.address || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
-        const provider = darkPool.provider;
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, provider);
+        const signer = darkPool.signer;
+        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, signer);
 
         if (!isNativeAsset(context.note.asset)) {
             await this.allowance();

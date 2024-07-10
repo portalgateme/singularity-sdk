@@ -119,8 +119,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const provider = darkPool.provider;
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, provider);
+        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, darkPool.signer);
         const tx = await contract.join(
             context.proof.inNoteNullifier1,
             context.proof.inNoteNullifier2,
