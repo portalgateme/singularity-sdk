@@ -1,29 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react'
 import {
-  Card,
-  styled,
-  useTheme,
   Box,
-  Typography,
+  Card,
   FormControl,
+  styled,
+  Typography,
+  useTheme,
 } from '@mui/material'
 import BN from 'bignumber.js'
-import { useToast } from '../../contexts/ToastContext/hooks'
 import { isEmpty } from 'lodash'
-import { useAccount, useBalance } from 'wagmi'
-import { DarkpoolError, HexData, TokenConfig } from '../../types'
-import { Note } from '@thesingularitynetwork/darkpool-v1-proof'
+import React, { useState } from 'react'
+import { useAccount } from 'wagmi'
+import { config } from '../../constants'
+import { useToast } from '../../contexts/ToastContext/hooks'
 import { formatContractError } from '../../helpers'
-import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
-import { SecretModal } from '../Modal/SecretModal'
+import { useDeposit } from '../../hooks/useDeposit'
+import { useSignMessage } from '../../hooks/useSignMessage'
+import { DarkpoolError, TokenConfig } from '../../types'
+import { AlignedRow } from '../Box/AlignedRow'
 import { LoadingExtButton } from '../Button/LoadingButton'
 import { AssetAmountInput } from '../Input/AssetAmountInput'
-import { ethers } from 'ethers'
-import { AlignedRow } from '../Box/AlignedRow'
-import { useSignMessage } from '../../hooks/useSignMessage'
-import { isNotNativeCurrencyByChain } from '../../helpers/utils'
-import { config } from '../../constants'
-import { useDeposit } from '../../hooks/useDeposit'
+import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
+import { tokenConfig } from '../../constants/tokenConfig'
 
 export const StyledCard = styled(Card)(() => {
   return {
@@ -33,7 +30,7 @@ export const StyledCard = styled(Card)(() => {
   }
 })
 
-export const Deposit: React.FC = () => {
+export const DemoCard: React.FC = () => {
   const theme = useTheme()
   const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState(false)
@@ -51,7 +48,7 @@ export const Deposit: React.FC = () => {
   const [key, setKey] = useState<number>(Date.now())
   const account = useAccount()
 
-  const [asset, setAsset] = useState<TokenConfig>()
+  const [asset, setAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
   const [amount, setAmount] = useState<number>()
   const { execute } = useDeposit()
 
@@ -99,23 +96,14 @@ export const Deposit: React.FC = () => {
 
     setError(null)
     setLoading(true)
-    showPendingToast(undefined, 'Signing Message')
 
     try {
-      const signature = await signMessageAsync(address)
-      setSignature(signature)
-
       await execute(
         asset,
         amountBN,
-        signature,
       )
     } catch (error: any) {
-      if (error instanceof DarkpoolError) {
-        setError(error.message)
-      } else {
-        setError(formatContractError(error.message))
-      }
+      setError(error.message)
       console.error(
         'Deposit error on preparation: ',
         error.message,

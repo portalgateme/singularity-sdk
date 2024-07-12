@@ -1,26 +1,26 @@
 import { NextPage } from 'next'
 import Head from 'next/head'
-import { Deposit } from '../components/Card'
+import { DemoCard } from '../components/Card/DemoCard'
 import Layout from '../components/Layout'
 import { TabConfig, TabPanel } from '../components/Panel/TabPanel'
 
 
-const DepositPage: NextPage = () => {
+const DemoPage: NextPage = () => {
 
   const tabComponents: TabConfig = {
-    deposit: { element: <Deposit />, tabTitle: 'Deposit' },
+    DemoCard: { element: <DemoCard />, tabTitle: 'Demo Wrap ETH' },
   }
 
   return (
     <div>
       <Head>
-        <title>Deposit</title>
+        <title>DemoCard</title>
       </Head>
-        <Layout title='Deposit'>
-          <TabPanel tabComponents={tabComponents} defaultTab='deposit' />
+        <Layout title='DemoCard'>
+          <TabPanel tabComponents={tabComponents} defaultTab='DemoCard' />
         </Layout>
     </div>
   )
 }
 
-export default DepositPage
+export default DemoPage

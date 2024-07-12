@@ -47,6 +47,7 @@ export type NetworkConfig = {
   drakpoolSubgraphUrl: string
   stakingOperator: HexData
   stakingAssetManager: HexData
+  mockDex: HexData
 
   explorerUrl: {
     tx: string

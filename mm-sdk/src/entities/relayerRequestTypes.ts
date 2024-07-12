@@ -115,9 +115,10 @@ export type DefiInfraRelayerRequest = BaseRelayerRequest & {
     inNoteType: number
     inNullifiers: string[]
     inAssets: string[]
-    inAmounts: string[]
+    inAmountsOrNftIds: string[]
     contractAddress: string
     defiParameters: string
+    defiParameterHash: string
     outNoteType: number
     outAssets: string[]
     outNoteFooters: string[]

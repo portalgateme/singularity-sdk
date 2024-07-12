@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 
 export async function isAddressCompliance(address: string, chainId: number): Promise<boolean> {
     if (!address
-        || !ethers.utils.isAddress(address)
+        || !ethers.isAddress(address)
         || !chainId
     ) {
         return false;

@@ -8,6 +8,7 @@ export enum Action {
     CURVE_LP_DEPOSIT = 'CURVE_LP_DEPOSIT',
     CURVE_LP_WITHDRAW = 'CURVE_LP_WITHDRAW',
     CURVE_MULTI_SWAP = 'CURVE_MULTI_SWAP',
+    DEFI_INFRA = 'DEFI_INFRA',
 }
 
 
@@ -20,5 +21,6 @@ export const relayerPathConfig: { [action: string]: string } = {
     [Action.CURVE_LP_DEPOSIT]: '/v1/pgDarkPoolCurveAddLiquidity',
     [Action.CURVE_LP_WITHDRAW]: '/v1/pgDarkPoolCurveRemoveLiquidity',
     [Action.CURVE_MULTI_SWAP]: '/v1/pgDarkPoolCurveMultiExchange',
+    [Action.DEFI_INFRA]: '/v1/pgDarkPoolDefiInfra',
 }
 

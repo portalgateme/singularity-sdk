@@ -25,28 +25,3 @@ export const useSignMessage = () => {
 
   return { signMessageAsync }
 }
-
-export const useSignMessageForNoteMgmtEncrpytion = () => {
-  const { signTypedDataAsync } = useSignTypedData()
-
-  const signMessageForNoteMgmtEncryption = async (user: HexData) => {
-    return await signTypedDataAsync({
-      types: {
-        'Private Note Encryption Key Generation for Note Management': [
-          { name: 'user', type: 'address' },
-          { name: 'action', type: 'string' },
-          { name: 'disclaimer', type: 'string' },
-        ],
-      },
-      primaryType: 'Private Note Encryption Key Generation for Note Management',
-      message: {
-        user,
-        action:
-          "Please sign this message to generate your encryption key pair, securing your private note within the Note Management Tool. This process is entirely free and doesn't entail any gas fees.",
-        disclaimer: 'Only sign this message on Singularity website!',
-      },
-    })
-  }
-
-  return { signMessageForNoteMgmtEncryption }
-}

@@ -170,6 +170,11 @@
     },
     {
       "inputs": [],
+      "name": "ParametesMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "RelayerMismatch",
       "type": "error"
     },
@@ -205,27 +210,27 @@
         },
         {
           "indexed": false,
-          "internalType": "bytes32[4]",
+          "internalType": "bytes32[]",
           "name": "nullifiers",
-          "type": "bytes32[4]"
+          "type": "bytes32[]"
         },
         {
           "indexed": false,
-          "internalType": "bytes32[4]",
+          "internalType": "bytes32[]",
           "name": "outNote",
-          "type": "bytes32[4]"
+          "type": "bytes32[]"
         },
         {
           "indexed": false,
-          "internalType": "uint256[4]",
+          "internalType": "uint256[]",
           "name": "outAmount",
-          "type": "uint256[4]"
+          "type": "uint256[]"
         },
         {
           "indexed": false,
-          "internalType": "bytes32[4]",
+          "internalType": "bytes32[]",
           "name": "noteFooter",
-          "type": "bytes32[4]"
+          "type": "bytes32[]"
         }
       ],
       "name": "DefiIntegration",
@@ -278,6 +283,19 @@
     },
     {
       "inputs": [],
+      "name": "MAXISUM_ASSETS_ALLOWED",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "P",
       "outputs": [
         {
@@ -304,9 +322,9 @@
               "type": "bytes32"
             },
             {
-              "internalType": "bytes32[4]",
+              "internalType": "bytes32[]",
               "name": "nullifiers",
-              "type": "bytes32[4]"
+              "type": "bytes32[]"
             },
             {
               "internalType": "enum IMimc254.NoteDomainSeparator",
@@ -314,14 +332,14 @@
               "type": "uint8"
             },
             {
-              "internalType": "address[4]",
+              "internalType": "address[]",
               "name": "assets",
-              "type": "address[4]"
+              "type": "address[]"
             },
             {
-              "internalType": "uint256[4]",
+              "internalType": "uint256[]",
               "name": "amountsOrNftIds",
-              "type": "uint256[4]"
+              "type": "uint256[]"
             },
             {
               "internalType": "address",
@@ -339,9 +357,9 @@
               "type": "bytes32"
             },
             {
-              "internalType": "bytes32[4]",
+              "internalType": "bytes32[]",
               "name": "noteFooters",
-              "type": "bytes32[4]"
+              "type": "bytes32[]"
             },
             {
               "internalType": "enum IMimc254.NoteDomainSeparator",
@@ -354,9 +372,9 @@
               "type": "address"
             },
             {
-              "internalType": "uint256[4]",
+              "internalType": "uint256[]",
               "name": "gasRefund",
-              "type": "uint256[4]"
+              "type": "uint256[]"
             }
           ],
           "internalType": "struct GeneralDefiIntegrationAssetManager.DefiArgs",

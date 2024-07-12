@@ -29,13 +29,14 @@ export interface DefiInfraRequest {
 class DefiInfraContext extends BaseRelayerContext {
     private _request?: DefiInfraRequest;
     private _proof?: DefiInfraProofResult;
+    private _inNotes?: Note[];
     private _outPartialNotes?: PartialNote[];
 
     constructor(relayer: Relayer, signature: string) {
         super(relayer, signature);
     }
 
-    set request(request: DefiInfraRequest) {
+    set request(request: DefiInfraRequest | undefined) {
         this._request = request;
     }
 
@@ -43,7 +44,7 @@ class DefiInfraContext extends BaseRelayerContext {
         return this._request;
     }
 
-    set proof(proof: DefiInfraProofResult) {
+    set proof(proof: DefiInfraProofResult | undefined) {
         this._proof = proof;
     }
 
@@ -51,7 +52,15 @@ class DefiInfraContext extends BaseRelayerContext {
         return this._proof;
     }
 
-    set outPartialNotes(outPartialNotes: PartialNote[]) {
+    set inNotes(inNotes: Note[] | undefined) {
+        this._inNotes = inNotes;
+    }
+
+    get inNotes(): Note[] | undefined {
+        return this._inNotes;
+    }
+
+    set outPartialNotes(outPartialNotes: PartialNote[] | undefined) {
         this._outPartialNotes = outPartialNotes;
     }
 
@@ -94,7 +103,8 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
         }
 
         let inNotes = [context.request.inNote1, context.request.inNote2, context.request.inNote3, context.request.inNote4];
-        const paths = await multiGetMerklePathAndRoot(inNotes.map((note) => note ? note.note : undefined).filter((note) => note !== undefined) as bigint[]);
+
+        const paths = await multiGetMerklePathAndRoot(inNotes.filter(item => item !== null).map(item => item?.note) as bigint[]);
         const root = paths[0].root;
         context.merkleRoot = root;
 
@@ -120,16 +130,18 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             }
         }
 
+        context.inNotes = notes;
+
         const proof = await generateInfraProof({
             merkleRoot: root,
-            merkleIndex1: paths[0].index,
-            merkleIndex2: paths[1].index,
-            merkleIndex3: paths[2].index,
-            merkleIndex4: paths[3].index,
-            merklePath1: paths[0].path,
-            merklePath2: paths[1].path,
-            merklePath3: paths[2].path,
-            merklePath4: paths[3].path,
+            merkleIndex1: noteMerkleIndex[0],
+            merkleIndex2: noteMerkleIndex[1],
+            merkleIndex3: noteMerkleIndex[2],
+            merkleIndex4: noteMerkleIndex[3],
+            merklePath1: noteMerklePath[0],
+            merklePath2: noteMerklePath[1],
+            merklePath3: noteMerklePath[2],
+            merklePath4: noteMerklePath[3],
             inNoteType: context.request.inNoteTpye,
             inNote1: notes[0],
             inNote2: notes[1],
@@ -152,10 +164,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
     protected async getRelayerRequest(context: DefiInfraContext): Promise<DefiInfraRelayerRequest> {
         if (!context
             || !context.request
-            || !context.request.inNote1
-            || !context.request.inNote2
-            || !context.request.inNote3
-            || !context.request.inNote4
+            || !context.inNotes
             || !context.outPartialNotes
             || !context.signature
             || !context.merkleRoot
@@ -169,17 +178,18 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             inNoteType: context.request.inNoteTpye,
             inNullifiers: [context.proof.inNullifier1, context.proof.inNullifier2, context.proof.inNullifier3, context.proof.inNullifier4],
             inAssets: [
-                context.request.inNote1.asset,
-                context.request.inNote2.asset,
-                context.request.inNote3.asset,
-                context.request.inNote4.asset],
-            inAmounts: [
-                hexlify32(context.request.inNote1.amount),
-                hexlify32(context.request.inNote2.amount),
-                hexlify32(context.request.inNote3.amount),
-                hexlify32(context.request.inNote4.amount)],
+                context.inNotes[0].asset,
+                context.inNotes[1].asset,
+                context.inNotes[2].asset,
+                context.inNotes[3].asset],
+            inAmountsOrNftIds: [
+                hexlify32(context.inNotes[0].amount),
+                hexlify32(context.inNotes[1].amount),
+                hexlify32(context.inNotes[2].amount),
+                hexlify32(context.inNotes[3].amount)],
             contractAddress: context.request.contractAddress,
             defiParameters: context.request.defiParameters,
+            defiParameterHash: context.proof.defiParametersHash,
             outNoteType: context.request.outNoteType,
             outAssets: [
                 context.outPartialNotes[0].asset,
@@ -197,21 +207,23 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             gasRefund: [hexlify32(0n), hexlify32(0n), hexlify32(0n), hexlify32(0n)],
             verifierArgs: context.proof.proof.verifyInputs,
         };
+        
+        console.log(relayerRequest);
 
         return relayerRequest;
     }
 
     protected getRelayerPath(): string {
-        return relayerPathConfig[Action.CURVE_LP_DEPOSIT];
+        return relayerPathConfig[Action.DEFI_INFRA];
     }
 
     protected async postExecute(context: DefiInfraContext): Promise<Note[]> {
-        if (!context 
-            || !context.request 
-            || !context.tx 
-            || !context.outPartialNotes 
-            || !context.signature 
-            || !context.merkleRoot 
+        if (!context
+            || !context.request
+            || !context.tx
+            || !context.outPartialNotes
+            || !context.signature
+            || !context.merkleRoot
             || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
