@@ -1,6 +1,7 @@
 import { Note, PartialNote } from "@thesingularitynetwork/darkpool-v1-proof";
 import axios from "axios";
 import { Relayer } from "../entities/relayer";
+import { DarkpoolError } from "../entities";
 
 export class BaseContext {
 
@@ -37,6 +38,7 @@ export class BaseContext {
 export class BaseRelayerContext extends BaseContext {
 
     private _relayer: Relayer;
+    private _jobId?: string;
 
     constructor(relayer: Relayer, signature: string) {
         super(signature);
@@ -45,6 +47,14 @@ export class BaseRelayerContext extends BaseContext {
 
     get relayer(): Relayer {
         return this._relayer;
+    }
+
+    set jobId(jobId: string | undefined) {
+        this._jobId = jobId;
+    }
+
+    get jobId(): string | undefined {
+        return this._jobId;
     }
 }
 
@@ -78,11 +88,72 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
             relayerRequest,
         )
         if (response.status == 200) {
+            context.jobId = response.data.id
             return response.data.id
         } else if (response.status == 400) {
             throw new Error('Request error' + response.data.error)
         } else {
             throw new Error('Relayer not asscessable')
+        }
+    }
+
+    async executeAndWaitForResult(context: T): Promise<any> {
+        await this.execute(context)
+
+        const { error } = await this.pollJobStatus(context)
+
+        if (error) {
+            throw new DarkpoolError(error)
+        }
+
+        return await this.postExecute(context)
+    }
+
+    async pollJobStatus(context: T): Promise<{ error: string | undefined, txHash: string | undefined }> {
+        let tries = 1
+        let txHash = undefined
+        while (tries <= 100) {
+            if (tries >= 100) {
+                break;
+            }
+            try {
+                const response = await axios.get(`${context.relayer.hostUrl}/v1/jobs/${context.jobId}`)
+                if (response.status === 400) {
+                    const { error } = response.data
+                    console.log(error)
+                    return {
+                        error: 'Failed to submit transaction to relayer:' + error,
+                        txHash: undefined,
+                    }
+                }
+                if (response.status === 200) {
+                    const { txHash, status, failedReason } =
+                        response.data
+                    context.tx = txHash
+
+                    if (status === 'FAILED') {
+                        return {
+                            error: failedReason ?? 'Transaction failed.',
+                            txHash: txHash,
+                        }
+                    }
+                    if (status === 'CONFIRMED' || status === 'MINED') {
+                        return {
+                            error: undefined,
+                            txHash: txHash,
+                        }
+                    }
+                }
+                await new Promise((resolve) => setTimeout(resolve, 5000))
+            } catch (error) {
+                console.log(error)
+            }
+            tries++
+        }
+
+        return {
+            error: "Waited too long for transaction to be mined.",
+            txHash,
         }
     }
 }

@@ -1,14 +1,14 @@
-import { EMPTY_NOTE, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
-import { DefiInfraRequest, DefiInfraService, DepositService, darkPool } from "@thesingularitynetwork/mm-sdk"
+import { EMPTY_NOTE, Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
+import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool } from "@thesingularitynetwork/mm-sdk"
 import { AbiCoder } from "ethers"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
 import { networkConfig } from "../constants/networkConfig"
 import { useToast } from "../contexts/ToastContext/hooks"
-import { DarkpoolError, TokenConfig } from "../types"
-import { useEthersSigner } from "../wagmi"
+import { DarkpoolError, HexData, TokenConfig } from "../types"
+import { useEthersSigner, wagmiConfig } from "../wagmi"
 import { useSignMessage } from "./useSignMessage"
-import { waitForTransactionReceipt } from "viem/actions"
+import { waitForTransactionReceipt } from '@wagmi/core'
 
 export const useDeposit = () => {
 
@@ -31,7 +31,7 @@ export const useDeposit = () => {
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
-                hostUrl: 'http://localhost:8000',
+                hostUrl: 'https://34.142.142.240:18000',
             }
         ], {
             priceOracle: config.networkConfig.priceOracle,
@@ -40,41 +40,33 @@ export const useDeposit = () => {
             complianceManager: config.networkConfig.complianceManager,
             merkleTreeOperator: config.networkConfig.merkleTreeOperator,
             darkpoolAssetManager: config.networkConfig.darkpoolAssetManager,
-            drakpoolSubgraphUrl: '',
-            uniswapConfig: {
-                swapRouterAddress: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
-                quoterContractAddress: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
-                wrappedNativeTokenAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-                v3PosNftAddress: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
-                factoryAddress: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-                subgraphUrl: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3?source=uniswap'
-            },
+            drakpoolSubgraphUrl: ''
         })
-        // const depositService = new DepositService()
-        // const { context, outNotes } = await depositService.prepare({
-        //     symbol: asset.symbol,
-        //     name: asset.name,
-        //     decimals: asset.decimals,
-        //     address: asset.address,
-        // }, amount, address, signature)
+        const depositService = new DepositService()
+        const { context, outNotes } = await depositService.prepare({
+            symbol: asset.symbol,
+            name: asset.name,
+            decimals: asset.decimals,
+            address: asset.address,
+        }, amount, address, signature)
 
-        // updatePendingToast(undefined, "Generating Proof")
-        // await depositService.generateProof(context)
+        updatePendingToast(undefined, "Generating Proof")
+        await depositService.generateProof(context)
 
 
-        // updatePendingToast(undefined, "Calling contract")
-        // const txId = await depositService.execute(context)
+        updatePendingToast(undefined, "Depositing")
+        const txId = await depositService.execute(context)
 
-        // const ethNote = outNotes[0];
-        const ethNote = {
-            amount: 1000000000000000000n,
-            asset:"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-            note: 15955092430626130633002645005166921609770356299703347039194450464529722216465n,
-            rho: 205314075303279360390769526663366794992399893517922447507205584512156282418n,
-        }
+        updatePendingToast(undefined, "Waiting for Confirmation")
+        const receipt = await waitForTransactionReceipt(wagmiConfig, {
+            confirmations: 3,
+            hash: txId as HexData })
+
+        console.log(receipt)
+
+        const ethNote = outNotes[0];
 
         console.log(ethNote)
-
 
         const defiParameters = new AbiCoder().encode(
             ['uint256', 'uint256'],
@@ -100,8 +92,17 @@ export const useDeposit = () => {
         const { context: infraContext, outPartialNotes } = await infraService.prepare(request, signature)
         updatePendingToast(undefined, "Generating Proof")
         await infraService.generateProof(infraContext)
-        await infraService.execute(infraContext)
+        updatePendingToast(undefined, "Executing")
+        const notes = await infraService.executeAndWaitForResult(infraContext)
 
+        console.log(notes)
+
+        const withdrawService = new WithdrawService()
+        const { context: withdrawContext } = await withdrawService.prepare(notes[0] as Note, address, signature)
+        updatePendingToast(undefined, "Generating Proof")
+        await withdrawService.generateProof(withdrawContext)
+        updatePendingToast(undefined, "Executing")
+        await withdrawService.executeAndWaitForResult(withdrawContext)
     }
 
     return {

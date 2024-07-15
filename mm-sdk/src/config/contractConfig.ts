@@ -8,7 +8,7 @@ export type ContractConfiguartion = {
     merkleTreeOperator: string
     darkpoolAssetManager: string
     drakpoolSubgraphUrl: string
-    uniswapConfig: {
+    uniswapConfig?: {
         swapRouterAddress: string
         quoterContractAddress: string
         wrappedNativeTokenAddress: string

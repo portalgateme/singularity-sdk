@@ -80,10 +80,16 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
     }
 
     private getV3PosAddress() {
+        if (!darkPool.contracts.uniswapConfig) {
+            throw new DarkpoolError("Uniswap config not found");
+        }
         return darkPool.contracts.uniswapConfig.v3PosNftAddress;
     }
 
     public async prepare(request: UniswapAddLiquidityRequest, signature: string): Promise<{ context: UniswapAddLiquidityContext, outPartialNotes: PartialNote[], outPartialNftNote: PartialNftNote }> {
+        if (!darkPool.contracts.uniswapConfig) {
+            throw new DarkpoolError("Uniswap config not found");
+        }
         const outPartialNftNote = await createPartialNftNote(this.getV3PosAddress(), signature);
         const outPartialChangeNote1 = await createPartialNote(request.inNote1.asset, signature);
         const outPartialChangeNote2 = await createPartialNote(request.inNote2.asset, signature);

@@ -83,7 +83,7 @@ export class DepositService extends BaseContractService<DepositContext> {
                 context.proof.noteFooter,
                 context.proof.proof.proof
             );
-            return tx;
+            return tx.hash;
 
         } else {
             const tx = await contract.depositETH(
@@ -92,7 +92,7 @@ export class DepositService extends BaseContractService<DepositContext> {
                 context.proof.proof.proof,
                 { value: context.note.amount }
             );
-            return tx;
+            return tx.hash;
         }
     }
 
