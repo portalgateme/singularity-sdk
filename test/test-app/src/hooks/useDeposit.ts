@@ -90,18 +90,18 @@ export const useDeposit = () => {
 
         const infraService = new DefiInfraService()
         const { context: infraContext, outPartialNotes } = await infraService.prepare(request, signature)
-        updatePendingToast(undefined, "Generating Proof")
+        updatePendingToast(undefined, "Generating Infra Proof")
         await infraService.generateProof(infraContext)
-        updatePendingToast(undefined, "Executing")
+        updatePendingToast(undefined, "Calling defi infra")
         const notes = await infraService.executeAndWaitForResult(infraContext)
 
         console.log(notes)
 
         const withdrawService = new WithdrawService()
         const { context: withdrawContext } = await withdrawService.prepare(notes[0] as Note, address, signature)
-        updatePendingToast(undefined, "Generating Proof")
+        updatePendingToast(undefined, "Generating Withdraw Proof")
         await withdrawService.generateProof(withdrawContext)
-        updatePendingToast(undefined, "Executing")
+        updatePendingToast(undefined, "Withdrawing")
         await withdrawService.executeAndWaitForResult(withdrawContext)
     }
 

@@ -62,6 +62,7 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
         }
 
         const path = await getMerklePathAndRoot(context.note.note);
+        context.merkleRoot = path.root;
 
         const proof = await generateWithdrawProof({
             note: context.note,
@@ -87,7 +88,7 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
             nullifier: context.proof.nullifier,
             recipient: context.recipient,
             relayer: context.relayer.relayerAddress,
-            amount: context.note.amount.toString(),
+            amount: hexlify32(context.note.amount),
             refund: hexlify32(0n),
             verifierArgs: context.proof.proof.verifyInputs,
         };

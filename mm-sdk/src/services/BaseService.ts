@@ -100,7 +100,9 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
     async executeAndWaitForResult(context: T): Promise<any> {
         await this.execute(context)
 
-        const { error } = await this.pollJobStatus(context)
+        const { error, txHash } = await this.pollJobStatus(context)
+
+        console.log("relayer response, error and tx: ", error, txHash)
 
         if (error) {
             throw new DarkpoolError(error)

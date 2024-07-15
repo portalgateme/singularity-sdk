@@ -207,7 +207,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             gasRefund: [hexlify32(0n), hexlify32(0n), hexlify32(0n), hexlify32(0n)],
             verifierArgs: context.proof.proof.verifyInputs,
         };
-        
+
         console.log(relayerRequest);
 
         return relayerRequest;
@@ -234,11 +234,11 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
         } else {
             let outNotes = [];
             for (let i = 0; i < 4; i++) {
-                if (outPut[i].amount != null && outPut[i].amount != BigInt(0)) {
+                if (outPut[i] != BigInt(0)) {
                     const outNote = await recoverNoteWithFooter(
                         context.outPartialNotes[i].rho,
                         context.outPartialNotes[i].asset,
-                        BigInt(outPut[i].amount),
+                        BigInt(outPut[i]),
                         context.signature,
                     )
 
@@ -254,13 +254,10 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
         const iface = new ethers.Interface(GeneralDefiIntegrationAssetManagerAbi.abi)
         const receipt = await darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
-            const log = receipt.logs.find(
-                (log) => log.topics[0] === 'DefiIntegration',
-            )
-            if (log) {
-                const event = iface.parseLog(log)
-                if (event) {
-                    return event.args[3]
+            for (let i = 0; i < receipt.logs.length; i++) {
+                const parsedLog = iface.parseLog(receipt.logs[i]);
+                if (parsedLog && parsedLog.name == 'DefiIntegration') {
+                    return parsedLog.args[3]
                 }
             }
         }
