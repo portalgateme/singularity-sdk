@@ -11,16 +11,16 @@ import { isEmpty } from 'lodash'
 import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { config } from '../../constants'
+import { tokenConfig } from '../../constants/tokenConfig'
 import { useToast } from '../../contexts/ToastContext/hooks'
-import { formatContractError } from '../../helpers'
 import { useDeposit } from '../../hooks/useDeposit'
 import { useSignMessage } from '../../hooks/useSignMessage'
-import { DarkpoolError, TokenConfig } from '../../types'
+import { TokenConfig } from '../../types'
 import { AlignedRow } from '../Box/AlignedRow'
 import { LoadingExtButton } from '../Button/LoadingButton'
 import { AssetAmountInput } from '../Input/AssetAmountInput'
 import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
-import { tokenConfig } from '../../constants/tokenConfig'
+import { useStake } from '../../hooks/useStake'
 
 export const StyledCard = styled(Card)(() => {
   return {
@@ -50,9 +50,11 @@ export const DemoCard: React.FC = () => {
 
   const [asset, setAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
   const [amount, setAmount] = useState<number>()
-  const { execute } = useDeposit()
 
   const [ethTx, setEthTx] = useState<string>('')
+
+  const { execute: executeDeposit } = useDeposit()
+  const { execute: executeStake} = useStake()
 
   const handleAssetChange = (value: TokenConfig) => {
     setError(null)
@@ -79,7 +81,7 @@ export const DemoCard: React.FC = () => {
     setKey(Date.now())
   }
 
-  const prepare = async () => {
+  const doDeposit = async () => {
     if (!amount || !asset) {
       setError('Please enter the amount and select a token')
       return
@@ -98,7 +100,43 @@ export const DemoCard: React.FC = () => {
     setLoading(true)
 
     try {
-      await execute(
+      await executeDeposit(
+        asset,
+        amountBN,
+      )
+    } catch (error: any) {
+      setError(error.message)
+      console.error(
+        'Deposit error on preparation: ',
+        error.message,
+        error.stack,
+      )
+    } finally {
+      setLoading(false)
+      closeToast()
+    }
+  }
+
+  const doStake = async () => {
+    if (!amount || !asset) {
+      setError('Please enter the amount and select a token')
+      return
+    }
+
+    if (!isConnected || !activeConnector || !address || !chainId) {
+      setError('No wallet connected!')
+      return
+    }
+
+    const amountBN = BigInt(
+      new BN(amount).multipliedBy(new BN(10).pow(asset.decimals)).toFixed(0, 1),
+    )
+
+    setError(null)
+    setLoading(true)
+
+    try {
+      await executeStake(
         asset,
         amountBN,
       )
@@ -139,8 +177,14 @@ export const DemoCard: React.FC = () => {
           <LoadingExtButton
             disabled={loading || !amount || !asset || !isEmpty(error)}
             loading={loading}
-            title={'Continue'}
-            onClick={prepare}
+            title={'Deposit'}
+            onClick={doDeposit}
+          />
+          <LoadingExtButton
+            disabled={loading || !amount || !asset || !isEmpty(error)}
+            loading={loading}
+            title={'Stake'}
+            onClick={doStake}
           />
         </Box>
       </FormControl>

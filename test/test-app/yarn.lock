@@ -1713,10 +1713,10 @@
   dependencies:
     "@tanstack/query-core" "5.28.6"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.2.11":
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.12.tgz#2f01c804d7fdc8a315204c3c466316e8f3867723"
-  integrity sha512-YYgvZ+fWt2hva958Lzn0o9SSTsMnHw9kJkcnUj2jDk+rpCYVnultFDBX7a1SiPooqYz4BEPposkubCJimc96IA==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.14":
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.14.tgz#aafbab648227d0ca66cdf3ae7ea3e86ee9d58f2a"
+  integrity sha512-wj2V01jcCUkw6JwPBM5qDWRphFeHT1fFhSxfnR/vwO+6uB4s5oKf8bqjPouSpnnRZ5dEWexVzmK1qTFkrMO14Q==
   dependencies:
     "@aztec/bb.js" "^0.30.0"
     "@ethersproject/abi" "^5.7.0"
@@ -1728,12 +1728,14 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/mm-sdk@file:.yalc/@thesingularitynetwork/mm-sdk":
-  version "0.0.1"
+"@thesingularitynetwork/mm-sdk@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/mm-sdk/-/mm-sdk-0.0.2.tgz#ad41580c5d0ab5886fdd30695fe2291be5d6ed9e"
+  integrity sha512-ZHXHCVeiRkYaeTffokmJ+mNWKs/3Yeovty1uk9z6jc1cW7XDBI0kUW5+i0eZeSNTrHOYa8JpUH8iRWRB3ttfKQ==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
-    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.11"
+    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.14"
     "@uniswap/permit2-sdk" "^1.2.0"
     "@uniswap/v3-periphery" "^1.4.4"
     "@uniswap/v3-sdk" "^3.11.0"
