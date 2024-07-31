@@ -125,3 +125,19 @@ export type DefiInfraRelayerRequest = BaseRelayerRequest & {
     relayer: string
     gasRefund: string[]
 }
+
+export type StakeNoteRelayerRequest = BaseRelayerRequest & {
+    inAsset: string,
+    inNullifier: string,
+    outNoteFooter: string,
+    inAmount: string,
+    refund: string,
+}
+
+export type RedeemRelayerRequest = BaseRelayerRequest & {
+    inNullifier: string,
+    inAsset: string,
+    inAmount: string,
+    outNoteFooter: string,
+    refund: string,
+}

@@ -5,3 +5,4 @@ export * from './infra';
 export * from './uniswap';
 export * from './BaseService';
 export * from './merkletree';
+export * from './staking';
