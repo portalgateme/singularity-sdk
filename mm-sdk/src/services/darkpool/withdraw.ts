@@ -2,7 +2,7 @@ import { Note, PartialNote, WithdrawProofResult, generateWithdrawProof } from "@
 import { Action, relayerPathConfig } from "../../config/config";
 import { darkPool } from "../../darkpool";
 import { WithdrawRelayerRequest } from "../../entities/relayerRequestTypes";
-import { hexlify32, isNativeAsset } from "../../utils/util";
+import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
