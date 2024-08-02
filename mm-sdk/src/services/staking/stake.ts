@@ -90,6 +90,39 @@ export class StakeService extends BaseContractService<StakeContext> {
     }
 
     public async execute(context: StakeContext): Promise<string> {
+        const contractParam = this.getContractCallParameters(context);
+        const signer = darkPool.signer;
+        const contract = new ethers.Contract(darkPool.contracts.stakingAssetManager, StakingAssetManagerAbi.abi, signer);
+
+        if (!isNativeAsset(contractParam.asset)) {
+            await this.allowance();
+            const tx = await contract.lockERC20(
+                [
+                    contractParam.asset,
+                    contractParam.amount,
+                    contractParam.note,
+                    contractParam.noteFooter,
+                ],
+                contractParam.proof
+            );
+            return tx.hash;
+        } else {
+            const tx = await contract.lockETH(
+                [
+                    contractParam.note,
+                    contractParam.noteFooter,
+                ],
+                contractParam.proof,
+                { value: contractParam.amount }
+            );
+            return tx.hash;
+        }
+    }
+
+    protected async allowance() {
+    }
+
+    public getContractCallParameters(context: StakeContext) {
         if (!context
             || !context.inAsset
             || !context.outNote
@@ -98,35 +131,13 @@ export class StakeService extends BaseContractService<StakeContext> {
             || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
-        const signer = darkPool.signer;
-        const contract = new ethers.Contract(darkPool.contracts.stakingAssetManager, StakingAssetManagerAbi.abi, signer);
 
-        if (!isNativeAsset(context.inAsset.address)) {
-            await this.allowance();
-            const tx = await contract.lockERC20(
-                [
-                    context.inAsset.address,
-                    hexlify32(context.outNote.amount),
-                    hexlify32(context.outNote.note),
-                    context.proof.outNoteFooter,
-                ],
-                context.proof.proof.proof
-            );
-            return tx.hash;
-
-        } else {
-            const tx = await contract.lockETH(
-                [
-                    hexlify32(context.outNote.note),
-                    context.proof.outNoteFooter
-                ],
-                context.proof.proof.proof,
-                { value: context.outNote.amount }
-            );
-            return tx.hash;
+        return {
+            proof: context.proof.proof.proof,
+            asset: context.inAsset.address,
+            amount: hexlify32(context.outNote.amount),
+            note: hexlify32(context.outNote.note),
+            noteFooter: context.proof.outNoteFooter,
         }
-    }
-
-    protected async allowance() {
     }
 }

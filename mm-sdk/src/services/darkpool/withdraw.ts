@@ -2,7 +2,7 @@ import { Note, PartialNote, WithdrawProofResult, generateWithdrawProof } from "@
 import { Action, relayerPathConfig } from "../../config/config";
 import { darkPool } from "../../darkpool";
 import { WithdrawRelayerRequest } from "../../entities/relayerRequestTypes";
-import { hexlify32 } from "../../utils/util";
+import { hexlify32, isNativeAsset } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
@@ -104,5 +104,21 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
     public async postExecute(context: WithdrawContext): Promise<Note[]> {
         console.log(context.tx);
         return [];
+    }
+
+    public getRelayerContractCallParameters(context: WithdrawContext) {
+        if (!context || !context.note || !context.recipient || !context.signature || !context.proof) {
+            throw new DarkpoolError("Invalid context");
+        }
+
+        return {
+            proof: context.proof.proof.proof,
+            asset: context.note.asset,
+            merkleRoot: context.merkleRoot,
+            nullifier: context.proof.nullifier,
+            recipient: context.recipient,
+            relayer: context.relayer.relayerAddress,
+            amount: hexlify32(context.note.amount),
+        }
     }
 }

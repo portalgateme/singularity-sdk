@@ -99,4 +99,18 @@ export class DepositService extends BaseContractService<DepositContext> {
     protected async allowance() {
 
     }
+
+    public getContractCallParameters(context: DepositContext) {
+        if (!context || !context.note || !context.address || !context.signature || !context.proof) {
+            throw new DarkpoolError("Invalid context");
+        }
+
+        return {
+            proof: context.proof.proof.proof,
+            asset: context.note.asset,
+            amount: hexlify32(context.note.amount),
+            note: hexlify32(context.note.note),
+            noteFooter: context.proof.noteFooter,
+        }
+    }
 }

@@ -142,4 +142,27 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
         )
         return [outNote];
     }
+
+    public getRelayerContractCallParameters(context: RedeemContext) {
+        if (!context
+            || !context.inNote
+            || !context.outNotePartial
+            || !context.signature
+            || !context.merkleRoot
+            || !context.proof) {
+            throw new DarkpoolError("Invalid context");
+        }
+
+        return {
+            args: {
+                relayer: context.relayer.relayerAddress,
+                merkleRoot: context.merkleRoot,
+                zkNoteNullifier: context.proof.inNullifier,
+                zkNoteAsset: context.inNote.asset,
+                zkNoteAmount: hexlify32(context.inNote.amount),
+                outNoteFooter: hexlify32(context.outNotePartial.footer),
+            },
+            proof: context.proof.proof.proof,
+        }
+    }
 }
