@@ -6,3 +6,4 @@ export * from './uniswap';
 export * from './BaseService';
 export * from './merkletree';
 export * from './staking';
+export * from './ComplianceService';
