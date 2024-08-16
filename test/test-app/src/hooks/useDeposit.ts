@@ -1,6 +1,6 @@
 import { EMPTY_NOTE, Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
-import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool } from "@thesingularitynetwork/mm-sdk"
-import { AbiCoder } from "ethers"
+import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/mm-sdk"
+import { AbiCoder, solidityPacked } from "ethers"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
 import { networkConfig } from "../constants/networkConfig"
@@ -17,7 +17,6 @@ export const useDeposit = () => {
     const signer = useEthersSigner()
     const { showPendingToast, showSuccessToast, closeToast, updatePendingToast } = useToast()
     const { signMessageAsync } = useSignMessage()
-
 
     const execute = async (asset: TokenConfig, amount: bigint) => {
         if (!isConnected || !address || !chainId || !signer) {
@@ -40,8 +39,16 @@ export const useDeposit = () => {
             complianceManager: config.networkConfig.complianceManager,
             merkleTreeOperator: config.networkConfig.merkleTreeOperator,
             darkpoolAssetManager: config.networkConfig.darkpoolAssetManager,
+            stakingAssetManager: config.networkConfig.stakingAssetManager,
+            stakingOperator: config.networkConfig.stakingOperator,
             drakpoolSubgraphUrl: ''
         })
+
+        const isCompliant = await isAddressCompliant(address)
+        if (!isCompliant) {
+            throw new DarkpoolError('Address is not compliant')
+        }
+
         const depositService = new DepositService()
         const { context, outNotes } = await depositService.prepare({
             symbol: asset.symbol,
@@ -60,7 +67,8 @@ export const useDeposit = () => {
         updatePendingToast(undefined, "Waiting for Confirmation")
         const receipt = await waitForTransactionReceipt(wagmiConfig, {
             confirmations: 3,
-            hash: txId as HexData })
+            hash: txId as HexData
+        })
 
         console.log(receipt)
 
@@ -68,10 +76,7 @@ export const useDeposit = () => {
 
         console.log(ethNote)
 
-        const defiParameters = new AbiCoder().encode(
-            ['uint256', 'uint256'],
-            [ethNote.amount, ethNote.amount * 8n / 10n])
-
+        const defiParameters = solidityPacked(['uint256', 'uint256'], [ethNote.amount, ethNote.amount * 8n / 10n])
 
         const request: DefiInfraRequest = {
             inNoteTpye: NoteType.Fungible,
