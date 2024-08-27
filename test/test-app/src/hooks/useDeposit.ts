@@ -1,5 +1,5 @@
 import { EMPTY_NOTE, Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
-import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/mm-sdk"
+import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
 import { AbiCoder, solidityPacked } from "ethers"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
