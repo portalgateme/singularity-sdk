@@ -1,0 +1,40 @@
+.toast {
+  :global {
+    .Toastify__toast {
+      border: 2px solid #1f750e;
+      border-radius: 12px;
+      background-color: #fff;
+    }
+
+    .Toastify__toast-body {
+      font-weight: 400;
+      font-size: 16px;
+      font-family: "Clash Grotesk", sans-serif;
+      line-height: 19px;
+    }
+
+    .Toastify__toast--default {
+      color: #fff;
+    }
+
+    .Toastify__toast--success {
+      color: #1f750e;
+    }
+
+    .Toastify__toast--error {
+      color: #ca4040;
+    }
+
+    .Toastify__close-button {
+      align-self: center;
+      border: none;
+      color: #1f750e;
+
+      svg {
+        width: 18px;
+        height: 18px;
+        color: #1f750e;
+      }
+    }
+  }
+}

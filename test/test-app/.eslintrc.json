@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "next",
+    "prettier"
+  ],
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none"
+      }
+    ]
+  },
+  "env": {
+    "es2020": true,
+    "browser": true,
+    "node": true,
+    "mocha": true
+  }
+}
