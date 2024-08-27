@@ -1,5 +1,5 @@
 import { Note } from "@thesingularitynetwork/darkpool-v1-proof"
-import { RedeemService, StakeNoteService, StakeService, WithdrawService, darkPool } from "@thesingularitynetwork/mm-sdk"
+import { RedeemService, StakeNoteService, StakeService, WithdrawService, darkPool } from "@thesingularitynetwork/singularity-sdk"
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useAccount } from "wagmi"
 import { config } from "../constants"
