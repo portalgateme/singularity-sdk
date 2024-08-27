@@ -1728,10 +1728,10 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/mm-sdk@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/mm-sdk/-/mm-sdk-0.0.4.tgz#1b7dc78c246435daaba236b0796f086d80f9f41d"
-  integrity sha512-o+UJWLel3dMBZfUUwP30tOPuXV/O1iQfdW00zsBF1NdUL3A8qggh7HqkDMAecqtR6AyeRut5frdhpRfjrX9GIg==
+"@thesingularitynetwork/singularity-sdk@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.5.tgz#3db5d26580732f7416693ebd4ee3ec239e454d35"
+  integrity sha512-a07Ry9eQCN3O09D5YuBtZ8uDaF+Wf8bA4RQSp9/MS7eSbiE2AJc9umeE9QrzMIvlbYX9jxT0NY7tLOx6sL/Omg==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
