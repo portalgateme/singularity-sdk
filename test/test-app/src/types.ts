@@ -44,6 +44,7 @@ export type NetworkConfig = {
   complianceManager: HexData
   merkleTreeOperator: HexData
   darkpoolAssetManager: HexData
+  otcSwapAssetManager: HexData
   drakpoolSubgraphUrl: string
   stakingOperator: HexData
   stakingAssetManager: HexData

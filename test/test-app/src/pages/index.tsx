@@ -1,6 +1,9 @@
 import { NextPage } from 'next'
 import Head from 'next/head'
-import { DemoCard } from '../components/Card/DemoCard'
+import { DemoSwapMakerCard } from '../components/Card/SwapMaker'
+import { DemoSwapMakerFinalCard } from '../components/Card/SwapMakerFinal'
+import { DemoSwapTakerCard } from '../components/Card/SwapTaker'
+import { DemoSwapTakerWithdrawCard } from '../components/Card/SwapTakerWithdraw'
 import Layout from '../components/Layout'
 import { TabConfig, TabPanel } from '../components/Panel/TabPanel'
 
@@ -8,7 +11,12 @@ import { TabConfig, TabPanel } from '../components/Panel/TabPanel'
 const DemoPage: NextPage = () => {
 
   const tabComponents: TabConfig = {
-    DemoCard: { element: <DemoCard />, tabTitle: 'Demo Wrap ETH' },
+    DemoSwapMakerCard: { element: <DemoSwapMakerCard />, tabTitle: '1.Maker' },
+    DemoSwapTakerCard: { element: <DemoSwapTakerCard />, tabTitle: '2.Taker' },
+    DemoSwapMakerFinalCard: { element: <DemoSwapMakerFinalCard />, tabTitle: '3.Maker Swap' },
+    DemoSwapTakerWithdrawCard: { element: <DemoSwapTakerWithdrawCard />, tabTitle: '4.Taker Withdraw' },
+    // DemoCard: { element: <DemoCard />, tabTitle: 'Demo Infra' },
+    // DemoStakeCard: { element: <DemoStakeCard />, tabTitle: 'Stake' },
   }
 
   return (
@@ -17,7 +25,7 @@ const DemoPage: NextPage = () => {
         <title>DemoCard</title>
       </Head>
         <Layout title='DemoCard'>
-          <TabPanel tabComponents={tabComponents} defaultTab='DemoCard' />
+          <TabPanel tabComponents={tabComponents} defaultTab='DemoSwapMakerCard' />
         </Layout>
     </div>
   )

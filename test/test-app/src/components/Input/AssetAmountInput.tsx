@@ -13,12 +13,14 @@ export interface AssetAmountInputProps {
   onAssetChange: (asset: TokenConfig) => void
   onAmountChange: (amount: string) => void
   type?: string
+  title?: string
 }
 
 export const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   onAssetChange,
   onAmountChange,
   type,
+  title,
 }) => {
   const theme = useTheme()
 
@@ -109,7 +111,7 @@ export const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
             fullWidth
             style={theme.typography.subtitle2}
             autoComplete="off"
-            placeholder="Please enter your amount"
+            placeholder={title || 'Please enter your amount'}
             sx={{
               color: textColor(),
               textAlign: 'right',

@@ -30,7 +30,7 @@ export const useDeposit = () => {
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
-                hostUrl: 'https://34.142.142.240:18000',
+                hostUrl: 'https://app.dev.portalgate.me:18000',
             }
         ], {
             priceOracle: config.networkConfig.priceOracle,
@@ -41,6 +41,7 @@ export const useDeposit = () => {
             darkpoolAssetManager: config.networkConfig.darkpoolAssetManager,
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
+            otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
             drakpoolSubgraphUrl: ''
         })
 
@@ -50,12 +51,7 @@ export const useDeposit = () => {
         }
 
         const depositService = new DepositService()
-        const { context, outNotes } = await depositService.prepare({
-            symbol: asset.symbol,
-            name: asset.name,
-            decimals: asset.decimals,
-            address: asset.address,
-        }, amount, address, signature)
+        const { context, outNotes } = await depositService.prepare(asset.address, amount, address, signature)
 
         updatePendingToast(undefined, "Generating Proof")
         await depositService.generateProof(context)

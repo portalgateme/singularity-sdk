@@ -29,7 +29,7 @@ export const useStake = () => {
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
-                hostUrl: 'https://34.142.142.240:18000',
+                hostUrl: 'https://app.dev.portalgate.me:18000',
             }
         ], {
             priceOracle: config.networkConfig.priceOracle,
@@ -40,6 +40,7 @@ export const useStake = () => {
             darkpoolAssetManager: config.networkConfig.darkpoolAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
             stakingAssetManager: config.networkConfig.stakingAssetManager,
+            otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
             drakpoolSubgraphUrl: ''
         }, [
             {

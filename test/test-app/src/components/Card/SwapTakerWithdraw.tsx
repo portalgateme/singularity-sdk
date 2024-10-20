@@ -3,6 +3,7 @@ import {
   Card,
   FormControl,
   styled,
+  TextField,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -13,13 +14,14 @@ import { useAccount } from 'wagmi'
 import { config } from '../../constants'
 import { tokenConfig } from '../../constants/tokenConfig'
 import { useToast } from '../../contexts/ToastContext/hooks'
-import { useDeposit } from '../../hooks/useDeposit'
-import { useSignMessage } from '../../hooks/useSignMessage'
+import { useTakerDeposit } from '../../hooks/useTakerDeposit'
 import { TokenConfig } from '../../types'
-import { AlignedRow } from '../Box/AlignedRow'
 import { LoadingExtButton } from '../Button/LoadingButton'
+import { NoteTextarea } from '../Input'
 import { AssetAmountInput } from '../Input/AssetAmountInput'
 import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
+import { SectionHeading } from '../Typography/SectionHeading'
+import { useTakerWithdraw } from '../../hooks/useTakerWithdraw'
 
 export const StyledCard = styled(Card)(() => {
   return {
@@ -29,11 +31,10 @@ export const StyledCard = styled(Card)(() => {
   }
 })
 
-export const DemoCard: React.FC = () => {
+export const DemoSwapTakerWithdrawCard: React.FC = () => {
   const theme = useTheme()
-  const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState(false)
-  const { showPendingToast, showSuccessToast, closeToast } =
+  const { closeToast } =
     useToast()
   const [error, setError] = useState<string | null>(null)
   const {
@@ -42,35 +43,23 @@ export const DemoCard: React.FC = () => {
     isConnected,
   } = useAccount()
   const chainId = config.chainId
-  const [signature, setSignature] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
   const [key, setKey] = useState<number>(Date.now())
-  const account = useAccount()
 
-  const [asset, setAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
-  const [amount, setAmount] = useState<number>()
+  const [makerAsset, setMakerAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
+  const [makerAmount, setMakerAmount] = useState<number>()
+  const [takerAsset, setTakerAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
+  const [takerAmount, setTakerAmount] = useState<number>()
 
   const [ethTx, setEthTx] = useState<string>('')
 
-  const { execute: executeDeposit } = useDeposit()
+  const { execute } = useTakerWithdraw()
+  const [fullSwapSecret, setFullSwapSecret] = useState<string>('')
+  const [orderId, setOrderId] = useState<string>('')
 
-  const handleAssetChange = (value: TokenConfig) => {
-    setError(null)
-    setAsset(value)
-  }
 
-  const handleAmountChange = (value: string) => {
-    setError(null)
-    if (!isNaN(Number(value))) {
-      const amount = parseFloat(value)
-      if (amount <= 0) {
-        setError('Amount must be greater than 0')
-        return
-      }
-      setAmount(parseFloat(value))
-    } else {
-      setAmount(undefined)
-    }
+  const handleFullSwapSecretChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFullSwapSecret(event.target.value.trim())
   }
 
   const onReset = () => {
@@ -79,9 +68,9 @@ export const DemoCard: React.FC = () => {
     setKey(Date.now())
   }
 
-  const doDeposit = async () => {
-    if (!amount || !asset) {
-      setError('Please enter the amount and select a token')
+  const doTakerWithdraw = async () => {
+    if (!fullSwapSecret) {
+      setError('Please enter the full swap secret')
       return
     }
 
@@ -90,18 +79,12 @@ export const DemoCard: React.FC = () => {
       return
     }
 
-    const amountBN = BigInt(
-      new BN(amount).multipliedBy(new BN(10).pow(asset.decimals)).toFixed(0, 1),
-    )
-
     setError(null)
     setLoading(true)
 
     try {
-      await executeDeposit(
-        asset,
-        amountBN,
-      )
+      await execute(fullSwapSecret)
+      setShowSuccessModal(true)
     } catch (error: any) {
       setError(error.message)
       console.error(
@@ -131,17 +114,18 @@ export const DemoCard: React.FC = () => {
               gap: theme.spacing(1),
             }}
           >
-            <AssetAmountInput
-              onAssetChange={handleAssetChange}
-              onAmountChange={handleAmountChange}
+            <SectionHeading>Full Swap Secret</SectionHeading>
+            <NoteTextarea
+              value={fullSwapSecret}
+              onChange={handleFullSwapSecretChange}
             />
           </Box>
 
           <LoadingExtButton
-            disabled={loading || !amount || !asset || !isEmpty(error)}
+            disabled={loading || !fullSwapSecret || !isEmpty(error)}
             loading={loading}
-            title={'Deposit'}
-            onClick={doDeposit}
+            title={'Withdraw'}
+            onClick={doTakerWithdraw}
           />
         </Box>
       </FormControl>
@@ -158,17 +142,11 @@ export const DemoCard: React.FC = () => {
       )}
 
       <GeneralSuccessModal
-        actionTitle="Your deposit is complete"
+        actionTitle="Your withdraw is complete"
         tx={ethTx}
         openState={showSuccessModal}
         onClose={onReset}
       >
-        <AlignedRow>
-          <Typography variant="body-sm">You Deposit:</Typography>
-          <Typography variant="body-sm" fontWeight={600}>
-            {amount?.toFixed(3)} {asset?.symbol || ''}
-          </Typography>
-        </AlignedRow>
       </GeneralSuccessModal>
     </StyledCard>
   )

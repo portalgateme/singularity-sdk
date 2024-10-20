@@ -13,15 +13,15 @@ import { useAccount } from 'wagmi'
 import { config } from '../../constants'
 import { tokenConfig } from '../../constants/tokenConfig'
 import { useToast } from '../../contexts/ToastContext/hooks'
-import { useDeposit } from '../../hooks/useDeposit'
 import { useSignMessage } from '../../hooks/useSignMessage'
+import { useStake } from '../../hooks/useStake'
 import { TokenConfig } from '../../types'
 import { AlignedRow } from '../Box/AlignedRow'
 import { LoadingExtButton } from '../Button/LoadingButton'
 import { AssetAmountInput } from '../Input/AssetAmountInput'
 import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
 
-export const StyledCard = styled(Card)(() => {
+const StyledCard = styled(Card)(() => {
   return {
     boxShadow: 'none',
     width: '648px',
@@ -29,7 +29,7 @@ export const StyledCard = styled(Card)(() => {
   }
 })
 
-export const DemoCard: React.FC = () => {
+export const DemoStakeCard: React.FC = () => {
   const theme = useTheme()
   const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState(false)
@@ -52,7 +52,7 @@ export const DemoCard: React.FC = () => {
 
   const [ethTx, setEthTx] = useState<string>('')
 
-  const { execute: executeDeposit } = useDeposit()
+  const { execute: executeStake} = useStake()
 
   const handleAssetChange = (value: TokenConfig) => {
     setError(null)
@@ -79,7 +79,7 @@ export const DemoCard: React.FC = () => {
     setKey(Date.now())
   }
 
-  const doDeposit = async () => {
+  const doStake = async () => {
     if (!amount || !asset) {
       setError('Please enter the amount and select a token')
       return
@@ -98,7 +98,7 @@ export const DemoCard: React.FC = () => {
     setLoading(true)
 
     try {
-      await executeDeposit(
+      await executeStake(
         asset,
         amountBN,
       )
@@ -114,7 +114,6 @@ export const DemoCard: React.FC = () => {
       closeToast()
     }
   }
-
 
 
   return (
@@ -140,8 +139,8 @@ export const DemoCard: React.FC = () => {
           <LoadingExtButton
             disabled={loading || !amount || !asset || !isEmpty(error)}
             loading={loading}
-            title={'Deposit'}
-            onClick={doDeposit}
+            title={'Stake'}
+            onClick={doStake}
           />
         </Box>
       </FormControl>
@@ -158,13 +157,13 @@ export const DemoCard: React.FC = () => {
       )}
 
       <GeneralSuccessModal
-        actionTitle="Your deposit is complete"
+        actionTitle="Your Staking is complete"
         tx={ethTx}
         openState={showSuccessModal}
         onClose={onReset}
       >
         <AlignedRow>
-          <Typography variant="body-sm">You Deposit:</Typography>
+          <Typography variant="body-sm">You Staked:</Typography>
           <Typography variant="body-sm" fontWeight={600}>
             {amount?.toFixed(3)} {asset?.symbol || ''}
           </Typography>
