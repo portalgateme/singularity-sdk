@@ -1743,10 +1743,10 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/singularity-sdk@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.6.tgz#26df16611fe919ae63c4f34a026403e6cddb5f60"
-  integrity sha512-o5+uWQaE+GFspPNGU/gSZet25yycW9Hli8H9ZYcwoPfb3/LRWmyfy3nrQXFxps7Dvc6+Uorb9JBT3JXipCWmKA==
+"@thesingularitynetwork/singularity-sdk@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.7.tgz#a35c8c0d8befd76f57e6a3dcc24af1d7bdc60713"
+  integrity sha512-RpwGwDhcVKxNlggVAOucK5zOAwvozY+zCrtZuoiF0mkbYu5N4exMK/KhulS0/uihmz8BF4UBMM2f13QYhpjk6Q==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
