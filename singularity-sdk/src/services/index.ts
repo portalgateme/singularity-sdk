@@ -7,3 +7,4 @@ export * from './BaseService';
 export * from './merkletree';
 export * from './staking';
 export * from './ComplianceService';
+export * from './otcswap';

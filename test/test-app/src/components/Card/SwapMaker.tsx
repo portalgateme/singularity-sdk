@@ -3,6 +3,7 @@ import {
   Card,
   FormControl,
   styled,
+  TextField,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -13,13 +14,14 @@ import { useAccount } from 'wagmi'
 import { config } from '../../constants'
 import { tokenConfig } from '../../constants/tokenConfig'
 import { useToast } from '../../contexts/ToastContext/hooks'
-import { useDeposit } from '../../hooks/useDeposit'
 import { useSignMessage } from '../../hooks/useSignMessage'
 import { TokenConfig } from '../../types'
 import { AlignedRow } from '../Box/AlignedRow'
 import { LoadingExtButton } from '../Button/LoadingButton'
 import { AssetAmountInput } from '../Input/AssetAmountInput'
 import { GeneralSuccessModal } from '../Modal/GeneralSuccessModal'
+import { SectionHeading } from '../Typography/SectionHeading'
+import { useMakerDeposit } from '../../hooks/useMakerDeposit'
 
 export const StyledCard = styled(Card)(() => {
   return {
@@ -29,7 +31,7 @@ export const StyledCard = styled(Card)(() => {
   }
 })
 
-export const DemoCard: React.FC = () => {
+export const DemoSwapMakerCard: React.FC = () => {
   const theme = useTheme()
   const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState(false)
@@ -47,19 +49,26 @@ export const DemoCard: React.FC = () => {
   const [key, setKey] = useState<number>(Date.now())
   const account = useAccount()
 
-  const [asset, setAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
-  const [amount, setAmount] = useState<number>()
+  const [makerAsset, setMakerAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
+  const [makerAmount, setMakerAmount] = useState<number>()
+  const [takerAsset, setTakerAsset] = useState<TokenConfig>(tokenConfig[chainId][0])
+  const [takerAmount, setTakerAmount] = useState<number>()
 
   const [ethTx, setEthTx] = useState<string>('')
 
-  const { execute: executeDeposit } = useDeposit()
+  const { execute, partialSwapSecret } = useMakerDeposit()
+  const [orderId, setOrderId] = useState<string>('')
 
-  const handleAssetChange = (value: TokenConfig) => {
-    setError(null)
-    setAsset(value)
+  const handleOrderIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOrderId(event.target.value)
   }
 
-  const handleAmountChange = (value: string) => {
+  const handleMakerAssetChange = (value: TokenConfig) => {
+    setError(null)
+    setMakerAsset(value)
+  }
+
+  const handleMakerAmountChange = (value: string) => {
     setError(null)
     if (!isNaN(Number(value))) {
       const amount = parseFloat(value)
@@ -67,9 +76,23 @@ export const DemoCard: React.FC = () => {
         setError('Amount must be greater than 0')
         return
       }
-      setAmount(parseFloat(value))
+      setMakerAmount(parseFloat(value))
     } else {
-      setAmount(undefined)
+      setMakerAmount(undefined)
+    }
+  }
+
+  const handleTakerAssetChange = (value: TokenConfig) => {
+    setError(null)
+    setTakerAsset(value)
+  }
+
+  const handleTakerAmountChange = (value: string) => {
+    setError(null)
+    if (!isNaN(Number(value))) {
+      setTakerAmount(parseFloat(value))
+    } else {
+      setTakerAmount(undefined)
     }
   }
 
@@ -79,8 +102,8 @@ export const DemoCard: React.FC = () => {
     setKey(Date.now())
   }
 
-  const doDeposit = async () => {
-    if (!amount || !asset) {
+  const doMakerDeposit = async () => {
+    if (!makerAmount || !makerAsset || !takerAmount || !takerAsset || !orderId) {
       setError('Please enter the amount and select a token')
       return
     }
@@ -90,18 +113,25 @@ export const DemoCard: React.FC = () => {
       return
     }
 
-    const amountBN = BigInt(
-      new BN(amount).multipliedBy(new BN(10).pow(asset.decimals)).toFixed(0, 1),
+    const makerAmountBN = BigInt(
+      new BN(makerAmount).multipliedBy(new BN(10).pow(makerAsset.decimals)).toFixed(0, 1),
+    )
+    const takerAmountBN = BigInt(
+      new BN(takerAmount).multipliedBy(new BN(10).pow(takerAsset.decimals)).toFixed(0, 1),
     )
 
     setError(null)
     setLoading(true)
 
     try {
-      await executeDeposit(
-        asset,
-        amountBN,
+      await execute(
+        makerAsset,
+        makerAmountBN,
+        takerAsset,
+        takerAmountBN,
+        orderId,
       )
+      setShowSuccessModal(true)
     } catch (error: any) {
       setError(error.message)
       console.error(
@@ -131,17 +161,30 @@ export const DemoCard: React.FC = () => {
               gap: theme.spacing(1),
             }}
           >
+            <SectionHeading>Order Settings</SectionHeading>
+            <TextField
+              label="Order ID"
+              value={orderId}
+              onChange={handleOrderIdChange}
+              fullWidth
+            />
             <AssetAmountInput
-              onAssetChange={handleAssetChange}
-              onAmountChange={handleAmountChange}
+              onAssetChange={handleMakerAssetChange}
+              onAmountChange={handleMakerAmountChange}
+              title="Maker Asset & Amount"
+            />
+            <AssetAmountInput
+              onAssetChange={handleTakerAssetChange}
+              onAmountChange={handleTakerAmountChange}
+              title="Taker Asset & Amount"
             />
           </Box>
 
           <LoadingExtButton
-            disabled={loading || !amount || !asset || !isEmpty(error)}
+            disabled={loading || !makerAmount || !makerAsset || !takerAmount || !takerAsset || !orderId || !isEmpty(error)}
             loading={loading}
-            title={'Deposit'}
-            onClick={doDeposit}
+            title={'Deposit & Get Partial Swap Secret'}
+            onClick={doMakerDeposit}
           />
         </Box>
       </FormControl>
@@ -163,12 +206,10 @@ export const DemoCard: React.FC = () => {
         openState={showSuccessModal}
         onClose={onReset}
       >
-        <AlignedRow>
-          <Typography variant="body-sm">You Deposit:</Typography>
+        <Typography variant="body-sm">Partial Swap Secret:</Typography>
           <Typography variant="body-sm" fontWeight={600}>
-            {amount?.toFixed(3)} {asset?.symbol || ''}
+            {partialSwapSecret}
           </Typography>
-        </AlignedRow>
       </GeneralSuccessModal>
     </StyledCard>
   )

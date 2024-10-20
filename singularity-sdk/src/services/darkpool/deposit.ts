@@ -1,14 +1,13 @@
 import { DepositProofResult, Note, createNote, generateDepositProof } from "@thesingularitynetwork/darkpool-v1-proof";
-import { Token } from "../../entities/token";
+import { ethers } from "ethers";
+import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json';
+import { darkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
 import { hexlify32, isNativeAsset } from "../../utils/util";
 import { BaseContext, BaseContractService } from "../BaseService";
-import { darkPool } from "../../darkpool";
-import { ethers } from "ethers";
-import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json'
-import { DarkpoolError } from "../../entities";
 
 
-class DepositContext extends BaseContext {
+export class DepositContext extends BaseContext {
     private _note?: Note;
     private _address?: string;
     private _proof?: DepositProofResult;
@@ -47,8 +46,8 @@ export class DepositService extends BaseContractService<DepositContext> {
         super();
     }
 
-    public async prepare(asset: Token, amount: bigint, walletAddress: string, signature: string): Promise<{ context: DepositContext, outNotes: Note[] }> {
-        const note = await createNote(asset.address, amount, signature);
+    public async prepare(asset: string, amount: bigint, walletAddress: string, signature: string): Promise<{ context: DepositContext, outNotes: Note[] }> {
+        const note = await createNote(asset, amount, signature);
         const context = new DepositContext(signature);
         context.note = note;
         context.address = walletAddress;

@@ -1728,10 +1728,25 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/singularity-sdk@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.5.tgz#3db5d26580732f7416693ebd4ee3ec239e454d35"
-  integrity sha512-a07Ry9eQCN3O09D5YuBtZ8uDaF+Wf8bA4RQSp9/MS7eSbiE2AJc9umeE9QrzMIvlbYX9jxT0NY7tLOx6sL/Omg==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.17":
+  version "0.2.17"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.17.tgz#bf10378fa36ebd032ac931f16f84b37b1e4fbe08"
+  integrity sha512-ZG7AtA/91olN+DEVR/BGwTmb+Vy04L5D/WqHeKxSVXT2wo2zaC/8mZq05ql7mOgugeMzhzwHKo2lw1ehyA40Fg==
+  dependencies:
+    "@aztec/bb.js" "^0.30.0"
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/bignumber" "^5.7.0"
+    "@ethersproject/sha2" "^5.7.0"
+    "@noir-lang/backend_barretenberg" "^0.28.0"
+    "@noir-lang/noir_js" "^0.28.0"
+    "@noir-lang/noir_wasm" "^0.28.0"
+    "@noir-lang/types" "^0.28.0"
+    buffer "^6.0.3"
+
+"@thesingularitynetwork/singularity-sdk@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.6.tgz#26df16611fe919ae63c4f34a026403e6cddb5f60"
+  integrity sha512-o5+uWQaE+GFspPNGU/gSZet25yycW9Hli8H9ZYcwoPfb3/LRWmyfy3nrQXFxps7Dvc6+Uorb9JBT3JXipCWmKA==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
