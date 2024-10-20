@@ -1,10 +1,15 @@
 import { DepositProofResult, Note, createNote, generateDepositProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json';
+import ERC20Abi from '../../abis/IERC20.json';
+import ERC20_USDT from '../../abis/IERC20_USDT.json';
 import { darkPool } from "../../darkpool";
 import { DarkpoolError } from "../../entities";
 import { hexlify32, isNativeAsset } from "../../utils/util";
 import { BaseContext, BaseContractService } from "../BaseService";
+import { legacyTokenConfig } from "../../config/config";
+
+const MAX_ALLOWANCE = BigInt("115792089237316195423570985008687907853269984665640564039457584007913129639935");  // 2**256 - 1
 
 
 export class DepositContext extends BaseContext {
@@ -74,7 +79,7 @@ export class DepositService extends BaseContractService<DepositContext> {
         const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, signer);
 
         if (!isNativeAsset(context.note.asset)) {
-            await this.allowance();
+            await this.allowance(context);
             const tx = await contract.depositERC20(
                 context.note.asset,
                 hexlify32(context.note.amount),
@@ -95,8 +100,19 @@ export class DepositService extends BaseContractService<DepositContext> {
         }
     }
 
-    protected async allowance() {
-
+    protected async allowance(context: DepositContext) {
+        if (!context || !context.note || !context.address || !context.signature || !context.proof) {
+            throw new DarkpoolError("Invalid context");
+        }
+        const signer = darkPool.signer;
+        const allowanceContract = new ethers.Contract(context.note.asset, ERC20Abi.abi, darkPool);
+        const allowance = await allowanceContract.allowance(signer.getAddress(), darkPool.contracts.darkpoolAssetManager);
+        if (BigInt(allowance) < context.note.amount) {
+            const isLegacy = legacyTokenConfig.hasOwnProperty(darkPool.chainId) && legacyTokenConfig[darkPool.chainId].includes(context.note.asset.toLowerCase());
+            const contract = new ethers.Contract(context.note.asset, isLegacy ? ERC20_USDT.abi : ERC20Abi.abi, signer);
+            const tx = await contract.approve(darkPool.contracts.darkpoolAssetManager, hexlify32(MAX_ALLOWANCE));
+            await tx.wait();
+        }
     }
 
     public getContractCallParameters(context: DepositContext) {

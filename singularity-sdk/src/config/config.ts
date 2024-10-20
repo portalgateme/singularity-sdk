@@ -1,3 +1,4 @@
+import { ChainId } from "./chain"
 
 export enum Action {
     CURVE_LP_DEPOSIT = 'CURVE_LP_DEPOSIT',
@@ -28,3 +29,8 @@ export const relayerPathConfig: { [action: string]: string } = {
     [Action.REDEEM]: '/v1/pgDarkPoolZkRedeem',
 }
 
+
+export const legacyTokenConfig: { [chainId: number]: string[] } = {
+    [ChainId.MAINNET]: ['0xdac17f958d2ee523a2206206994597c13d831ec7'],
+    [ChainId.HARDHAT]: ["0xdac17f958d2ee523a2206206994597c13d831ec7"],
+}
