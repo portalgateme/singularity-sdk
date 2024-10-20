@@ -11,29 +11,11 @@ import { isAddressEquals } from "../../utils/util";
 
 
 class OTCSwapContext extends BaseContext {
-    private _note?: Note;
-    private _address?: string;
     private _proof?: OTCSwapProofResult;
     private _swapMessage?: OTCSwapFullMessage;
 
     constructor(signature: string) {
         super(signature);
-    }
-
-    set note(note: Note | undefined) {
-        this._note = note;
-    }
-
-    get note(): Note | undefined {
-        return this._note;
-    }
-
-    set address(address: string | undefined) {
-        this._address = address;
-    }
-
-    get address(): string | undefined {
-        return this._address;
     }
 
     set proof(proof: OTCSwapProofResult | undefined) {
@@ -106,12 +88,12 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
         return newTakerNote;
     }
 
-    public async prepare(order: Order, fullSwapMessageString: string): Promise<{ context: OTCSwapContext, outNotes: Note[] }> {
+    public async prepare(order: Order, fullSwapMessageString: string, signedMessage: string): Promise<{ context: OTCSwapContext, outNotes: Note[] }> {
         const fullSwapMessage = fullSwapSecretFromString(darkPool.chainId, fullSwapMessageString);
         if (!this.checkFullSwapSecret(fullSwapMessage, order)) {
             throw new DarkpoolError("Invalid full swap secret");
         }
-        const context = new OTCSwapContext('');
+        const context = new OTCSwapContext(signedMessage);
         context.swapMessage = fullSwapMessage;
         return { context, outNotes: [] };
     }
@@ -124,6 +106,8 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
         const merklePathes = await multiGetMerklePathAndRoot([context.swapMessage.makerNote.note, context.swapMessage.takerNote.note]);
         const path1 = merklePathes[0];
         const path2 = merklePathes[1];
+
+        context.merkleRoot = path1.root;
 
         const makerNewNote = await createNoteWithPubKey(
             context.swapMessage.makerNewRho,
@@ -166,7 +150,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
     }
 
     public async execute(context: OTCSwapContext): Promise<string> {
-        if (!context || !context.note || !context.address || !context.signature || !context.proof) {
+        if (!context || !context.swapMessage || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
         const signer = darkPool.signer;

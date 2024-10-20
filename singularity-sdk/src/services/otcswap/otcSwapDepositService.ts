@@ -113,7 +113,8 @@ function partialSwapSecretFromString(
 }
 
 function fullSwapSecretToString(finalSwapSecret: OTCSwapFullMessage): string {
-    const takerSignatureString = Buffer.from(finalSwapSecret.takerSignature).toString('hex');
+    let sigString: string = finalSwapSecret.takerSignature.join('-')
+
     const messageArray = [
         'ONEOFF-SWAP-RETURN',
         finalSwapSecret.chainId,
@@ -136,7 +137,7 @@ function fullSwapSecretToString(finalSwapSecret: OTCSwapFullMessage): string {
         finalSwapSecret.takerNewRho,
         finalSwapSecret.takerPubKey.x,
         finalSwapSecret.takerPubKey.y,
-        takerSignatureString
+        sigString
     ];
 
     return messageArray.join('|');
@@ -170,9 +171,13 @@ export function fullSwapSecretFromString(chainId: number, messageString: string)
     const takerPubKeyY = messageArray[20];
     const takerSignatureString = messageArray[21];
 
-    const takerSignature = Array.from(new Uint8Array(Buffer.from(takerSignatureString, 'hex')));
+    const takerSignatureStringArray = takerSignatureString.split('-');
+    const takerSignature: number[] = [];
+    for (let i = 0; i < takerSignatureStringArray.length; i++) {
+        takerSignature.push(parseInt(takerSignatureStringArray[i]))
+    }
 
-    return {
+    const result = {
         chainId,
         makerNote: {
             asset: makerAsset,
@@ -203,6 +208,8 @@ export function fullSwapSecretFromString(chainId: number, messageString: string)
         },
         takerSignature
     }
+
+    return result;
 }
 
 
@@ -213,7 +220,7 @@ export class OTCSwapDepositService {
     private async generateMakerSwapMessage(chainId: number, order: Order, note: Note, signedMessage: string): Promise<string> {
         const [makerPublicKey] = await generateKeyPair(signedMessage);
         const makerNewNote = await createNoteWithFooter(order.takerAmount, order.takerAsset, signedMessage);
-        const makerNullifier = calcNullifier(makerNewNote.rho, makerPublicKey);
+        const makerNullifier = calcNullifier(note.rho, makerPublicKey);
 
         return partialSwapSecretToString({
             chainId,
@@ -270,7 +277,7 @@ export class OTCSwapDepositService {
             DOMAIN_NOTE);
         const [takerPublicKey, takerPrivateKey] = await generateKeyPair(signedMessage);
         const takerNewNote = await createNoteWithFooter(order.makerAmount, order.makerAsset, signedMessage);
-        const takerNullifier = calcNullifier(takerNewNote.rho, takerPublicKey);
+        const takerNullifier = calcNullifier(takerNote.rho, takerPublicKey);
         const takerSignature = await generateOTCSwapSignature(
             partialSwapMessage.makerNote.note,
             takerNote.note,
