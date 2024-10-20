@@ -7,6 +7,7 @@ export type ContractConfiguartion = {
     complianceManager: string
     merkleTreeOperator: string
     darkpoolAssetManager: string
+    otcSwapAssetManager: string
     stakingOperator: string
     stakingAssetManager: string
     drakpoolSubgraphUrl: string
@@ -28,6 +29,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         complianceManager: '0x630aD89523a18fA30F752297F3F53B7BC363488b',
         merkleTreeOperator: '0x152f1051c8D37Fba9A362Fc9b32a0eeF8496202F',
         darkpoolAssetManager: '0x159F3668c72BBeCdF1fb31beeD606Ec9649654eB',
+        otcSwapAssetManager: '0xB8096ecD7d3185b24AA218C509175185C11f13a9',
         stakingOperator: '0x539bcbc08F2cA42E50887dA4Db0DC34EbF0B090b',
         stakingAssetManager: '0x1Fa7Cb4925086128f3bb9e26761C9C75dbAC3CD1',
         drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-subgraph/version/v0.0.1/api',
@@ -49,6 +51,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         complianceManager: '0x23A37b553c46f4864537Ab1e8d1e49804b47A5A7',
         merkleTreeOperator: '0x0e2aCb73EBB02bd4099d495bcb96F7522F84ddb7',
         darkpoolAssetManager: '0xf7C40b5057a1D1a3d58B02BCdb125E63ef380564',
+        otcSwapAssetManager: '0xcbFA6BB3eb4Bd9BF97866baE75FfB62f3aE897c0',
         drakpoolSubgraphUrl:
             'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-arb-subgraph/api',
     },
@@ -61,8 +64,22 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         complianceManager: '0x1Fe002A6E413C70D5CB8477cDaA0422fc7611fCc',
         merkleTreeOperator: '0x159F3668c72BBeCdF1fb31beeD606Ec9649654eB',
         darkpoolAssetManager: '0x722133fBb559E2849e3402De3279Bd3059b7fe4E',
+        otcSwapAssetManager: '0xAa5e02284d1Fd0f6C12AFBDABc28Ed5aC5a6474b',
         drakpoolSubgraphUrl:
             'https://bb.subgraph.thesingularity.network/subgraphs/name/singularity/',
+    },
+    [ChainId.BASE]: {
+        priceOracle: '0xf224a25453D76A41c4427DD1C05369BC9f498444',
+        ethAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+        nativeWrapper: '0x4200000000000000000000000000000000000006',
+        complianceManager: '0xFa368E046B4051582662f7d1C033756dB55058cF',
+        merkleTreeOperator: '0xdcd767f6f877B4Ef85d631f23e51ff3a2BCC9378',
+        darkpoolAssetManager: '0x84eb120A35802460484015e6748375369e40468a',
+        stakingOperator: '0xfdA33b941E6C014bD079C6917b815EFA58976f37',
+        stakingAssetManager: '0xa3d27E1Ca5057372478011FB781479B8A1fF7AA3',
+        otcSwapAssetManager: '0x3D76Fd85FCc2593970d22Aa34bcC4c5444c57c9D',
+
+        drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-base-subgraph/api',
     },
     [ChainId.SEPOLIA]: {
         priceOracle: '0x4Fe44a9aC8Ef059Be2dB97f9e3bcA32Ab698C2f2',
@@ -73,6 +90,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         complianceManager: '0x08DD9cEf89923EDa02F56a4d4aB3FC4a96531443',
         merkleTreeOperator: '0x84026d6f3b6A4cEa7AD00Cd5154a8537129B3742',
         darkpoolAssetManager: '0xa10d309818527C8D8F5164f9D640515d6616bFeE',
+        otcSwapAssetManager: '0x549f3bAD265A0383394E0ABEC7b67b4ff750d2ca',
         drakpoolSubgraphUrl: '',
     },
     [ChainId.BounceBitTestnet]: {
@@ -84,6 +102,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         complianceManager: '0x1Fa7Cb4925086128f3bb9e26761C9C75dbAC3CD1',
         merkleTreeOperator: '0x40FecD96e94c3c2eE0Fb8bE5cE7073Bb3fB46F51',
         darkpoolAssetManager: '0xf21f124F395271e8435A93063AE2AD74829D7b69',
+        otcSwapAssetManager: '0x0',
         drakpoolSubgraphUrl: '',
     },
     [ChainId.HARDHAT]: {
@@ -93,6 +112,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         merkleTreeOperator: '0xCC5Bc84C3FDbcF262AaDD9F76652D6784293dD9e',
         complianceManager: '0x987Aa6E80e995d6A76C4d061eE324fc760Ea9F61',
         darkpoolAssetManager: '0xe24e7570Fe7207AdAaAa8c6c89a59850391B5276',
+        otcSwapAssetManager: '0x26Df0Ea798971A97Ae121514B32999DfDb220e1f',
         stakingOperator: '0x6B9C4119796C80Ced5a3884027985Fd31830555b',
         stakingAssetManager: '0xCd9BC6cE45194398d12e27e1333D5e1d783104dD',
         drakpoolSubgraphUrl:
