@@ -2,13 +2,13 @@ import { NftNote, Note, PartialNftNote, PartialNote, UniswapAddLiquidProofResult
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
 import { Relayer } from "../../entities/relayer";
 import { UniswapAddLiquidityRelayerRequest } from "../../entities/relayerRequestTypes";
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { DarkpoolError } from "../../entities";
+import { DarkPool } from "../../darkpool";
 
 export interface UniswapAddLiquidityRequest {
     inNote1: Note;
@@ -75,26 +75,26 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
 }
 
 export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiquidityContext, UniswapAddLiquidityRelayerRequest> {
-    constructor() {
-        super();
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
     }
 
     private getV3PosAddress() {
-        if (!darkPool.contracts.uniswapConfig) {
+        if (!this._darkPool.contracts.uniswapConfig) {
             throw new DarkpoolError("Uniswap config not found");
         }
-        return darkPool.contracts.uniswapConfig.v3PosNftAddress;
+        return this._darkPool.contracts.uniswapConfig.v3PosNftAddress;
     }
 
     public async prepare(request: UniswapAddLiquidityRequest, signature: string): Promise<{ context: UniswapAddLiquidityContext, outPartialNotes: PartialNote[], outPartialNftNote: PartialNftNote }> {
-        if (!darkPool.contracts.uniswapConfig) {
+        if (!this._darkPool.contracts.uniswapConfig) {
             throw new DarkpoolError("Uniswap config not found");
         }
         const outPartialNftNote = await createPartialNftNote(this.getV3PosAddress(), signature);
         const outPartialChangeNote1 = await createPartialNote(request.inNote1.asset, signature);
         const outPartialChangeNote2 = await createPartialNote(request.inNote2.asset, signature);
 
-        const context = new UniswapAddLiquidityContext(darkPool.getRelayer(), signature);
+        const context = new UniswapAddLiquidityContext(this._darkPool.getRelayer(), signature);
         context.request = request;
         context.outPartialNftNote = outPartialNftNote;
         context.outPartialChangeNote1 = outPartialChangeNote1;
@@ -112,8 +112,8 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
             throw new DarkpoolError("Invalid context");
         }
 
-        const path1 = await getMerklePathAndRoot(context.request.inNote1.note);
-        const path2 = await getMerklePathAndRoot(context.request.inNote2.note);
+        const path1 = await getMerklePathAndRoot(context.request.inNote1.note, this._darkPool);
+        const path2 = await getMerklePathAndRoot(context.request.inNote2.note, this._darkPool);
 
         const proof = await generateUniswapAddLiquidityProof({
             note1: context.request.inNote1,
@@ -238,7 +238,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
 
     private async getTokenIdAndChangeAmounts(tx: string) {
         const iface = new ethers.Interface(UniswapLiquidityAssetManagerAbi.abi)
-        const receipt = await darkPool.provider.getTransactionReceipt(tx)
+        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             const log = receipt.logs.find(
                 (log) => log.topics[0] === 'UniswapLiquidityProvision',

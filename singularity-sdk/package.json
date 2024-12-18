@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "⚒️ An Market Maker SDK for interacting with the Singularity Network's contracts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

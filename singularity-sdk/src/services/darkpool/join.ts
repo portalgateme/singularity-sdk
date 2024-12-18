@@ -1,11 +1,11 @@
 import { JoinProofResult, Note, createNote, generateJoinProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
-import { darkPool } from "../../darkpool";
 import { hexlify32, isAddressEquals } from "../../utils/util";
 import { multiGetMerklePathAndRoot } from "../merkletree";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json'
 import { BaseContext, BaseContractService } from "../BaseService";
 import { DarkpoolError } from "../../entities";
+import { DarkPool } from "../../darkpool";
 
 
 class JoinContext extends BaseContext{
@@ -52,8 +52,9 @@ class JoinContext extends BaseContext{
 }
 
 export class JoinService extends BaseContractService<JoinContext> {
-    constructor() {
-        super();
+
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(inNote1: Note, inNote2: Note, signature: string): Promise<{ context: JoinContext, outNotes: Note[] }> {
@@ -78,7 +79,7 @@ export class JoinService extends BaseContractService<JoinContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const merklePathes = await multiGetMerklePathAndRoot([context.inNote1.note, context.inNote2.note]);
+        const merklePathes = await multiGetMerklePathAndRoot([context.inNote1.note, context.inNote2.note], this._darkPool);
         const path1 = merklePathes[0];
         const path2 = merklePathes[1];
 
@@ -101,7 +102,7 @@ export class JoinService extends BaseContractService<JoinContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, darkPool.signer);
+        const contract = new ethers.Contract(this._darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, this._darkPool.signer);
         const tx = await contract.join(
             context.proof.inNoteNullifier1,
             context.proof.inNoteNullifier2,

@@ -2,12 +2,11 @@ import { zkDepositProofResult, Note, createNote, generateZkDepositProof } from "
 import { Token } from "../../entities/token";
 import { hexlify32, isNativeAsset } from "../../utils/util";
 import { BaseContext, BaseContractService } from "../BaseService";
-import { darkPool } from "../../darkpool";
 import { ethers } from "ethers";
 import StakingAssetManagerAbi from '../../abis/StakingAssetManager.json'
 import { DarkpoolError } from "../../entities";
 import { getZkTokenFromOriginalToken } from "./stakingUtils";
-
+import { DarkPool } from "../../darkpool";
 
 class StakeContext extends BaseContext {
     private _inAsset?: Token;
@@ -53,8 +52,8 @@ class StakeContext extends BaseContext {
 }
 
 export class StakeService extends BaseContractService<StakeContext> {
-    constructor() {
-        super();
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(inAsset: Token, inAmount: bigint, walletAddress: string, signature: string): Promise<{ context: StakeContext, outNotes: Note[] }> {
@@ -91,8 +90,8 @@ export class StakeService extends BaseContractService<StakeContext> {
 
     public async execute(context: StakeContext): Promise<string> {
         const contractParam = this.getContractCallParameters(context);
-        const signer = darkPool.signer;
-        const contract = new ethers.Contract(darkPool.contracts.stakingAssetManager, StakingAssetManagerAbi.abi, signer);
+        const signer = this._darkPool.signer;
+        const contract = new ethers.Contract(this._darkPool.contracts.stakingAssetManager, StakingAssetManagerAbi.abi, signer);
 
         if (!isNativeAsset(contractParam.asset)) {
             await this.allowance();

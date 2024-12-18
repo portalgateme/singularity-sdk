@@ -1,6 +1,6 @@
 import MerkleAbi from '../abis/MerkleTreeOperator.json'
 import { ethers } from "ethers";
-import { darkPool } from '../darkpool';
+import { DarkPool } from '../darkpool';
 import { mimc_bn254 } from '../utils/mimc';
 import { hexlify32, isHexEquals } from '../utils/util';
 import { DarkpoolError } from '../entities';
@@ -14,18 +14,18 @@ export interface MerklePath {
   root: string;
 }
 
-function getContract(address: string) {
+function getContract(address: string, darkPool: DarkPool) {
   const provider = darkPool.provider;
   return new ethers.Contract(address, MerkleAbi.abi, provider);
 }
 
-async function getAllMerkleNodes() {
-  const contract = getContract(darkPool.contracts.merkleTreeOperator);
+async function getAllMerkleNodes(darkPool: DarkPool) {
+  const contract = getContract(darkPool.contracts.merkleTreeOperator, darkPool);
   return await contract.getmerkleNodes() as string[][];
 }
 
-export async function getMerklePathAndRoot(note: bigint) {
-  const merkleTree = await getAllMerkleNodes();
+export async function getMerklePathAndRoot(note: bigint, darkPool: DarkPool) {
+  const merkleTree = await getAllMerkleNodes(darkPool);
   return getMerklePath(merkleTree, note);
 }
 
@@ -73,7 +73,7 @@ function getMerklePath(merkleNodes: string[][], noteCommitment: bigint): MerkleP
   return { noteCommitment, path, index: isLeft.map((x) => x ? 1 : 0), root };
 }
 
-export async function multiGetMerklePathAndRoot(notes: bigint[]) {
-  const merkleTree = await getAllMerkleNodes();
+export async function multiGetMerklePathAndRoot(notes: bigint[], darkPool: DarkPool) {
+  const merkleTree = await getAllMerkleNodes(darkPool);
   return notes.map((note) => getMerklePath(merkleTree, note));
 }

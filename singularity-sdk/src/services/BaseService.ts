@@ -2,6 +2,7 @@ import { Note, PartialNote } from "@thesingularitynetwork/darkpool-v1-proof";
 import axios from "axios";
 import { Relayer } from "../entities/relayer";
 import { DarkpoolError } from "../entities";
+import { darkPool, DarkPool } from "../darkpool";
 
 export class BaseContext {
 
@@ -61,6 +62,12 @@ export class BaseRelayerContext extends BaseContext {
 
 export abstract class BaseContractService<T> {
 
+    protected _darkPool: DarkPool
+
+    constructor(_darkPool?: DarkPool) {
+        this._darkPool = _darkPool || darkPool
+    }
+
     abstract prepare(...args: any[]): Promise<{ context: T, outNotes: Note[] }>;
 
     abstract generateProof(context: T): Promise<void>;
@@ -70,6 +77,12 @@ export abstract class BaseContractService<T> {
 
 
 export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
+
+    protected _darkPool: DarkPool
+
+    constructor(_darkPool?: DarkPool) {
+        this._darkPool = _darkPool || darkPool
+    }
 
     abstract prepare(...args: any[]): Promise<{ context: T, outPartialNotes: PartialNote[] }>;
 

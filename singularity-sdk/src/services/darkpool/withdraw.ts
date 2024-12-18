@@ -1,13 +1,12 @@
 import { Note, PartialNote, WithdrawProofResult, generateWithdrawProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
 import { WithdrawRelayerRequest } from "../../entities/relayerRequestTypes";
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
 import { DarkpoolError } from "../../entities";
-
+import { DarkPool } from "../../darkpool";
 
 class WithdrawContext extends BaseRelayerContext {
     private _note?: Note;
@@ -44,13 +43,13 @@ class WithdrawContext extends BaseRelayerContext {
 }
 
 export class WithdrawService extends BaseRelayerService<WithdrawContext, WithdrawRelayerRequest> {
-    constructor() {
-        super();
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(note: Note, recipient: string, signature: string): Promise<{ context: WithdrawContext, outPartialNotes: PartialNote[] }> {
 
-        const context = new WithdrawContext(darkPool.getRelayer(), signature);
+        const context = new WithdrawContext(this._darkPool.getRelayer(), signature);
         context.note = note;
         context.recipient = recipient;
         return { context, outPartialNotes: [] };
@@ -61,7 +60,7 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.note.note);
+        const path = await getMerklePathAndRoot(context.note.note, this._darkPool);
         context.merkleRoot = path.root;
 
         const proof = await generateWithdrawProof({

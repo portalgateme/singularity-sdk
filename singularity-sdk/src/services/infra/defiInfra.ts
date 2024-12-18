@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { isEmpty } from "lodash";
 import GeneralDefiIntegrationAssetManagerAbi from '../../abis/GeneralDefiIntegrationAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
+import { DarkPool } from "../../darkpool";
 import { DarkpoolError } from "../../entities";
 import { Relayer } from "../../entities/relayer";
 import { DefiInfraRelayerRequest } from "../../entities/relayerRequestTypes";
@@ -70,8 +70,8 @@ class DefiInfraContext extends BaseRelayerContext {
 }
 
 export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiInfraRelayerRequest> {
-    constructor() {
-        super();
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(request: DefiInfraRequest, signature: string): Promise<{ context: DefiInfraContext, outPartialNotes: PartialNote[] }> {
@@ -91,7 +91,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             }
         }
 
-        const context = new DefiInfraContext(darkPool.getRelayer(), signature);
+        const context = new DefiInfraContext(this._darkPool.getRelayer(), signature);
         context.request = request;
         context.outPartialNotes = outPartialNotes;
         return { context, outPartialNotes };
@@ -104,7 +104,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
 
         let inNotes = [context.request.inNote1, context.request.inNote2, context.request.inNote3, context.request.inNote4];
 
-        const paths = await multiGetMerklePathAndRoot(inNotes.filter(item => item !== null).map(item => item?.note) as bigint[]);
+        const paths = await multiGetMerklePathAndRoot(inNotes.filter(item => item !== null).map(item => item?.note) as bigint[], this._darkPool);
         const root = paths[0].root;
         context.merkleRoot = root;
 
@@ -252,7 +252,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
 
     private async getAmounts(tx: string) {
         const iface = new ethers.Interface(GeneralDefiIntegrationAssetManagerAbi.abi)
-        const receipt = await darkPool.provider.getTransactionReceipt(tx)
+        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             for (let i = 0; i < receipt.logs.length; i++) {
                 const parsedLog = iface.parseLog(receipt.logs[i]);

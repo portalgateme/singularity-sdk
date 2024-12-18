@@ -1,8 +1,7 @@
 import { ethers } from "ethers"
-import { darkPool } from "../darkpool";
+import { DarkPool } from "../darkpool";
 
-
-export async function getOutEvent(tx: string, abi: any, eventTopic: string) {
+export async function getOutEvent(tx: string, abi: any, eventTopic: string, darkPool: DarkPool) {
     const iface = new ethers.Interface(abi)
     const receipt = await darkPool.provider.getTransactionReceipt(tx)
     if (receipt && receipt.logs.length > 0) {
