@@ -57,7 +57,7 @@ export class StakeService extends BaseContractService<StakeContext> {
     }
 
     public async prepare(inAsset: Token, inAmount: bigint, walletAddress: string, signature: string): Promise<{ context: StakeContext, outNotes: Note[] }> {
-        const zkToken = await getZkTokenFromOriginalToken(inAsset.address);
+        const zkToken = await getZkTokenFromOriginalToken(this._darkPool, inAsset.address);
         if (!zkToken) {
             throw new DarkpoolError("The token is not supported in compliant staking: " + inAsset.address);
         }

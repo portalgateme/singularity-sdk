@@ -50,7 +50,7 @@ export class StakeNoteService extends BaseRelayerService<StakeNoteContext, Stake
     }
 
     public async prepare(inNote: Note, signature: string): Promise<{ context: StakeNoteContext, outPartialNotes: PartialNote[] }> {
-        const zkToken = await getZkTokenFromOriginalToken(inNote.asset);
+        const zkToken = await getZkTokenFromOriginalToken(this._darkPool, inNote.asset);
         if (!zkToken) {
             throw new DarkpoolError("The token is not supported in compliant staking: " + inNote.asset);
         }

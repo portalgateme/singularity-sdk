@@ -49,7 +49,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
     }
 
     public async prepare(inNote: Note, signature: string): Promise<{ context: RedeemContext, outPartialNotes: PartialNote[] }> {
-        const originalToken = await getOriginalTokenFromZkToken(inNote.asset);
+        const originalToken = await getOriginalTokenFromZkToken(this._darkPool, inNote.asset);
         if (!originalToken) {
             throw new DarkpoolError("The token is not supported in compliant staking: " + inNote.asset);
         }
