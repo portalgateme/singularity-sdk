@@ -12,6 +12,7 @@ export type ContractConfiguartion = {
     stakingAssetManager: string
     drakpoolSubgraphUrl: string
     batchJoinSplitAssetManager: string
+    darkpoolSwapAssetManager: string
     uniswapConfig?: {
         swapRouterAddress: string
         quoterContractAddress: string
@@ -34,6 +35,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         stakingOperator: '0x539bcbc08F2cA42E50887dA4Db0DC34EbF0B090b',
         stakingAssetManager: '0x1Fa7Cb4925086128f3bb9e26761C9C75dbAC3CD1',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-subgraph/version/v0.0.1/api',
         uniswapConfig: {
             swapRouterAddress: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
@@ -55,6 +57,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         darkpoolAssetManager: '0xf7C40b5057a1D1a3d58B02BCdb125E63ef380564',
         otcSwapAssetManager: '0xcbFA6BB3eb4Bd9BF97866baE75FfB62f3aE897c0',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl:
             'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-arb-subgraph/api',
     },
@@ -69,6 +72,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         darkpoolAssetManager: '0x722133fBb559E2849e3402De3279Bd3059b7fe4E',
         otcSwapAssetManager: '0xAa5e02284d1Fd0f6C12AFBDABc28Ed5aC5a6474b',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl:
             'https://bb.subgraph.thesingularity.network/subgraphs/name/singularity/',
     },
@@ -83,6 +87,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         stakingAssetManager: '0xa3d27E1Ca5057372478011FB781479B8A1fF7AA3',
         otcSwapAssetManager: '0x3D76Fd85FCc2593970d22Aa34bcC4c5444c57c9D',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-base-subgraph/api',
     },
     [ChainId.SEPOLIA]: {
@@ -96,6 +101,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         darkpoolAssetManager: '0xa10d309818527C8D8F5164f9D640515d6616bFeE',
         otcSwapAssetManager: '0x549f3bAD265A0383394E0ABEC7b67b4ff750d2ca',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl: '',
     },
     [ChainId.BounceBitTestnet]: {
@@ -109,6 +115,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         darkpoolAssetManager: '0xf21f124F395271e8435A93063AE2AD74829D7b69',
         otcSwapAssetManager: '0x0',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl: '',
     },
     [ChainId.HARDHAT]: {
@@ -122,6 +129,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         stakingOperator: '0x6B9C4119796C80Ced5a3884027985Fd31830555b',
         stakingAssetManager: '0xCd9BC6cE45194398d12e27e1333D5e1d783104dD',
         batchJoinSplitAssetManager: '0x0',//FIXME
+        darkpoolSwapAssetManager: '0x0',//FIXME
         drakpoolSubgraphUrl:
             'https://34.142.142.240:8080/subgraphs/name/singularity/',
         uniswapConfig: {

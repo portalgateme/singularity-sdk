@@ -8,3 +8,4 @@ export * from './merkletree';
 export * from './staking';
 export * from './ComplianceService';
 export * from './otcswap';
+export * from './darkpool';
