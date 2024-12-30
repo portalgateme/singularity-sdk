@@ -2,7 +2,7 @@ import { calcNullifier, createNoteWithFooter, createNoteWithPubKey, DOMAIN_NOTE,
 import { DarkpoolError, Order, OTCSwapFullMessage, OTCSwapMakerMessage } from "../../entities";
 import { isAddressEquals } from "../../utils/util";
 import { BaseContext } from "../BaseService";
-import { DepositContext, DepositService } from "../darkpool";
+import { DepositContext, DepositService } from "../base";
 import { darkPool, DarkPool } from "../../darkpool";
 class OTCSwapMakerDepositContext extends BaseContext {
     private _noteToDeposit: Note;
