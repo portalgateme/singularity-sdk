@@ -5,7 +5,6 @@ import { DarkPool } from "../../darkpool";
 import { DarkpoolError } from "../../entities";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
-import { hexlify32 } from "../../utils/util";
 
 class TakerSwapContext extends BaseContext {
     private _proof?: DarkPoolTakerSwapProofResult;
