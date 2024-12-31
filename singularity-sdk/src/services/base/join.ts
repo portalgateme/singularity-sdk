@@ -97,7 +97,7 @@ export class JoinService extends BaseContractService<JoinContext> {
         context.proof = proof;
     }
 
-    public async execute(context: JoinContext) {
+    public async execute(context: JoinContext): Promise<string> {
         if (!context || !context.inNote1 || !context.inNote2 || !context.outNote || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }

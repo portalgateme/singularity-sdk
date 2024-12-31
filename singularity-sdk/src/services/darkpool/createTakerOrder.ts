@@ -8,28 +8,28 @@ import { getMerklePathAndRoot } from "../merkletree";
 
 
 class CreateTakerOrderContext extends BaseContext {
-    private _inNote?: Note;
-    private _outNote?: Note;
+    private _outgoingNote?: Note;
+    private _incomingNote?: Note;
     private _proof?: darkPoolTakerCreateOrderProofResult;
     private _feeAmount?: bigint;
     constructor(signature: string) {
         super(signature);
     }
 
-    set inNote(note: Note | undefined) {
-        this._inNote = note;
+    set incomingNote(note: Note | undefined) {
+        this._incomingNote = note;
     }
 
-    get inNote(): Note | undefined {
-        return this._inNote;
+    get incomingNote(): Note | undefined {
+        return this._incomingNote;
     }
 
-    set outNote(note: Note | undefined) {
-        this._outNote = note;
+    set outgoingNote(note: Note | undefined) {
+        this._outgoingNote = note;
     }
 
-    get outNote(): Note | undefined {
-        return this._outNote;
+    get outgoingNote(): Note | undefined {
+        return this._outgoingNote;
     }
 
     set proof(proof: darkPoolTakerCreateOrderProofResult | undefined) {
@@ -59,41 +59,41 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
         return 0n;//FIXME
     }
 
-    public async prepare(inNote: Note, outAsset: string, outAmount: bigint, signature: string): Promise<{ context: CreateTakerOrderContext, outNotes: Note[] }> {
+    public async prepare(outgoingNote: Note, incomingAsset: string, incomingAmount: bigint, signature: string): Promise<{ context: CreateTakerOrderContext, outNotes: Note[] }> {
         const context = new CreateTakerOrderContext(signature);
-        context.inNote = inNote;
+        context.outgoingNote = outgoingNote;
         const feeAmount = await this.getFeeAmount();
-        if (feeAmount >= outAmount) {
+        if (feeAmount >= incomingAmount) {
             throw new DarkpoolError("Fee amount is greater than out amount");
         }
         context.feeAmount = feeAmount;
-        const outNote = await createNote(outAsset, outAmount - feeAmount, signature);
-        context.outNote = outNote;
-        return { context, outNotes: [outNote] };
+        const incomingNote = await createNote(incomingAsset, incomingAmount - feeAmount, signature);
+        context.incomingNote = incomingNote;
+        return { context, outNotes: [incomingNote] };
     }
 
     public async generateProof(context: CreateTakerOrderContext): Promise<void> {
-        if (!context || !context.inNote || !context.outNote || !context.feeAmount) {
+        if (!context || !context.incomingNote || !context.outgoingNote || !context.feeAmount) {
             throw new DarkpoolError("Invalid context");
         }
 
-        const merklePath = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
+        const merklePath = await getMerklePathAndRoot(context.outgoingNote.note, this._darkPool);
         context.merkleRoot = merklePath.root;
 
         const proof = await generateDarkPoolTakerCreateOrderProof({
             merkleRoot: merklePath.root,
             merklePath: merklePath.path,
             merkleIndex: merklePath.index,
-            inNote: context.outNote,
-            outNote: context.inNote,
+            outNote: context.outgoingNote,
+            inNote: context.incomingNote,
             feeAmount: context.feeAmount,
             signedMessage: context.signature,
         });
         context.proof = proof;
     }
 
-    public async execute(context: CreateTakerOrderContext) {
-        if (!context || !context.inNote || !context.proof || !context.merkleRoot) {
+    public async execute(context: CreateTakerOrderContext): Promise<string> {
+        if (!context || !context.incomingNote || !context.proof || !context.merkleRoot) {
             throw new DarkpoolError("Invalid context");
         }
 
@@ -106,6 +106,6 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
             context.proof.inNote,
             context.proof.inNoteFooter,
             context.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

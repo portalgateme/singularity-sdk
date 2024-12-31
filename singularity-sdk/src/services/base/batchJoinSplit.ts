@@ -162,7 +162,7 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
         context.proof = proof;
     }
 
-    public async execute(context: BatchJoinSplitContext) {
+    public async execute(context: BatchJoinSplitContext): Promise<string> {
         if (!context || !context.inNotes || !context.outNotes || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }

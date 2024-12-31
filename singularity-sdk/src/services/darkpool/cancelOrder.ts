@@ -8,19 +8,19 @@ import { getMerklePathAndRoot } from "../merkletree";
 
 
 class CancelOrderContext extends BaseContext{
-    private _inNote?: Note;
+    private _outgoingNote?: Note;
     private _proof?: darkPoolCancelOrderProofResult;
 
     constructor(signature: string) {
         super(signature);
     }
 
-    set inNote(note: Note | undefined) {
-        this._inNote = note;
+    set outgoingNote(note: Note | undefined) {
+        this._outgoingNote = note;
     }
 
-    get inNote(): Note | undefined {
-        return this._inNote;
+    get outgoingNote(): Note | undefined {
+        return this._outgoingNote;
     }
 
     set proof(proof: darkPoolCancelOrderProofResult | undefined) {
@@ -38,32 +38,32 @@ export class CancelOrderService extends BaseContractService<CancelOrderContext> 
         super(_darkPool);
     }
 
-    public async prepare(inNote: Note, signature: string): Promise<{ context: CancelOrderContext, outNotes: Note[] }> {
+    public async prepare(outgoingNote: Note, signature: string): Promise<{ context: CancelOrderContext, outNotes: Note[] }> {
         const context = new CancelOrderContext(signature);
-        context.inNote = inNote;
+        context.outgoingNote = outgoingNote;
         return { context, outNotes: [] };
     }
 
     public async generateProof(context: CancelOrderContext): Promise<void> {
-        if (!context || !context.inNote) {
+        if (!context || !context.outgoingNote) {
             throw new DarkpoolError("Invalid context");
         }
 
-        const merklePath = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
+        const merklePath = await getMerklePathAndRoot(context.outgoingNote.note, this._darkPool);
         context.merkleRoot = merklePath.root;
 
         const proof = await generateDarkPoolCancelOrderProof({
             merkleRoot: merklePath.root,
             merklePath: merklePath.path,
             merkleIndex: merklePath.index,
-            outNote: context.inNote,
+            outNote: context.outgoingNote,
             signedMessage: context.signature,
         });
         context.proof = proof;
     }
 
-    public async execute(context: CancelOrderContext) {
-        if (!context || !context.inNote || !context.proof || !context.merkleRoot) {
+    public async execute(context: CancelOrderContext): Promise<string> {
+        if (!context || !context.outgoingNote || !context.proof || !context.merkleRoot) {
             throw new DarkpoolError("Invalid context");
         }
         const contract = new ethers.Contract(this._darkPool.contracts.darkpoolSwapAssetManager, DarkpoolSwapAssetManagerAbi.abi, this._darkPool.signer);
@@ -71,6 +71,6 @@ export class CancelOrderService extends BaseContractService<CancelOrderContext> 
             context.merkleRoot,
             context.proof.outNullifier,
             context.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

@@ -91,7 +91,7 @@ export class SplitService extends BaseContractService<SplitContext> {
         context.proof = proof;
     }
 
-    public async execute(context: SplitContext) {
+    public async execute(context: SplitContext): Promise<string> {
         if (!context || !context.inNote || !context.outNote1 || !context.outNote2 || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }

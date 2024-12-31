@@ -114,7 +114,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
         context.proof = proof;
     }
 
-    public async execute(context: JoinSplitContext) {
+    public async execute(context: JoinSplitContext): Promise<string> {
         if (!context || !context.inNote1 || !context.inNote2 || !context.outNote1 || !context.outNote2 || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
