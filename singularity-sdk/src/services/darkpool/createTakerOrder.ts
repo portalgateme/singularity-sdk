@@ -1,4 +1,5 @@
-import { createNote, darkPoolTakerCreateOrderProofResult, generateDarkPoolTakerCreateOrderProof, Note } from "@thesingularitynetwork/darkpool-v1-proof";
+import { createNote, DarkPoolTakerCreateOrderProofResult, DarkPoolTakerSwapMessage, generateDarkPoolTakerCreateOrderProof, Note } from "@thesingularitynetwork/darkpool-v1-proof";
+import { generateDarkPoolTakerSwapMessage } from "@thesingularitynetwork/darkpool-v1-proof/dist/services/darkpool/darkPoolTakerCreateOrder";
 import { ethers } from "ethers";
 import DarkpoolSwapAssetManagerAbi from '../../abis/DarkPoolSwapAssetManager.json';
 import { DarkPool } from "../../darkpool";
@@ -10,8 +11,10 @@ import { getMerklePathAndRoot } from "../merkletree";
 class CreateTakerOrderContext extends BaseContext {
     private _outgoingNote?: Note;
     private _incomingNote?: Note;
-    private _proof?: darkPoolTakerCreateOrderProofResult;
+    private _proof?: DarkPoolTakerCreateOrderProofResult;
     private _feeAmount?: bigint;
+    private _takerSwapMessage?: DarkPoolTakerSwapMessage;
+
     constructor(signature: string) {
         super(signature);
     }
@@ -32,11 +35,11 @@ class CreateTakerOrderContext extends BaseContext {
         return this._outgoingNote;
     }
 
-    set proof(proof: darkPoolTakerCreateOrderProofResult | undefined) {
+    set proof(proof: DarkPoolTakerCreateOrderProofResult | undefined) {
         this._proof = proof;
     }
 
-    get proof(): darkPoolTakerCreateOrderProofResult | undefined {
+    get proof(): DarkPoolTakerCreateOrderProofResult | undefined {
         return this._proof;
     }
 
@@ -46,6 +49,14 @@ class CreateTakerOrderContext extends BaseContext {
 
     get feeAmount(): bigint | undefined {
         return this._feeAmount;
+    }
+
+    set takerSwapMessage(takerSwapMessage: DarkPoolTakerSwapMessage | undefined) {
+        this._takerSwapMessage = takerSwapMessage;
+    }
+
+    get takerSwapMessage(): DarkPoolTakerSwapMessage | undefined {
+        return this._takerSwapMessage;
     }
 }
 
@@ -69,6 +80,13 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
         context.feeAmount = feeAmount;
         const incomingNote = await createNote(incomingAsset, incomingAmount - feeAmount, signature);
         context.incomingNote = incomingNote;
+        context.takerSwapMessage = await generateDarkPoolTakerSwapMessage({
+            outNote: outgoingNote,
+            inNote: incomingNote,
+            feeAsset: incomingNote.asset,
+            feeAmount: feeAmount,
+            signedMessage: signature,
+        });
         return { context, outNotes: [incomingNote] };
     }
 

@@ -1,157 +1,104 @@
-// import { DOMAIN_NOTE, DarkPoolTakerSwapProofResult, Note, OTCSwapProofResult, createNoteWithPubKey, generateDarkPoolTakerSwapProof, generateOTCSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
-// import { ethers } from "ethers";
-// import OTCSwapAssetManagerAbi from '../../abis/OTCSwapAssetManager.json';
-// import { DarkpoolError, Order, OTCSwapFullMessage } from "../../entities";
-// import { BaseContext, BaseContractService } from "../BaseService";
-// import { multiGetMerklePathAndRoot } from "../merkletree";
-// import { fullSwapSecretFromString } from "./otcSwapDepositService";
-// import { isAddressEquals } from "../../utils/util";
-// import { DarkPool } from "../../darkpool";
-// import { DarkPoolTakerSwapMessage } from "../../entities/darkpool";
+import { DarkPoolTakerSwapMessage, DarkPoolTakerSwapProofResult, Note, generateDarkPoolTakerSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
+import { ethers } from "ethers";
+import DarkPoolSwapAssetManagerAbi from '../../abis/DarkPoolSwapAssetManager.json';
+import { DarkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
+import { BaseContext, BaseContractService } from "../BaseService";
+import { multiGetMerklePathAndRoot } from "../merkletree";
+import { hexlify32 } from "../../utils/util";
 
+class TakerSwapContext extends BaseContext {
+    private _proof?: DarkPoolTakerSwapProofResult;
+    private _alceSwapMessage?: DarkPoolTakerSwapMessage;
+    private _bobSwapMessage?: DarkPoolTakerSwapMessage;
 
+    constructor(signature: string) {
+        super(signature);
+    }
 
+    set proof(proof: DarkPoolTakerSwapProofResult | undefined) {
+        this._proof = proof;
+    }
 
-// class TakerSwapContext extends BaseContext {
-//     private _proof?: DarkPoolTakerSwapProofResult;
-//     private _swapMessage?: OTCSwapFullMessage;
+    get proof(): DarkPoolTakerSwapProofResult | undefined {
+        return this._proof;
+    }
 
-//     constructor(signature: string) {
-//         super(signature);
-//     }
+    set alceSwapMessage(swapMessage: DarkPoolTakerSwapMessage | undefined) {
+        this._alceSwapMessage = swapMessage;
+    }
 
-//     set proof(proof: DarkPoolTakerSwapProofResult | undefined) {
-//         this._proof = proof;
-//     }
+    get alceSwapMessage(): DarkPoolTakerSwapMessage | undefined {
+        return this._alceSwapMessage;
+    }
 
-//     get proof(): DarkPoolTakerSwapProofResult | undefined {
-//         return this._proof;
-//     }
+    set bobSwapMessage(swapMessage: DarkPoolTakerSwapMessage | undefined) {
+        this._bobSwapMessage = swapMessage;
+    }
 
-//     set swapMessage(swapMessage: OTCSwapFullMessage | undefined) {
-//         this._swapMessage = swapMessage;
-//     }
+    get bobSwapMessage(): DarkPoolTakerSwapMessage | undefined {
+        return this._bobSwapMessage;
+    }
+}
 
-//     get swapMessage(): OTCSwapFullMessage | undefined {
-//         return this._swapMessage;
-//     }
-// }
+export class TakerSwapService extends BaseContractService<TakerSwapContext> {
+    constructor(_darkPool?: DarkPool) {
+        super(_darkPool);
+    }
 
-// export class TakerSwapService extends BaseContractService<TakerSwapContext> {
-//     constructor(_darkPool?: DarkPool) {
-//         super(_darkPool);
-//     }
+    public async prepare(aliceSwapMessage: DarkPoolTakerSwapMessage, bobSwapMessage: DarkPoolTakerSwapMessage): Promise<{ context: TakerSwapContext, outNotes: Note[] }> {
 
-//     private checkSingleSwapMessage(swapMesage: DarkPoolTakerSwapMessage): boolean {
-        
+        const context = new TakerSwapContext('');
+        context.alceSwapMessage = aliceSwapMessage;
+        context.bobSwapMessage = bobSwapMessage;
+        return { context, outNotes: [] };
+    }
 
-//         return true;
-//     }
+    public async generateProof(context: TakerSwapContext): Promise<void> {
+        if (!context || !context.alceSwapMessage || !context.bobSwapMessage) {
+            throw new DarkpoolError("Invalid context");
+        }
 
-//     public async getMakerNewNoteAfterSwap(fullSwapMessageString: string): Promise<Note> {
-//         const fullSwapMessage = fullSwapSecretFromString(this._darkPool.chainId, fullSwapMessageString);
-//         const newMakerNote = await createNoteWithPubKey(
-//             fullSwapMessage.makerNewRho,
-//             fullSwapMessage.takerNote.asset,
-//             fullSwapMessage.takerNote.amount,
-//             fullSwapMessage.makerPubKey,
-//             DOMAIN_NOTE
-//         );
-//         return newMakerNote;
-//     }
+        const merklePathes = await multiGetMerklePathAndRoot([context.alceSwapMessage.outNote.note, context.bobSwapMessage.outNote.note], this._darkPool);
+        const path1 = merklePathes[0];
+        const path2 = merklePathes[1];
 
-//     public async getTakerNewNoteAfterSwap(fullSwapMessageString: string): Promise<Note> {
-//         const fullSwapMessage = fullSwapSecretFromString(this._darkPool.chainId, fullSwapMessageString);
-//         const newTakerNote = await createNoteWithPubKey(
-//             fullSwapMessage.takerNewRho,
-//             fullSwapMessage.makerNote.asset,
-//             fullSwapMessage.makerNote.amount,
-//             fullSwapMessage.takerPubKey,
-//             DOMAIN_NOTE
-//         );
-//         return newTakerNote;
-//     }
+        context.merkleRoot = path1.root;
 
-//     public async prepare(aliceSwapMessage: DarkPoolTakerSwapMessage, bobSwapMessage: DarkPoolTakerSwapMessage): Promise<{ context: TakerSwapContext, outNotes: Note[] }> {
-//         if (!this.checkSingleSwapMessage(aliceSwapMessage, bobSwapMessage)) {
-//             throw new DarkpoolError("Invalid full swap secret");
-//         }
-//         const context = new TakerSwapContext(aliceSwapMessage.swapSignature);
-//         context.swapMessage = aliceSwapMessage;
-//         return { context, outNotes: [] };
-//     }
+        const proof = await generateDarkPoolTakerSwapProof({
+            merkleRoot: path1.root,
+            aliceMerkleIndex: path1.index,
+            aliceMerklePath: path1.path,
+            aliceMessage: context.alceSwapMessage,
+            bobMerkleIndex: path2.index,
+            bobMerklePath: path2.path,
+            bobMessage: context.bobSwapMessage,
+        });
+        context.proof = proof;
+    }
 
-//     public async generateProof(context: TakerSwapContext): Promise<void> {
-//         if (!context || !context.swapMessage) {
-//             throw new DarkpoolError("Invalid context");
-//         }
-
-//         const merklePathes = await multiGetMerklePathAndRoot([context.swapMessage.makerNote.note, context.swapMessage.takerNote.note], this._darkPool);
-//         const path1 = merklePathes[0];
-//         const path2 = merklePathes[1];
-
-//         context.merkleRoot = path1.root;
-
-//         const makerNewNote = await createNoteWithPubKey(
-//             context.swapMessage.makerNewRho,
-//             context.swapMessage.takerNote.asset,
-//             context.swapMessage.takerNote.amount,
-//             context.swapMessage.makerPubKey,
-//             DOMAIN_NOTE
-//         )
-
-//         const takerNewNote = await createNoteWithPubKey(
-//             context.swapMessage.takerNewRho,
-//             context.swapMessage.makerNote.asset,
-//             context.swapMessage.makerNote.amount,
-//             context.swapMessage.takerPubKey,
-//             DOMAIN_NOTE
-//         )
-
-
-
-//         const proof = await generateDarkPoolTakerSwapProof({
-//             merkleRoot: context.merkleRoot,
-//             aliceMerkleIndex: path1.index,
-//             aliceMerklePath: path1.path,
-//             aliceOutNote: makerNewNote,
-//             aliceOutNullifier: calcNullifier(makerNewNote.note),
-//             aliceFeeAmount: context.swapMessage.makerNote.amount,
-//             aliceInNoteNote: context.swapMessage.makerNote.note,
-//             aliceInNoteRho: context.swapMessage.makerNote.rho,
-//             aliceInNoteFooter: context.swapMessage.makerNote.footer,
-//             aliceSignature: context.signature,
-//             alicePubKey: context.swapMessage.makerPubKey,
-//             bobMerkleIndex: path2.index,
-//             bobMerklePath: path2.path,
-//             bobOutNote: takerNewNote,
-//             bobOutNullifier: calcNullifier(takerNewNote.note),
-//             bobFeeAmount: context.swapMessage.takerNote.amount,
-//             bobInNoteNote: context.swapMessage.takerNote.note,
-//             bobInNoteRho: context.swapMessage.takerNote.rho,
-//             bobInNoteFooter: context.swapMessage.takerNote.footer,
-//             bobSignature: context.signature,
-//             bobPubKey: context.swapMessage.takerPubKey,
-//         });
-//         context.proof = proof;
-//     }
-
-//     public async execute(context: TakerSwapContext): Promise<string> {
-//         if (!context || !context.swapMessage || !context.signature || !context.proof) {
-//             throw new DarkpoolError("Invalid context");
-//         }
-//         const signer = this._darkPool.signer;
-//         const contract = new ethers.Contract(this._darkPool.contracts.otcSwapAssetManager, OTCSwapAssetManagerAbi.abi, signer);
-//         const tx = await contract.swap(
-//             context.merkleRoot,
-//             context.proof.aliceNullifier,
-//             context.proof.aliceNewNote,
-//             context.proof.aliceNewNoteFooter,
-//             context.proof.bobNullifier,
-//             context.proof.bobNewNote,
-//             context.proof.bobNewNoteFooter,
-//             context.proof.proof.proof
-//         );
-//         return tx.hash;
-//     }
-// }
+    public async execute(context: TakerSwapContext): Promise<string> {
+        if (!context || !context.alceSwapMessage || !context.bobSwapMessage || !context.signature || !context.proof) {
+            throw new DarkpoolError("Invalid context");
+        }
+        const signer = this._darkPool.signer;
+        const contract = new ethers.Contract(this._darkPool.contracts.darkpoolSwapAssetManager, DarkPoolSwapAssetManagerAbi.abi, signer);
+        const tx = await contract.takerSwap(
+            context.proof.proof,
+            [
+                context.merkleRoot,
+                context.proof.aliceOutNullifier,
+                context.proof.aliceFeeAsset,
+                context.proof.aliceFeeAmount,
+                context.proof.aliceInNote,
+                context.proof.aliceInNoteFooter,
+                context.proof.bobOutNullifier,
+                context.proof.bobFeeAsset,
+                context.proof.bobFeeAmount,
+                context.proof.bobInNote,
+                context.proof.bobInNoteFooter
+            ]
+        );
+        return tx.hash;
+    }
+}
