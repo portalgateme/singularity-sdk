@@ -1,8 +1,8 @@
-import { OTCSwapService, Order, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
+import { DarkPool, OTCSwapService, WithdrawService, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
 import { useToast } from "../contexts/ToastContext/hooks"
-import { DarkpoolError, TokenConfig } from "../types"
+import { DarkpoolError } from "../types"
 import { useEthersSigner } from "../wagmi"
 import { useSignMessage } from "./useSignMessage"
 
@@ -22,6 +22,7 @@ export const useTakerWithdraw = () => {
         showPendingToast(undefined, 'Signing Message')
         const signedMessage = await signMessageAsync(address)
 
+        const darkPool = new DarkPool();
         darkPool.init(signer, chainId, [
             {
                 relayerName: '',
@@ -38,20 +39,22 @@ export const useTakerWithdraw = () => {
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
             otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
+            batchJoinSplitAssetManager: config.networkConfig.batchJoinSplitAssetManager,
+            darkpoolSwapAssetManager: config.networkConfig.darkpoolSwapAssetManager,
             drakpoolSubgraphUrl: ''
         })
 
-        const isCompliant = await isAddressCompliant(address)
+        const isCompliant = await isAddressCompliant(address, darkPool)
         if (!isCompliant) {
             throw new DarkpoolError('Address is not compliant')
         }
 
-        const otcSwapService = new OTCSwapService()
+        const otcSwapService = new OTCSwapService(darkPool)
         const takerNewNote = await otcSwapService.getTakerNewNoteAfterSwap(fullSwapSecret)
 
         updatePendingToast(undefined, "Generating Proof & Withdrawing")
 
-        const withdrawService = new WithdrawService()
+        const withdrawService = new WithdrawService(darkPool)
         const { context: withdrawContext } = await withdrawService.prepare(takerNewNote, address, signedMessage)
         await withdrawService.generateProof(withdrawContext)
         await withdrawService.executeAndWaitForResult(withdrawContext)

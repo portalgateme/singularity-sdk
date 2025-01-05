@@ -60,6 +60,19 @@ export class BaseRelayerContext extends BaseContext {
 }
 
 
+export interface BaseRelayerResult {
+    txHash: string
+}
+
+export interface SingleNoteResult extends BaseRelayerResult {
+    note: Note
+}
+
+export interface MultiNotesResult extends BaseRelayerResult {
+    notes: Note[]
+}
+
+
 export abstract class BaseContractService<T> {
 
     protected _darkPool: DarkPool
@@ -76,7 +89,7 @@ export abstract class BaseContractService<T> {
 }
 
 
-export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
+export abstract class BaseRelayerService<T extends BaseRelayerContext, R, S extends BaseRelayerResult> {
 
     protected _darkPool: DarkPool
 
@@ -92,7 +105,7 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
 
     protected abstract getRelayerPath(): string;
 
-    protected abstract postExecute(context: T): Promise<any>;
+    protected abstract postExecute(context: T): Promise<S>;
 
     async execute(context: T): Promise<string> {
         const relayerRequest = await this.getRelayerRequest(context);
@@ -110,7 +123,7 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R> {
         }
     }
 
-    async executeAndWaitForResult(context: T): Promise<any> {
+    async executeAndWaitForResult(context: T): Promise<S> {
         await this.execute(context)
 
         const { error, txHash } = await this.pollJobStatus(context)

@@ -1,13 +1,13 @@
-import { Note, PartialNote, createPartialNote, generateZkStakeProof, recoverNoteWithFooter, zkStakeProofResult } from "@thesingularitynetwork/darkpool-v1-proof";
+import { createPartialNote, generateZkStakeProof, Note, PartialNote, recoverNoteWithFooter, zkStakeProofResult } from "@thesingularitynetwork/darkpool-v1-proof";
 import StakeAssetManagerAbi from "../../abis/StakingAssetManager.json";
 import { Action, relayerPathConfig } from "../../config/config";
+import { DarkPool } from "../../darkpool";
 import { DarkpoolError, Relayer, StakeNoteRelayerRequest } from "../../entities";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
 import { getOutEvent } from "../EventService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { getZkTokenFromOriginalToken } from "./stakingUtils";
-import { DarkPool } from "../../darkpool";
 
 
 class StakeNoteContext extends BaseRelayerContext {
@@ -44,7 +44,7 @@ class StakeNoteContext extends BaseRelayerContext {
     }
 }
 
-export class StakeNoteService extends BaseRelayerService<StakeNoteContext, StakeNoteRelayerRequest> {
+export class StakeNoteService extends BaseRelayerService<StakeNoteContext, StakeNoteRelayerRequest, SingleNoteResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -116,7 +116,7 @@ export class StakeNoteService extends BaseRelayerService<StakeNoteContext, Stake
         return relayerPathConfig[Action.STAKE];
     }
 
-    public async postExecute(context: StakeNoteContext): Promise<Note[]> {
+    public async postExecute(context: StakeNoteContext): Promise<SingleNoteResult> {
         if (!context
             || !context.outNotePartial
             || !context.signature
@@ -140,6 +140,6 @@ export class StakeNoteService extends BaseRelayerService<StakeNoteContext, Stake
             BigInt(outAmount),
             context.signature,
         )
-        return [outNote];
+        return { note: outNote, txHash: context.tx! };
     }
 }

@@ -2,7 +2,7 @@ import { Note, PartialNote, WithdrawProofResult, generateWithdrawProof } from "@
 import { Action, relayerPathConfig } from "../../config/config";
 import { WithdrawRelayerRequest } from "../../entities/relayerRequestTypes";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerResult, BaseRelayerService } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
 import { DarkpoolError } from "../../entities";
@@ -42,7 +42,9 @@ class WithdrawContext extends BaseRelayerContext {
     }
 }
 
-export class WithdrawService extends BaseRelayerService<WithdrawContext, WithdrawRelayerRequest> {
+
+
+export class WithdrawService extends BaseRelayerService<WithdrawContext, WithdrawRelayerRequest, BaseRelayerResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -100,9 +102,9 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
     }
 
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async postExecute(context: WithdrawContext): Promise<Note[]> {
+    public async postExecute(context: WithdrawContext): Promise<BaseRelayerResult> {
         console.log(context.tx);
-        return [];
+        return { txHash: context.tx! };
     }
 
     public getRelayerContractCallParameters(context: WithdrawContext) {

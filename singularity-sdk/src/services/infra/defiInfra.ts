@@ -8,7 +8,7 @@ import { DarkpoolError } from "../../entities";
 import { Relayer } from "../../entities/relayer";
 import { DefiInfraRelayerRequest } from "../../entities/relayerRequestTypes";
 import { hexlify32, isAddressEquals } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
 
 export interface DefiInfraRequest {
@@ -69,7 +69,7 @@ class DefiInfraContext extends BaseRelayerContext {
     }
 }
 
-export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiInfraRelayerRequest> {
+export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiInfraRelayerRequest, MultiNotesResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -217,7 +217,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
         return relayerPathConfig[Action.DEFI_INFRA];
     }
 
-    protected async postExecute(context: DefiInfraContext): Promise<Note[]> {
+    protected async postExecute(context: DefiInfraContext): Promise<MultiNotesResult> {
         if (!context
             || !context.request
             || !context.tx
@@ -246,7 +246,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
                 }
             }
 
-            return outNotes;
+            return { notes: outNotes, txHash: context.tx };
         }
     }
 

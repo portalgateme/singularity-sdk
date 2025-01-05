@@ -1,5 +1,5 @@
 import { Note } from "@thesingularitynetwork/darkpool-v1-proof"
-import { RedeemService, StakeNoteService, StakeService, WithdrawService, darkPool } from "@thesingularitynetwork/singularity-sdk"
+import { DarkPool, RedeemService, StakeNoteService, StakeService, WithdrawService, darkPool } from "@thesingularitynetwork/singularity-sdk"
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { useAccount } from "wagmi"
 import { config } from "../constants"
@@ -25,6 +25,7 @@ export const useStake = () => {
         showPendingToast(undefined, 'Signing Message')
         const signature = await signMessageAsync(address)
 
+        const darkPool = new DarkPool();
         darkPool.init(signer, chainId, [
             {
                 relayerName: '',
@@ -41,6 +42,8 @@ export const useStake = () => {
             stakingOperator: config.networkConfig.stakingOperator,
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
+            batchJoinSplitAssetManager: config.networkConfig.batchJoinSplitAssetManager,
+            darkpoolSwapAssetManager: config.networkConfig.darkpoolSwapAssetManager,
             drakpoolSubgraphUrl: ''
         }, [
             {
@@ -59,7 +62,7 @@ export const useStake = () => {
             },
         ])
 
-        const stakeService = new StakeService()
+        const stakeService = new StakeService(darkPool)
         const { context: stakeContext, outNotes } = await stakeService.prepare({
             symbol: asset.symbol,
             name: asset.name,
@@ -83,26 +86,26 @@ export const useStake = () => {
 
         console.log(sgEthNote)
 
-        const redeemService = new RedeemService()
+        const redeemService = new RedeemService(darkPool)
         const { context: redeemContext } = await redeemService.prepare(sgEthNote, signature)
         updatePendingToast(undefined, "Generating Redeem Proof")
         await redeemService.generateProof(redeemContext)
         updatePendingToast(undefined, "Calling redeem")
-        const notes = await redeemService.executeAndWaitForResult(redeemContext)
+        const { txHash: redeemTxHash, note } = await redeemService.executeAndWaitForResult(redeemContext)
 
-        console.log(notes[0])
+        console.log(note)
 
-        const stakeNoteService = new StakeNoteService()
-        const { context: stakeNoteContext } = await stakeNoteService.prepare(notes[0] as Note, signature)
+        const stakeNoteService = new StakeNoteService(darkPool)
+        const { context: stakeNoteContext } = await stakeNoteService.prepare(note, signature)
         updatePendingToast(undefined, "Generating Stake Note Proof")
         await stakeNoteService.generateProof(stakeNoteContext)
         updatePendingToast(undefined, "Staking Note")
-        const stakedNotes = await stakeNoteService.executeAndWaitForResult(stakeNoteContext)
+        const { txHash: stakeTxHash, note: stakedNote } = await stakeNoteService.executeAndWaitForResult(stakeNoteContext)
 
-        console.log(stakedNotes[0])
+        console.log(stakedNote)
 
-        const withdrawService = new WithdrawService()
-        const { context: withdrawContext } = await withdrawService.prepare(stakedNotes[0] as Note, address, signature)
+        const withdrawService = new WithdrawService(darkPool)
+        const { context: withdrawContext } = await withdrawService.prepare(stakedNote, address, signature)
         updatePendingToast(undefined, "Generating Withdraw Proof")
         await withdrawService.generateProof(withdrawContext)
         updatePendingToast(undefined, "Withdrawing")

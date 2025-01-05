@@ -1,4 +1,4 @@
-import { OTCSwapDepositService, Order, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
+import { DarkPool, OTCSwapDepositService, Order, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
 import { useState } from "react"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
@@ -24,6 +24,7 @@ export const useTakerDeposit = () => {
         showPendingToast(undefined, 'Signing Message')
         const signature = await signMessageAsync(address)
 
+        const darkPool = new DarkPool();
         darkPool.init(signer, chainId, [
             {
                 relayerName: '',
@@ -40,10 +41,12 @@ export const useTakerDeposit = () => {
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
             otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
+            batchJoinSplitAssetManager: config.networkConfig.batchJoinSplitAssetManager,
+            darkpoolSwapAssetManager: config.networkConfig.darkpoolSwapAssetManager,
             drakpoolSubgraphUrl: ''
         })
 
-        const isCompliant = await isAddressCompliant(address)
+        const isCompliant = await isAddressCompliant(address, darkPool)
         if (!isCompliant) {
             throw new DarkpoolError('Address is not compliant')
         }
@@ -56,7 +59,7 @@ export const useTakerDeposit = () => {
             takerAmount: takerAmount,
         }
 
-        const otcSwapDepositService = new OTCSwapDepositService()
+        const otcSwapDepositService = new OTCSwapDepositService(darkPool)
         const { finalSwapSecret, context } = await otcSwapDepositService.prepareTakerAsset(order, partialSwapSecret, address, signature);
         setFullSwapSecret(finalSwapSecret)
 

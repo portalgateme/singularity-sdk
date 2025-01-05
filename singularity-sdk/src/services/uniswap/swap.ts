@@ -5,7 +5,7 @@ import { Action, relayerPathConfig } from "../../config/config";
 import { UniswapSwapRelayerRequest } from "../../entities/relayerRequestTypes";
 import { Token } from "../../entities/token";
 import { hexlify32, isAddressEquals } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
 import { DarkpoolError } from "../../entities";
@@ -52,7 +52,7 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSwapContext, UniswapSwapRelayerRequest> {
+export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSwapContext, UniswapSwapRelayerRequest, SingleNoteResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -114,7 +114,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
         return relayerPathConfig[Action.UNISWAP_SINGLE_SWAP];
     }
 
-    protected async postExecute(context: UniswapSingleSwapContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapSingleSwapContext): Promise<SingleNoteResult> {
         if (!context || !context.request || !context.tx || !context.outPartialNote || !context.signature || !context.merkleRoot || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
@@ -135,7 +135,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
                 context.signature,
             )
 
-            return [outNote];
+            return { note: outNote, txHash: context.tx };
         }
     }
 

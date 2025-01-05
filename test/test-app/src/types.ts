@@ -49,6 +49,8 @@ export type NetworkConfig = {
   stakingOperator: HexData
   stakingAssetManager: HexData
   mockDex: HexData
+  batchJoinSplitAssetManager: HexData
+  darkpoolSwapAssetManager: HexData
 
   explorerUrl: {
     tx: string

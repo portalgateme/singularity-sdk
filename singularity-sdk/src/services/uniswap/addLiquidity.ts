@@ -2,13 +2,13 @@ import { NftNote, Note, PartialNftNote, PartialNote, UniswapAddLiquidProofResult
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
+import { DarkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
 import { Relayer } from "../../entities/relayer";
 import { UniswapAddLiquidityRelayerRequest } from "../../entities/relayerRequestTypes";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
-import { DarkpoolError } from "../../entities";
-import { DarkPool } from "../../darkpool";
 
 export interface UniswapAddLiquidityRequest {
     inNote1: Note;
@@ -74,7 +74,11 @@ class UniswapAddLiquidityContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiquidityContext, UniswapAddLiquidityRelayerRequest> {
+export interface UniswapAddLiquidityResult extends MultiNotesResult {
+    nftNote: NftNote
+}
+
+export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiquidityContext, UniswapAddLiquidityRelayerRequest, UniswapAddLiquidityResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -182,7 +186,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
         return relayerPathConfig[Action.UNISWAP_LP_DEPOSIT];
     }
 
-    protected async postExecute(context: UniswapAddLiquidityContext): Promise<{ outNotes: Note[], outNftNote: NftNote }> {
+    protected async postExecute(context: UniswapAddLiquidityContext): Promise<UniswapAddLiquidityResult> {
         if (!context
             || !context.request
             || !context.tx
@@ -232,7 +236,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
             if (changeNote2)
                 results.push(changeNote2);
 
-            return { outNftNote: nftNote, outNotes: results };
+            return { nftNote: nftNote, notes: results, txHash: context.tx };
         }
     }
 

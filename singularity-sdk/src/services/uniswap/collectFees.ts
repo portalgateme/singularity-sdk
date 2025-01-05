@@ -1,15 +1,15 @@
-import { NftNote, Note, PartialNote, UniswapCollectFeesProofResult, createPartialNote, generateUniswapCollectFeeProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
+import { NftNote, PartialNote, UniswapCollectFeesProofResult, createPartialNote, generateUniswapCollectFeeProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
+import { DarkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
 import { Relayer } from "../../entities/relayer";
 import { UniswapCollectFeesRelayerRequest } from "../../entities/relayerRequestTypes";
 import { Token } from "../../entities/token";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
-import { DarkpoolError } from "../../entities";
-import { DarkPool } from "../../darkpool";
 
 export interface UniswapCollectFeesRequest {
     inNote: NftNote;
@@ -61,7 +61,7 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest> {
+export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest, MultiNotesResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -132,7 +132,7 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
         return relayerPathConfig[Action.UNISWAP_LP_COLLECT_FEE];
     }
 
-    protected async postExecute(context: UniswapCollectFeesContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapCollectFeesContext): Promise<MultiNotesResult> {
         if (!context
             || !context.request
             || !context.tx
@@ -146,7 +146,6 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
         if (!outAmount1 || !outAmount2) {
             throw new DarkpoolError("Failed to find the UniswapCollectFees event in the transaction receipt.");
         } else {
-
             const outNote1 = await recoverNoteWithFooter(
                 context.outPartialNote1.rho,
                 context.outPartialNote1.asset,
@@ -160,7 +159,7 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
                 context.signature,
             )
 
-            return [outNote1, outNote2];
+            return { notes: [outNote1, outNote2], txHash: context.tx };
         }
     }
 

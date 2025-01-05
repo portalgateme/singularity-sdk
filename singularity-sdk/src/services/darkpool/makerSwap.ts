@@ -1,4 +1,4 @@
-import { DarkPoolMakerSwapProofResult, DarkPoolTakerSwapMessage, Note, createNote, generateDarkPoolMakerSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
+import { DarkPoolMakerSwapProofResult, DarkPoolTakerSwapMessage, EMPTY_NOTE, Note, createNote, generateDarkPoolMakerSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkPoolSwapAssetManagerAbi from '../../abis/DarkPoolSwapAssetManager.json';
 import { DarkPool } from "../../darkpool";
@@ -76,20 +76,29 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
         const context = new MakerSwapContext(signedMessage);
         context.aliceOutgoingNote = aliceOutgoingNote;
         context.bobSwapMessage = bobSwapMessage;
+
+        const preparedNotes = [];
         const aliceIncomingNote = await createNote(
             bobSwapMessage.outNote.asset,
             bobSwapMessage.outNote.amount,
             signedMessage
         )
+        preparedNotes.push(aliceIncomingNote);
 
-        const aliceChangeNote = await createNote(
-            aliceOutgoingNote.asset,
-            aliceOutgoingNote.amount - order.makerAmount,
-            signedMessage
-        )
+        if(aliceOutgoingNote.amount > order.makerAmount) {
+            const aliceChangeNote = await createNote(
+                aliceOutgoingNote.asset,
+                aliceOutgoingNote.amount - order.makerAmount,
+                signedMessage
+            )
+            context.aliceChangeNote = aliceChangeNote;
+            preparedNotes.push(aliceChangeNote);
+        } else {
+            context.aliceChangeNote = EMPTY_NOTE;
+        }
 
 
-        return { context, outNotes: [aliceIncomingNote, aliceChangeNote] };
+        return { context, outNotes: preparedNotes };
     }
 
     public async generateProof(context: MakerSwapContext): Promise<void> {
@@ -109,6 +118,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
             aliceMerkleIndex: path1.index,
             aliceMerklePath: path1.path,
             aliceOutNote: context.aliceOutgoingNote,
+            aliceChangeNote: context.aliceChangeNote,
             aliceInNote: context.aliceIncomingNote,
             aliceSignedMessage: context.signature,
             bobMerkleIndex: path2.index,

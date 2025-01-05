@@ -1,5 +1,4 @@
-import { createNote, DarkPoolTakerCreateOrderProofResult, DarkPoolTakerSwapMessage, generateDarkPoolTakerCreateOrderProof, Note } from "@thesingularitynetwork/darkpool-v1-proof";
-import { generateDarkPoolTakerSwapMessage } from "@thesingularitynetwork/darkpool-v1-proof/dist/services/darkpool/darkPoolTakerCreateOrder";
+import { createNote, DarkPoolTakerCreateOrderProofResult, DarkPoolTakerSwapMessage, generateDarkPoolTakerCreateOrderProof, Note, generateDarkPoolTakerSwapMessage } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkpoolSwapAssetManagerAbi from '../../abis/DarkPoolSwapAssetManager.json';
 import { DarkPool } from "../../darkpool";

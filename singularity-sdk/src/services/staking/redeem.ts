@@ -3,7 +3,7 @@ import StakeAssetManagerAbi from "../../abis/StakingAssetManager.json";
 import { Action, relayerPathConfig } from "../../config/config";
 import { DarkpoolError, RedeemRelayerRequest, Relayer } from "../../entities";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
 import { getOutEvent } from "../EventService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { getOriginalTokenFromZkToken } from "./stakingUtils";
@@ -43,7 +43,7 @@ class RedeemContext extends BaseRelayerContext {
     }
 }
 
-export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelayerRequest> {
+export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelayerRequest, SingleNoteResult> {
     constructor(_darkPool?: DarkPool) {
         super(_darkPool);
     }
@@ -115,7 +115,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
         return relayerPathConfig[Action.REDEEM];
     }
 
-    public async postExecute(context: RedeemContext): Promise<Note[]> {
+    public async postExecute(context: RedeemContext): Promise<SingleNoteResult> {
         if (!context
             || !context.outNotePartial
             || !context.signature
@@ -139,7 +139,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
             BigInt(outAmount),
             context.signature,
         )
-        return [outNote];
+        return { note: outNote, txHash: context.tx };
     }
 
     public getRelayerContractCallParameters(context: RedeemContext) {

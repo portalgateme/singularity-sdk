@@ -11,6 +11,8 @@ export const networkConfig: { [chainId: number]: NetworkConfig } = {
     stakingOperator: '0xFE92134da38df8c399A90a540f20187D19216E05',
     stakingAssetManager: '0x1966dc8ff30Bc4AeDEd27178642253b3cCC9AA3f',
     otcSwapAssetManager: '0x26Df0Ea798971A97Ae121514B32999DfDb220e1f',
+    batchJoinSplitAssetManager: '0x0',
+    darkpoolSwapAssetManager: '0x0',
     mockDex: '0x29023DE63D7075B4cC2CE30B55f050f9c67548d4',
     drakpoolSubgraphUrl:
       'https://app.dev.portalgate.me:8080/subgraphs/name/singularity/',
