@@ -1,10 +1,12 @@
-import { DarkPoolMakerSwapProofResult, DarkPoolTakerSwapMessage, EMPTY_NOTE, Note, createNote, generateDarkPoolMakerSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
+import { DarkPoolMakerSwapProofResult, DarkPoolTakerSwapMessage, EMPTY_NOTE, Note, createNote, generateDarkPoolMakerSwapProof, generateDarkPoolTakerSwapMessage } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkPoolSwapAssetManagerAbi from '../../abis/DarkPoolSwapAssetManager.json';
 import { DarkPool } from "../../darkpool";
 import { DarkpoolError, Order } from "../../entities";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
+import { decryptWithPrivateKey, deserializeDarkPoolTakerSwapMessage, encryptWithPublicKey } from "../order/orderService";
+import { serializeDarkPoolTakerSwapMessage } from "../order/orderService";
 
 class MakerSwapContext extends BaseContext {
     private _aliceOutgoingNote?: Note;
@@ -72,6 +74,28 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
         super(_darkPool);
     }
 
+    public async getFullMatchSwapMessage(order: Order, bobOutgoingNote: Note, signedMessage: string): Promise<{ incomingNote: Note, bobSwapMessage: DarkPoolTakerSwapMessage }> {
+        const incomingNote = await createNote(order.makerAsset, order.makerAmount, signedMessage);
+        const bobSwapMessage = await generateDarkPoolTakerSwapMessage({
+            outNote: bobOutgoingNote,
+            inNote: incomingNote,
+            feeAsset: incomingNote.asset,
+            feeAmount: 0n,
+            signedMessage: signedMessage,
+        });
+        return { incomingNote, bobSwapMessage };
+    }
+
+    public async encryptSwapMessageWithPublicKey(swapMessage: DarkPoolTakerSwapMessage, alicePublicKey: string): Promise<string> {
+        const encryptedMessage = await encryptWithPublicKey(alicePublicKey, serializeDarkPoolTakerSwapMessage(swapMessage));
+        return encryptedMessage;
+    }
+
+    public async decryptSwapMessageWithPrivateKey(encryptedMessage: string, alicePrivateKey: string): Promise<DarkPoolTakerSwapMessage> {
+        const decryptedMessage = await decryptWithPrivateKey(alicePrivateKey, encryptedMessage);
+        return deserializeDarkPoolTakerSwapMessage(decryptedMessage);
+    }
+
     public async prepare(order: Order, aliceOutgoingNote: Note, bobSwapMessage: DarkPoolTakerSwapMessage, signedMessage: string): Promise<{ context: MakerSwapContext, outNotes: Note[] }> {
         const context = new MakerSwapContext(signedMessage);
         context.aliceOutgoingNote = aliceOutgoingNote;
@@ -85,7 +109,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
         )
         preparedNotes.push(aliceIncomingNote);
 
-        if(aliceOutgoingNote.amount > order.makerAmount) {
+        if (aliceOutgoingNote.amount > order.makerAmount) {
             const aliceChangeNote = await createNote(
                 aliceOutgoingNote.asset,
                 aliceOutgoingNote.amount - order.makerAmount,
