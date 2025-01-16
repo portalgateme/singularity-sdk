@@ -73,7 +73,7 @@ export class CreateMakerOrderService extends BaseContractService<CreateMakerOrde
         const tx = await contract.makerCreateOrder(
             context.merkleRoot,
             context.proof.outNullifier,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx.hash;
     }
 }

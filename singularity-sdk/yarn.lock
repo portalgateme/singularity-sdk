@@ -1714,10 +1714,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.2.28":
-  version "0.2.28"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.28.tgz#e786c25c673f67addc1a8d97725899960ea9805b"
-  integrity sha512-kVsjo3mwUy67RmdxxJ/jhlcMv/8xSiRspB4ipxXCxwhliTQn2eREiMU4Cfi8rd1acGsfx7wyIH6AIx90qoVq8Q==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.30":
+  version "0.2.30"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.30.tgz#81c33e5ae462a3851d1b45e45763f2e289f6ce37"
+  integrity sha512-HJv8cUbDKUlSwcyGzlxO6B+kcGWX/60oiNNIkO09AbHmFaWJibWPT23QoS0z2BLlwnB3gEulsfUUj3Ir5qNBtg==
   dependencies:
     "@aztec/bb.js" "^0.30.0"
     "@ethersproject/abi" "^5.7.0"
@@ -1728,6 +1728,22 @@
     "@noir-lang/noir_wasm" "^0.28.0"
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
+
+"@thesingularitynetwork/singularity-sdk@../singularity-sdk":
+  version "0.0.21"
+  dependencies:
+    "@ethersproject/abi" "^5.0.12"
+    "@ethersproject/solidity" "^5.0.9"
+    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.30"
+    "@thesingularitynetwork/singularity-sdk" "../singularity-sdk"
+    "@uniswap/permit2-sdk" "^1.2.0"
+    "@uniswap/v3-periphery" "^1.4.4"
+    "@uniswap/v3-sdk" "^3.11.0"
+    axios "^1.6.8"
+    ethers "^6.12.0"
+    lodash "^4.17.21"
+    tiny-invariant "^1.1.0"
+    tiny-warning "^1.0.3"
 
 "@types/babel__core@^7.1.7":
   version "7.20.5"
