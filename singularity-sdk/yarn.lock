@@ -1729,22 +1729,6 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/singularity-sdk@../singularity-sdk":
-  version "0.0.22"
-  dependencies:
-    "@ethersproject/abi" "^5.0.12"
-    "@ethersproject/solidity" "^5.0.9"
-    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.32"
-    "@thesingularitynetwork/singularity-sdk" "../singularity-sdk"
-    "@uniswap/permit2-sdk" "^1.2.0"
-    "@uniswap/v3-periphery" "^1.4.4"
-    "@uniswap/v3-sdk" "^3.11.0"
-    axios "^1.6.8"
-    ethers "^6.12.0"
-    lodash "^4.17.21"
-    tiny-invariant "^1.1.0"
-    tiny-warning "^1.0.3"
-
 "@types/babel__core@^7.1.7":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"
