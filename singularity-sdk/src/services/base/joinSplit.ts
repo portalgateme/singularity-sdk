@@ -127,7 +127,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             hexlify32(context.outNote2.note),
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx;
     }
 }

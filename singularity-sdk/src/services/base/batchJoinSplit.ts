@@ -184,7 +184,7 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
             [
                 context.proof.outNoteFooter1,
                 context.proof.outNoteFooter2],
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx;
     }
 }

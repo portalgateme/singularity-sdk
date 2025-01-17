@@ -108,7 +108,7 @@ export class JoinService extends BaseContractService<JoinContext> {
             context.proof.inNoteNullifier2,
             hexlify32(context.outNote.note),
             context.proof.outNoteFooter,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx;
     }
 }

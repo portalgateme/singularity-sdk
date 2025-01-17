@@ -104,7 +104,7 @@ export class SplitService extends BaseContractService<SplitContext> {
             hexlify32(context.outNote2.note),
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx;
     }
 }
