@@ -70,7 +70,7 @@ class MakerSwapContext extends BaseContext {
 }
 
 export class MakerSwapService extends BaseContractService<MakerSwapContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
@@ -102,12 +102,12 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
         context.bobSwapMessage = bobSwapMessage;
 
         const preparedNotes = [];
-        const aliceIncomingNote = await createNote(
+        context.aliceIncomingNote = await createNote(
             bobSwapMessage.outNote.asset,
             bobSwapMessage.outNote.amount,
             signedMessage
         )
-        preparedNotes.push(aliceIncomingNote);
+        preparedNotes.push(context.aliceIncomingNote);
 
         if (aliceOutgoingNote.amount > order.makerAmount) {
             const aliceChangeNote = await createNote(
@@ -126,7 +126,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
     }
 
     public async generateProof(context: MakerSwapContext): Promise<void> {
-        if (!context || !context.aliceOutgoingNote || !context.bobSwapMessage || !context.aliceIncomingNote || !context.aliceChangeNote) {
+        if (!context || !context.aliceOutgoingNote || !context.bobSwapMessage || !context.aliceIncomingNote) {
             throw new DarkpoolError("Invalid context");
         }
 
@@ -142,7 +142,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
             aliceMerkleIndex: path1.index,
             aliceMerklePath: path1.path,
             aliceOutNote: context.aliceOutgoingNote,
-            aliceChangeNote: context.aliceChangeNote,
+            aliceChangeNote: context.aliceChangeNote || EMPTY_NOTE,
             aliceInNote: context.aliceIncomingNote,
             aliceSignedMessage: context.signature,
             bobMerkleIndex: path2.index,

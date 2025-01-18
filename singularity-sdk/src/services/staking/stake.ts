@@ -52,7 +52,7 @@ class StakeContext extends BaseContext {
 }
 
 export class StakeService extends BaseContractService<StakeContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

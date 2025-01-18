@@ -53,7 +53,7 @@ class JoinContext extends BaseContext{
 
 export class JoinService extends BaseContractService<JoinContext> {
 
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
@@ -109,6 +109,6 @@ export class JoinService extends BaseContractService<JoinContext> {
             hexlify32(context.outNote.note),
             context.proof.outNoteFooter,
             context.proof.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

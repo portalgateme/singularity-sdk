@@ -41,7 +41,7 @@ class TakerSwapContext extends BaseContext {
 }
 
 export class TakerSwapService extends BaseContractService<TakerSwapContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

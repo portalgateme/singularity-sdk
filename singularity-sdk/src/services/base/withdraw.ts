@@ -45,7 +45,7 @@ class WithdrawContext extends BaseRelayerContext {
 
 
 export class WithdrawService extends BaseRelayerService<WithdrawContext, WithdrawRelayerRequest, BaseRelayerResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

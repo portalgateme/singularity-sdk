@@ -34,7 +34,7 @@ class CancelOrderContext extends BaseContext{
 
 export class CancelOrderService extends BaseContractService<CancelOrderContext> {
 
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

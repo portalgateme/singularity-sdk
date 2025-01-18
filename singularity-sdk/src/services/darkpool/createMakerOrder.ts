@@ -34,7 +34,7 @@ class CreateMakerOrderContext extends BaseContext {
 
 export class CreateMakerOrderService extends BaseContractService<CreateMakerOrderContext> {
 
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

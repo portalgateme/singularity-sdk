@@ -61,7 +61,7 @@ class CreateTakerOrderContext extends BaseContext {
 
 export class CreateTakerOrderService extends BaseContractService<CreateTakerOrderContext> {
 
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

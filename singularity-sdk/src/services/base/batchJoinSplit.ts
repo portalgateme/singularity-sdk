@@ -44,7 +44,7 @@ class BatchJoinSplitContext extends BaseContext {
 }
 
 export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
@@ -185,6 +185,6 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
                 context.proof.outNoteFooter1,
                 context.proof.outNoteFooter2],
             context.proof.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

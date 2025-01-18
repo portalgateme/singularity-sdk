@@ -52,7 +52,7 @@ class SplitContext extends BaseContext{
 }
 
 export class SplitService extends BaseContractService<SplitContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
@@ -105,6 +105,6 @@ export class SplitService extends BaseContractService<SplitContext> {
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
             context.proof.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

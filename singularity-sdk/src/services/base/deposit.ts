@@ -48,7 +48,7 @@ export class DepositContext extends BaseContext {
 
 export class DepositService extends BaseContractService<DepositContext> {
 
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

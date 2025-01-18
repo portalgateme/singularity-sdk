@@ -79,7 +79,7 @@ export interface UniswapAddLiquidityResult extends MultiNotesResult {
 }
 
 export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiquidityContext, UniswapAddLiquidityRelayerRequest, UniswapAddLiquidityResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

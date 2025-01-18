@@ -53,7 +53,7 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
 }
 
 export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSwapContext, UniswapSwapRelayerRequest, SingleNoteResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

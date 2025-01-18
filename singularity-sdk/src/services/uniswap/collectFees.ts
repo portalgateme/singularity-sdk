@@ -62,7 +62,7 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
 }
 
 export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest, MultiNotesResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

@@ -44,7 +44,7 @@ class RedeemContext extends BaseRelayerContext {
 }
 
 export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelayerRequest, SingleNoteResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

@@ -61,7 +61,7 @@ class JoinSplitContext extends BaseContext{
 }
 
 export class JoinSplitService extends BaseContractService<JoinSplitContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
@@ -128,6 +128,6 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
             context.proof.proof.proof);
-        return tx;
+        return tx.hash;
     }
 }

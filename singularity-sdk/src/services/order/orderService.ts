@@ -31,7 +31,7 @@ export function serializeDarkPoolTakerSwapMessage(message: DarkPoolTakerSwapMess
         },
         feeAsset: message.feeAsset,
         feeAmount: hexlify32(message.feeAmount),
-        publicKey: message.publicKey,
+        publicKey: message.publicKey.toString(),
         swapSignature: message.swapSignature
     });
 }

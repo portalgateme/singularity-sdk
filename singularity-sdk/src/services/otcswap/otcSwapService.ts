@@ -37,7 +37,7 @@ class OTCSwapContext extends BaseContext {
 }
 
 export class OTCSwapService extends BaseContractService<OTCSwapContext> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 

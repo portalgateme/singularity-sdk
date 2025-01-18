@@ -3,7 +3,7 @@ import { DarkpoolError, Order, OTCSwapFullMessage, OTCSwapMakerMessage } from ".
 import { isAddressEquals } from "../../utils/util";
 import { BaseContext } from "../BaseService";
 import { DepositContext, DepositService } from "../base";
-import { darkPool, DarkPool } from "../../darkpool";
+import { DarkPool } from "../../darkpool";
 class OTCSwapMakerDepositContext extends BaseContext {
     private _noteToDeposit: Note;
     private _partialSwapSecret: string;
@@ -216,8 +216,8 @@ export class OTCSwapDepositService {
 
     private _darkPool: DarkPool
 
-    constructor(_darkPool?: DarkPool) {
-        this._darkPool = _darkPool || darkPool
+    constructor(_darkPool: DarkPool) {
+        this._darkPool = _darkPool
     }
 
     private async generateMakerSwapMessage(chainId: number, order: Order, note: Note, signedMessage: string): Promise<string> {
@@ -237,7 +237,7 @@ export class OTCSwapDepositService {
     }
 
     public async prepareMakerAsset(order: Order, walletAddress: string, signedMessage: string): Promise<{ partialSwapSecret: string, context: OTCSwapMakerDepositContext }> {
-        const depositService = new DepositService();
+        const depositService = new DepositService(this._darkPool);
         const { context: depositContext, outNotes: [note] } = await depositService.prepare(order.makerAsset, order.makerAmount, walletAddress, signedMessage);
         const partialSwapSecret = await this.generateMakerSwapMessage(this._darkPool.chainId, order, note, signedMessage);
         const context = new OTCSwapMakerDepositContext(signedMessage, depositContext, partialSwapSecret, note);
@@ -245,7 +245,7 @@ export class OTCSwapDepositService {
     }
 
     public async depositMakerAsset(context: OTCSwapMakerDepositContext): Promise<string> {
-        const depositService = new DepositService();
+        const depositService = new DepositService(this._darkPool);
         await depositService.generateProof(context.depositContext);
         const txId = await depositService.execute(context.depositContext);
         return txId;
@@ -308,7 +308,7 @@ export class OTCSwapDepositService {
         if (!this.checkPartialSwapSecret(partialSwapMessage, order)) {
             throw new DarkpoolError('Partial swap secret does not match the current order');
         }
-        const depositService = new DepositService();
+        const depositService = new DepositService(this._darkPool);
         const { context: depositContext, outNotes: [note] } = await depositService.prepare(order.takerAsset, order.takerAmount, walletAddress, signedMessage);
         const finalSwapSecret = await this.generateTakerSwapMessage(order, partialSwapMessage, note, signedMessage);
         const context = new OTCSwapTakerDepositContext(signedMessage, depositContext, finalSwapSecret, note);
@@ -316,7 +316,7 @@ export class OTCSwapDepositService {
     }
 
     public async depositTakerAsset(context: OTCSwapTakerDepositContext): Promise<string> {
-        const depositService = new DepositService();
+        const depositService = new DepositService(this._darkPool);
         await depositService.generateProof(context.depositContext);
         const txId = await depositService.execute(context.depositContext);
         return txId;

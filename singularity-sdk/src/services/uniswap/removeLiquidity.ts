@@ -64,7 +64,7 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
 }
 
 export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRemoveLiquidityContext, UniswapRemoveLiquidityRelayerRequest, MultiNotesResult> {
-    constructor(_darkPool?: DarkPool) {
+    constructor(_darkPool: DarkPool) {
         super(_darkPool);
     }
 
