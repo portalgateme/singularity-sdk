@@ -166,6 +166,8 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
                 context.proof.aliceOutNullifier,
                 context.proof.aliceInNote,
                 context.proof.aliceInNoteFooter,
+                context.proof.aliceChangeNote,
+                context.proof.aliceChangeNoteFooter,
                 context.proof.bobOutNullifier,
                 context.proof.bobFeeAsset,
                 context.proof.bobFeeAmount,
