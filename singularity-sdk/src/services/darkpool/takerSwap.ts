@@ -83,7 +83,7 @@ export class TakerSwapService extends BaseContractService<TakerSwapContext> {
         const signer = this._darkPool.signer;
         const contract = new ethers.Contract(this._darkPool.contracts.darkpoolSwapAssetManager, DarkPoolSwapAssetManagerAbi.abi, signer);
         const tx = await contract.takerSwap(
-            context.proof.proof,
+            context.proof.proof.proof,
             [
                 context.merkleRoot,
                 context.proof.aliceOutNullifier,

@@ -160,7 +160,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
         const signer = this._darkPool.signer;
         const contract = new ethers.Contract(this._darkPool.contracts.darkpoolSwapAssetManager, DarkPoolSwapAssetManagerAbi.abi, signer);
         const tx = await contract.makerSwap(
-            context.proof.proof,
+            context.proof.proof.proof,
             [
                 context.merkleRoot,
                 context.proof.aliceOutNullifier,
