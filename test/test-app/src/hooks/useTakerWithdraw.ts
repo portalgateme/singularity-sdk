@@ -22,8 +22,7 @@ export const useTakerWithdraw = () => {
         showPendingToast(undefined, 'Signing Message')
         const signedMessage = await signMessageAsync(address)
 
-        const darkPool = new DarkPool();
-        darkPool.init(signer, chainId, [
+        const darkPool = new DarkPool(signer, chainId, [
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',

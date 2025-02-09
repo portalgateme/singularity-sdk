@@ -1713,10 +1713,10 @@
   dependencies:
     "@tanstack/query-core" "5.28.6"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.2.24":
-  version "0.2.24"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.24.tgz#7f9321ac4a1b8a744d3e438ede1e0974304a0001"
-  integrity sha512-BnRUjyfpzN3MHL6BChFGHogcEWTNfXb6gtQEGp5ZwCyIF642A4eSAaaeLFu1ScS2L1IJM6AQ3dpl/APG3q8gcQ==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.34":
+  version "0.2.34"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.34.tgz#113b021842a682a1bdd040c5cabe3aaa1a83cbc0"
+  integrity sha512-rtmjU6dV3sQAsSC9+2V4RyNoJ2dzSdAx0zKaMa4npH/5N3764S7MV+Nib1dkOtvfSmsi3n4Qk4rdKvGXhpu1kw==
   dependencies:
     "@aztec/bb.js" "^0.30.0"
     "@ethersproject/abi" "^5.7.0"
@@ -1728,29 +1728,14 @@
     "@noir-lang/types" "^0.28.0"
     buffer "^6.0.3"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.2.26":
-  version "0.2.26"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.26.tgz#63293c2ad93d75be21391acdc4be02008987a8d6"
-  integrity sha512-dh/SVQDVixXLc8L+lM08/nM0kZP5rbTSdPjVPzHYQZPn17aOYfsfSQOSJWoMtrYIeJwwcMWTlHoMPkELGg3SyA==
-  dependencies:
-    "@aztec/bb.js" "^0.30.0"
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/bignumber" "^5.7.0"
-    "@ethersproject/sha2" "^5.7.0"
-    "@noir-lang/backend_barretenberg" "^0.28.0"
-    "@noir-lang/noir_js" "^0.28.0"
-    "@noir-lang/noir_wasm" "^0.28.0"
-    "@noir-lang/types" "^0.28.0"
-    buffer "^6.0.3"
-
-"@thesingularitynetwork/singularity-sdk@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.16.tgz#aa43dc17ecaff356e5afbe28dda71b235f0e448c"
-  integrity sha512-Iud/CVfJGlBjngeUdtMJDoispJJ8AJy5bfabqJ9VWp2oqpisdYE25I7mdWHpBAex99leIOwoX5TficXU9IXevQ==
+"@thesingularitynetwork/singularity-sdk@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/singularity-sdk/-/singularity-sdk-0.0.29.tgz#7d92ec79d0fa1e554165140f039f543db32a7c2e"
+  integrity sha512-OYFVTwRKMl0Z9pytAHgraFDvJNi2xKOPBB2lxjz4485egVAw9e7nxbp86pgXOGEIyDned5etys8xwo+s4bjZog==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
-    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.26"
+    "@thesingularitynetwork/darkpool-v1-proof" "^0.2.34"
     "@uniswap/permit2-sdk" "^1.2.0"
     "@uniswap/v3-periphery" "^1.4.4"
     "@uniswap/v3-sdk" "^3.11.0"

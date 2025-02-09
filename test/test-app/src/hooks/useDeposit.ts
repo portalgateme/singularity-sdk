@@ -26,8 +26,7 @@ export const useDeposit = () => {
         showPendingToast(undefined, 'Signing Message')
         const signature = await signMessageAsync(address)
 
-        const darkPool = new DarkPool();
-        darkPool.init(signer, chainId, [
+        const darkPool = new DarkPool(signer, chainId, [
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
@@ -92,7 +91,7 @@ export const useDeposit = () => {
             outAsset4: null,
         }
 
-        const infraService = new DefiInfraService()
+        const infraService = new DefiInfraService(darkPool)
         const { context: infraContext, outPartialNotes } = await infraService.prepare(request, signature)
         updatePendingToast(undefined, "Generating Infra Proof")
         await infraService.generateProof(infraContext)
