@@ -154,7 +154,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
     }
 
     public async execute(context: MakerSwapContext): Promise<string> {
-        if (!context || !context.bobSwapMessage || !context.signature || !context.proof) {
+        if (!context || !context.bobSwapMessage || !context.signature || !context.proof || !context.aliceOutgoingNote || !context.merkleRoot) {
             throw new DarkpoolError("Invalid context");
         }
         const signer = this._darkPool.signer;
@@ -169,7 +169,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
                 context.proof.aliceChangeNote,
                 context.proof.aliceChangeNoteFooter,
                 context.proof.bobOutNullifier,
-                context.proof.bobFeeAsset,
+                context.aliceOutgoingNote.asset,
                 context.proof.bobFeeAmount,
                 context.proof.bobInNote,
                 context.proof.bobInNoteFooter,
