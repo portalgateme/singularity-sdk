@@ -90,7 +90,7 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
     }
 
     public async generateProof(context: CreateTakerOrderContext): Promise<void> {
-        if (!context || !context.incomingNote || !context.outgoingNote || !context.feeAmount) {
+        if (!context || !context.incomingNote || !context.outgoingNote) {
             throw new DarkpoolError("Invalid context");
         }
 
@@ -103,7 +103,7 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
             merkleIndex: merklePath.index,
             outNote: context.outgoingNote,
             inNote: context.incomingNote,
-            feeAmount: context.feeAmount,
+            feeAmount: context.feeAmount ?? 0n,
             signedMessage: context.signature,
         });
         context.proof = proof;
