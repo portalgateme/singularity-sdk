@@ -122,7 +122,7 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
             context.proof.feeAmount,
             context.proof.inNote,
             context.proof.inNoteFooter,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx.hash;
     }
 }
