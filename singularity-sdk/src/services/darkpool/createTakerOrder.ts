@@ -118,7 +118,7 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
         const tx = await contract.takerCreateOrder(
             context.merkleRoot,
             context.proof.outNullifier,
-            context.proof.feeAsset,
+            context.incomingNote.asset,
             context.proof.feeAmount,
             context.proof.inNote,
             context.proof.inNoteFooter,
