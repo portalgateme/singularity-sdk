@@ -70,7 +70,7 @@ export class CancelOrderService extends BaseContractService<CancelOrderContext> 
         const tx = await contract.cancelOrder(
             context.merkleRoot,
             context.proof.outNullifier,
-            context.proof.proof);
+            context.proof.proof.proof);
         return tx.hash;
     }
 }
