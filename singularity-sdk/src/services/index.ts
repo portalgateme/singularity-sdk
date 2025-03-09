@@ -10,3 +10,4 @@ export * from './ComplianceService';
 export * from './otcswap';
 export * from './darkpool';
 export * from './order';
+export * from './aerodrome';
