@@ -80,5 +80,47 @@ export const tokenConfig: { [chainId: string]: TokenConfig[] } = {
     //   logoURI: '/images/token/WETH.png',
     //   isTop: true,
     // },
-  ]
+  ],
+  [ChainId.HARDHAT_BASE]: [
+    {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+      logoURI: '/images/token/ETH.png',
+      isTop: true,
+    },
+    {
+      name: 'Tether USD',
+      symbol: 'USDT',
+      decimals: 6,
+      address: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2',
+      logoURI: '/images/token/USDT.png',
+      isTop: true,
+    },
+    {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
+      address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+      logoURI: '/images/token/USDC.png',
+      isTop: true,
+    },
+    {
+      name: 'Dai Stablecoin',
+      symbol: 'DAI',
+      decimals: 18,
+      address: '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',
+      logoURI: '/images/token/DAI.png',
+      isTop: true,
+    },
+    {
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      decimals: 18,
+      address: '0x4200000000000000000000000000000000000006',
+      logoURI: '/images/token/WETH.png',
+      isTop: true,
+    },
+  ],
 }

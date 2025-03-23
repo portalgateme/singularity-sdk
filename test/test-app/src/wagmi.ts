@@ -4,19 +4,33 @@ import { injected } from 'wagmi/connectors';
 import { config } from "./constants/config";
 import { FallbackProvider, JsonRpcProvider } from 'ethers'
 import { useMemo } from 'react'
-import type { Account, Chain, Client, Transport } from 'viem'
+import { defineChain, type Account, type Chain, type Client, type Transport } from 'viem'
 import { type Config, useClient, useConnectorClient } from 'wagmi'
 import { BrowserProvider, JsonRpcSigner } from 'ethers'
+import { ChainId } from './types';
 
+const hardhatBase = defineChain({
+    id: ChainId.HARDHAT_BASE,
+    name: 'Hardhat Base',
+    nativeCurrency: {
+      decimals: 18,
+      name: 'Ether',
+      symbol: 'ETH',
+    },
+    rpcUrls: {
+      default: { http: ['http://127.0.0.1:8545'] },
+    },
+  })
 
 export const wagmiConfig = createConfig({
-    chains: [hardhat],
+    chains: [hardhatBase],
     connectors: [
         injected({ target: 'metaMask' }),
     ],
     ssr: true,
     transports: {
-        [hardhat.id]: http(config.rpcUrl),
+        // [hardhat.id]: http(config.rpcUrl),
+        [ChainId.HARDHAT_BASE]: http(config.rpcUrl),
     },
 })
 

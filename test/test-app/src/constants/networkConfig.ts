@@ -1,4 +1,5 @@
-import { NetworkConfig, ChainId } from '../types'
+import { NetworkConfig, ChainId, HexData } from '../types'
+import hardhatBase from './contracts/hardhatBase.json'
 
 export const networkConfig: { [chainId: number]: NetworkConfig } = {
   [ChainId.HARDHAT]: {
@@ -22,4 +23,25 @@ export const networkConfig: { [chainId: number]: NetworkConfig } = {
       block: 'https://sepolia.etherscan.io/block/',
     },
   },
+  [ChainId.HARDHAT_BASE]: {
+    priceOracle: '0xf224a25453D76A41c4427DD1C05369BC9f498444',
+    ethAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+    nativeWrapper: '0x4200000000000000000000000000000000000006',
+    complianceManager: hardhatBase.accessPortal as HexData,
+    merkleTreeOperator: hardhatBase.merkleTreeOperator as HexData,
+    darkpoolAssetManager: hardhatBase.darkpoolAssetManager as HexData,
+    stakingOperator: hardhatBase.stakingOperator as HexData,
+    stakingAssetManager: hardhatBase.stakingAssetManager as HexData,
+    otcSwapAssetManager: hardhatBase.oTCSwapAssetManager as HexData,
+    batchJoinSplitAssetManager: hardhatBase.batchJoinSplitAssetManager as HexData,
+    darkpoolSwapAssetManager: hardhatBase.darkPoolSwapAssetManager as HexData,
+    mockDex: '0x29023DE63D7075B4cC2CE30B55f050f9c67548d4',
+    drakpoolSubgraphUrl:
+      'https://app.dev.portalgate.me:8080/subgraphs/name/singularity/',
+    explorerUrl: {
+      tx: 'https://sepolia.etherscan.io/tx/',
+      address: 'https://sepolia.etherscan.io/address/',
+      block: 'https://sepolia.etherscan.io/block/',
+    },
+  }
 }

@@ -1,5 +1,4 @@
 import { AerodromeSwapProofResult, AerodromeSwapRoute, Note, PartialNote, createPartialNote, generateAerodromeSwapProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
-import { ethers } from "ethers";
 import AerodromeSwapAssetManagerAbi from '../../abis/AerodromeSwapAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
 import { Token } from "../../entities/token";
@@ -9,6 +8,7 @@ import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
 import { AerodromeSwapRelayerRequest, DarkpoolError } from "../../entities";
 import { DarkPool } from "../../darkpool";
+import { getOutEvent } from "../EventService";
 
 export interface AerodromeSwapRequest {
     inNote: Note;
@@ -85,6 +85,7 @@ export class AerodromeSwapService extends BaseRelayerService<AerodromeSwapContex
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
         });
+        context.merkleRoot = path.root;
         context.proof = proof;
     }
 
@@ -122,41 +123,32 @@ export class AerodromeSwapService extends BaseRelayerService<AerodromeSwapContex
             throw new DarkpoolError("Invalid context");
         }
 
-        const [amountOut, noteCommitmentOut] = await this.getOutAmount(context.tx);
-        if (!amountOut || !noteCommitmentOut) {
-            throw new DarkpoolError("Failed to find the AerodromeSwap event in the transaction receipt.");
-        } else {
-            let processedOutAsset = context.request.outAsset.address;
-            if (isAddressEquals(context.request.outAsset.address, this._darkPool.contracts.nativeWrapper)) {
-                processedOutAsset = this._darkPool.contracts.ethAddress;
-            }
-
-            const outNote = await recoverNoteWithFooter(
-                context.outPartialNote.rho,
-                processedOutAsset,
-                BigInt(amountOut),
-                context.signature,
-            )
-
-            return { note: outNote, txHash: context.tx };
-        }
-    }
-
-    private async getOutAmount(tx: string) {
-        const iface = new ethers.Interface(AerodromeSwapAssetManagerAbi.abi)
-        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
-        if (receipt && receipt.logs.length > 0) {
-            const log = receipt.logs.find(
-                (log) => log.topics[0] === 'AerodromeSwap',
-            )
-            if (log) {
-                const event = iface.parseLog(log)
-                if (event) {
-                    return [event.args[2], event.args[3]]
-                }
-            }
+        if (!context.tx) {
+            throw new DarkpoolError("No transaction hash");
         }
 
-        return [null, null]
+        const event = await getOutEvent(context.tx, AerodromeSwapAssetManagerAbi.abi, "AerodromeSwap", this._darkPool);
+
+        if (!event || !event.args || !event.args[2]) {
+            throw new DarkpoolError("Can not find AerodromeSwap Event from transaction: " + context.tx);
+        }
+
+        console.log(event)
+
+        const amountOut = event.args[2];
+
+        let processedOutAsset = context.request.outAsset.address;
+        if (isAddressEquals(context.request.outAsset.address, this._darkPool.contracts.nativeWrapper)) {
+            processedOutAsset = this._darkPool.contracts.ethAddress;
+        }
+
+        const outNote = await recoverNoteWithFooter(
+            context.outPartialNote.rho,
+            processedOutAsset,
+            BigInt(amountOut),
+            context.signature,
+        )
+
+        return { note: outNote, txHash: context.tx };
     }
 }

@@ -143,7 +143,7 @@ export type CurvePool = {
 export enum ChainId {
   HARDHAT = 31337,
   HARDHAT_ARBITRUM = 31338,
-  HARDHAT_POLYGON = 31339,
+  HARDHAT_BASE = 31339,
   MAINNET = 1,
   GOERLI = 5,
   SEPOLIA = 11155111,
