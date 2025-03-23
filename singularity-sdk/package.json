@@ -4,14 +4,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "⚒️ An Market Maker SDK for interacting with the Singularity Network's contracts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/portalgateme/darkpool-v1-mm-sdk.git",
+  "repository": "https://github.com/portalgateme/singularity-sdk.git",
   "keywords": [
     "singularity",
     "ethereum"
@@ -27,11 +27,8 @@
     "@ethersproject/abi": "^5.0.12",
     "@ethersproject/solidity": "^5.0.9",
     "@thesingularitynetwork/darkpool-v1-proof": "^0.2.38",
-    "@uniswap/permit2-sdk": "^1.2.0",
-    "@uniswap/v3-periphery": "^1.4.4",
-    "@uniswap/v3-sdk": "^3.11.0",
     "axios": "^1.6.8",
-    "ethers": "^6.12.0",
+    "ethers": "^6.13.4",
     "lodash": "^4.17.21",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3"
