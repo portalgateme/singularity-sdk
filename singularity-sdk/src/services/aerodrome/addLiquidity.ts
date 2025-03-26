@@ -1,5 +1,4 @@
 import { AerodromeAddLiquidityProofResult, Note, PartialNote, createPartialNote, generateAerodromeAddLiquidityProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
-import { ethers } from "ethers";
 import AerodromeAddLiquidityAssetManagerAbi from '../../abis/AerodromeAddLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
 import { DarkPool } from "../../darkpool";
@@ -7,6 +6,7 @@ import { AerodromeAddLiquidityRelayerRequest, DarkpoolError } from "../../entiti
 import { Relayer } from "../../entities/relayer";
 import { hexlify32 } from "../../utils/util";
 import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
+import { getOutEvent } from "../EventService";
 import { getMerklePathAndRoot } from "../merkletree";
 
 export interface AerodromeAddLiquidityRequest {
@@ -79,9 +79,6 @@ export class AerodromeAddLiquidityService extends BaseRelayerService<AerodromeAd
     }
 
     public async prepare(request: AerodromeAddLiquidityRequest, signature: string): Promise<{ context: AerodromeAddLiquidityContext, outPartialNotes: PartialNote[] }> {
-        if (!this._darkPool.contracts.uniswapConfig) {
-            throw new DarkpoolError("Uniswap config not found");
-        }
         const outLpTokenPartialNote = await createPartialNote(request.lpTokenAddress, signature);
         const outPartialChangeNote1 = await createPartialNote(request.inNote1.asset, signature);
         const outPartialChangeNote2 = await createPartialNote(request.inNote2.asset, signature);
@@ -126,6 +123,7 @@ export class AerodromeAddLiquidityService extends BaseRelayerService<AerodromeAd
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
         });
+        context.merkleRoot = path1.root;
         context.proof = proof;
     }
 
@@ -183,60 +181,41 @@ export class AerodromeAddLiquidityService extends BaseRelayerService<AerodromeAd
             throw new DarkpoolError("Invalid context");
         }
 
-        const [amounts, noteOuts] =
-            await this.getAmountsOut(context.tx);
-        if (!amounts || !noteOuts) {
-            throw new DarkpoolError("Failed to find the AerodromeAddLiquidity event in the transaction receipt.");
-        } else {
-            const resultNotes: Note[] = [];
-            const lpTokenNote = await recoverNoteWithFooter(
-                context.outLpTokenPartialNote.rho,
-                context.outLpTokenPartialNote.asset,
-                BigInt(amounts[2]),
+        const event = await getOutEvent(context.tx, AerodromeAddLiquidityAssetManagerAbi.abi, "AerodromeAddLiquidity", this._darkPool);
+        if (!event || !event.args || !event.args[2]) {
+            throw new DarkpoolError("Can not find AerodromeAddLiquidity Event from transaction: " + context.tx);
+        }
+
+        const amountsOut = event.args[2];
+
+
+        const resultNotes: Note[] = [];
+        const lpTokenNote = await recoverNoteWithFooter(
+            context.outLpTokenPartialNote.rho,
+            context.outLpTokenPartialNote.asset,
+            BigInt(amountsOut[2]),
+            context.signature,
+        )
+        resultNotes.push(lpTokenNote);
+        if (amountsOut[0] && BigInt(amountsOut[0]) > BigInt(0)) {
+            const changeNote1 = await recoverNoteWithFooter(
+                context.outPartialChangeNote1.rho,
+                context.outPartialChangeNote1.asset,
+                BigInt(amountsOut[0]),
                 context.signature,
             )
-            resultNotes.push(lpTokenNote);
-            if (amounts[0] && BigInt(amounts[0]) > BigInt(0)) {
-                const changeNote1 = await recoverNoteWithFooter(
-                    context.outPartialChangeNote1.rho,
-                    context.outPartialChangeNote1.asset,
-                    BigInt(amounts[0]),
-                    context.signature,
-                )
-                resultNotes.push(changeNote1);
-            }
-            if (amounts[1] && BigInt(amounts[1]) > BigInt(0)) {
-                const changeNote2 = await recoverNoteWithFooter(
-                    context.outPartialChangeNote2.rho,
-                    context.outPartialChangeNote2.asset,
-                    BigInt(amounts[1]),
-                    context.signature,
-                )
-                resultNotes.push(changeNote2);
-            }
-
-            return { notes: resultNotes, txHash: context.tx };
+            resultNotes.push(changeNote1);
         }
-    }
-
-    private async getAmountsOut(tx: string) {
-        const iface = new ethers.Interface(AerodromeAddLiquidityAssetManagerAbi.abi)
-        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
-        if (receipt && receipt.logs.length > 0) {
-            const log = receipt.logs.find(
-                (log) => log.topics[0] === 'AerodromeAddLiquidity',
+        if (amountsOut[1] && BigInt(amountsOut[1]) > BigInt(0)) {
+            const changeNote2 = await recoverNoteWithFooter(
+                context.outPartialChangeNote2.rho,
+                context.outPartialChangeNote2.asset,
+                BigInt(amountsOut[1]),
+                context.signature,
             )
-            if (log) {
-                const event = iface.parseLog(log)
-                if (event) {
-                    return [
-                        event.args[2],
-                        event.args[3]
-                    ]
-                }
-            }
+            resultNotes.push(changeNote2);
         }
 
-        return [null, null, null]
+        return { notes: resultNotes, txHash: context.tx };
     }
 }

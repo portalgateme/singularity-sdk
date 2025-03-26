@@ -133,8 +133,6 @@ export class AerodromeSwapService extends BaseRelayerService<AerodromeSwapContex
             throw new DarkpoolError("Can not find AerodromeSwap Event from transaction: " + context.tx);
         }
 
-        console.log(event)
-
         const amountOut = event.args[2];
 
         let processedOutAsset = context.request.outAsset.address;
