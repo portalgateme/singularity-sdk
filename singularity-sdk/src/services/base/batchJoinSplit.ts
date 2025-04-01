@@ -66,7 +66,7 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
         }
 
         // Check for duplicate input notes
-        const noteSet = new Set(inNotes.map(note => note.toString()));
+        const noteSet = new Set(inNotes.map(note => note.note.toString()));
         if (noteSet.size !== inNotes.length) {
             throw new DarkpoolError("Duplicate input notes are not allowed");
         }
@@ -116,7 +116,7 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
         }
 
         // Get merkle paths for actual input notes
-        const merklePathes = await multiGetMerklePathAndRoot(context.inNotes.map(note => note.amount), this._darkPool);
+        const merklePathes = await multiGetMerklePathAndRoot(context.inNotes.map(note => note.note), this._darkPool);
 
         // Create empty merkle path for empty notes
         const emptyMerklePath: MerklePath = {
@@ -160,10 +160,11 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
             signedMessage: context.signature,
         });
         context.proof = proof;
+        context.merkleRoot = merklePaths[0].root;
     }
 
     public async execute(context: BatchJoinSplitContext): Promise<string> {
-        if (!context || !context.inNotes || !context.outNotes || !context.signature || !context.proof) {
+        if (!context || !context.merkleRoot || !context.inNotes || !context.outNotes || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
 
@@ -183,7 +184,8 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
             ],
             [
                 context.proof.outNoteFooter1,
-                context.proof.outNoteFooter2],
+                context.proof.outNoteFooter2
+            ],
             context.proof.proof.proof);
         return tx.hash;
     }
