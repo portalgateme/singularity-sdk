@@ -87,12 +87,12 @@ export class TakerSwapService extends BaseContractService<TakerSwapContext> {
             [
                 context.merkleRoot,
                 context.proof.aliceOutNullifier,
-                context.proof.aliceFeeAsset,
+                context.alceSwapMessage.inNote.asset,
                 context.proof.aliceFeeAmount,
                 context.proof.aliceInNote,
                 context.proof.aliceInNoteFooter,
                 context.proof.bobOutNullifier,
-                context.proof.bobFeeAsset,
+                context.bobSwapMessage.inNote.asset,
                 context.proof.bobFeeAmount,
                 context.proof.bobInNote,
                 context.proof.bobInNoteFooter
