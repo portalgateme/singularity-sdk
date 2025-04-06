@@ -77,7 +77,7 @@ export class TakerSwapService extends BaseContractService<TakerSwapContext> {
     }
 
     public async execute(context: TakerSwapContext): Promise<string> {
-        if (!context || !context.alceSwapMessage || !context.bobSwapMessage || !context.signature || !context.proof) {
+        if (!context || !context.alceSwapMessage || !context.bobSwapMessage || !context.merkleRoot || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
         const signer = this._darkPool.signer;
