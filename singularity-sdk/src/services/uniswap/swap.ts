@@ -2,14 +2,14 @@ import { Note, PartialNote, UniswapSingleSwapProofResult, createPartialNote, gen
 import { ethers } from "ethers";
 import UniswapSwapAssetManagerAbi from '../../abis/UniswapSwapAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
 import { UniswapSwapRelayerRequest } from "../../entities/relayerRequestTypes";
 import { Token } from "../../entities/token";
 import { hexlify32, isAddressEquals } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { Relayer } from "../../entities/relayer";
 import { DarkpoolError } from "../../entities";
+import { DarkPool } from "../../darkpool";
 
 export interface UniswapSingleSwapRequest {
     inNote: Note;
@@ -52,14 +52,14 @@ class UniswapSingleSwapContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSwapContext, UniswapSwapRelayerRequest> {
-    constructor() {
-        super();
+export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSwapContext, UniswapSwapRelayerRequest, SingleNoteResult> {
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(request: UniswapSingleSwapRequest, signature: string): Promise<{ context: UniswapSingleSwapContext, outPartialNotes: PartialNote[] }> {
         const outPartialNote = await createPartialNote(request.outAsset.address, signature);
-        const context = new UniswapSingleSwapContext(darkPool.getRelayer(), signature);
+        const context = new UniswapSingleSwapContext(this._darkPool.getRelayer(), signature);
         context.request = request;
         context.outPartialNote = outPartialNote;
         return { context, outPartialNotes: [outPartialNote] };
@@ -70,7 +70,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.request.inNote.note);
+        const path = await getMerklePathAndRoot(context.request.inNote.note, this._darkPool);
 
         const proof = await generateUniswapSwapProof({
             note: context.request.inNote,
@@ -114,7 +114,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
         return relayerPathConfig[Action.UNISWAP_SINGLE_SWAP];
     }
 
-    protected async postExecute(context: UniswapSingleSwapContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapSingleSwapContext): Promise<SingleNoteResult> {
         if (!context || !context.request || !context.tx || !context.outPartialNote || !context.signature || !context.merkleRoot || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
@@ -124,8 +124,8 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
             throw new DarkpoolError("Failed to find the UniswapSwap event in the transaction receipt.");
         } else {
             let processedOutAsset = context.request.outAsset.address;
-            if (isAddressEquals(context.request.outAsset.address, darkPool.contracts.nativeWrapper)) {
-                processedOutAsset = darkPool.contracts.ethAddress;
+            if (isAddressEquals(context.request.outAsset.address, this._darkPool.contracts.nativeWrapper)) {
+                processedOutAsset = this._darkPool.contracts.ethAddress;
             }
 
             const outNote = await recoverNoteWithFooter(
@@ -135,13 +135,13 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
                 context.signature,
             )
 
-            return [outNote];
+            return { note: outNote, txHash: context.tx };
         }
     }
 
     private async getOutAmount(tx: string) {
         const iface = new ethers.Interface(UniswapSwapAssetManagerAbi.abi)
-        const receipt = await darkPool.provider.getTransactionReceipt(tx)
+        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             const log = receipt.logs.find(
                 (log) => log.topics[0] === 'UniswapSwap',

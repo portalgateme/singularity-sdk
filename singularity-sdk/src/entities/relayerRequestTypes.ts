@@ -1,3 +1,5 @@
+import { AerodromeSwapRoute } from "@thesingularitynetwork/darkpool-v1-proof"
+
 type BaseRelayerRequest = {
     proof: string
     relayer: string
@@ -140,4 +142,53 @@ export type RedeemRelayerRequest = BaseRelayerRequest & {
     inAmount: string,
     outNoteFooter: string,
     refund: string,
+}
+
+export type AerodromeSwapRelayerRequest = BaseRelayerRequest & {
+    inNullifier: string,
+    inAsset: string,
+    inAmount: string,
+    routes: AerodromeSwapRoute[],
+    routeHash: string,
+    minExpectedAmountOut: string,
+    deadline: string,
+    outNoteFooter: string,
+    gasRefund: string,
+}
+
+export type AerodromeAddLiquidityRelayerRequest = BaseRelayerRequest & {
+    inNullifier1: string,
+    inNullifier2: string,
+    inAsset1: string,
+    inAsset2: string,
+    inAmount1: string,
+    inAmount2: string,
+    pool: string,
+    stable: boolean,
+    amount1Min: string,
+    amount2Min: string,
+    deadline: string,
+    outNoteFooter: string,
+    outChangeFooter1: string,
+    outChangeFooter2: string,
+    refundToken1: string,
+    refundToken2: string,
+}
+
+export type AerodromeRemoveLiquidityRelayerRequest = BaseRelayerRequest & {
+    nullifier: string,
+    pool: string,
+    amount: string,
+    amountBurn: string,
+    stable: boolean,
+    outAsset1: string,
+    outAsset2: string,
+    outAmount1Min: string,
+    outAmount2Min: string,
+    deadline: string,
+    outNoteFooter1: string,
+    outNoteFooter2: string,
+    outChangeNoteFooter: string,
+    refundToken1: string,
+    refundToken2: string,
 }

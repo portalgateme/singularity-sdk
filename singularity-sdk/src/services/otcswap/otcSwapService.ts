@@ -1,12 +1,13 @@
 import { DOMAIN_NOTE, Note, OTCSwapProofResult, createNoteWithPubKey, generateOTCSwapProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import OTCSwapAssetManagerAbi from '../../abis/OTCSwapAssetManager.json';
-import { darkPool } from "../../darkpool";
 import { DarkpoolError, Order, OTCSwapFullMessage } from "../../entities";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
 import { fullSwapSecretFromString } from "./otcSwapDepositService";
 import { isAddressEquals } from "../../utils/util";
+import { DarkPool } from "../../darkpool";
+
 
 
 
@@ -36,12 +37,12 @@ class OTCSwapContext extends BaseContext {
 }
 
 export class OTCSwapService extends BaseContractService<OTCSwapContext> {
-    constructor() {
-        super();
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     private checkFullSwapSecret(partialSwapMessage: OTCSwapFullMessage, order: Order): boolean {
-        if (partialSwapMessage.chainId !== darkPool.chainId) {
+        if (partialSwapMessage.chainId !== this._darkPool.chainId) {
             return false;
         }
 
@@ -65,7 +66,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
     }
 
     public async getMakerNewNoteAfterSwap(fullSwapMessageString: string): Promise<Note> {
-        const fullSwapMessage = fullSwapSecretFromString(darkPool.chainId, fullSwapMessageString);
+        const fullSwapMessage = fullSwapSecretFromString(this._darkPool.chainId, fullSwapMessageString);
         const newMakerNote = await createNoteWithPubKey(
             fullSwapMessage.makerNewRho,
             fullSwapMessage.takerNote.asset,
@@ -77,7 +78,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
     }
 
     public async getTakerNewNoteAfterSwap(fullSwapMessageString: string): Promise<Note> {
-        const fullSwapMessage = fullSwapSecretFromString(darkPool.chainId, fullSwapMessageString);
+        const fullSwapMessage = fullSwapSecretFromString(this._darkPool.chainId, fullSwapMessageString);
         const newTakerNote = await createNoteWithPubKey(
             fullSwapMessage.takerNewRho,
             fullSwapMessage.makerNote.asset,
@@ -89,7 +90,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
     }
 
     public async prepare(order: Order, fullSwapMessageString: string, signedMessage: string): Promise<{ context: OTCSwapContext, outNotes: Note[] }> {
-        const fullSwapMessage = fullSwapSecretFromString(darkPool.chainId, fullSwapMessageString);
+        const fullSwapMessage = fullSwapSecretFromString(this._darkPool.chainId, fullSwapMessageString);
         if (!this.checkFullSwapSecret(fullSwapMessage, order)) {
             throw new DarkpoolError("Invalid full swap secret");
         }
@@ -103,7 +104,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const merklePathes = await multiGetMerklePathAndRoot([context.swapMessage.makerNote.note, context.swapMessage.takerNote.note]);
+        const merklePathes = await multiGetMerklePathAndRoot([context.swapMessage.makerNote.note, context.swapMessage.takerNote.note], this._darkPool);
         const path1 = merklePathes[0];
         const path2 = merklePathes[1];
 
@@ -153,8 +154,8 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
         if (!context || !context.swapMessage || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
-        const signer = darkPool.signer;
-        const contract = new ethers.Contract(darkPool.contracts.otcSwapAssetManager, OTCSwapAssetManagerAbi.abi, signer);
+        const signer = this._darkPool.signer;
+        const contract = new ethers.Contract(this._darkPool.contracts.otcSwapAssetManager, OTCSwapAssetManagerAbi.abi, signer);
         const tx = await contract.swap(
             context.merkleRoot,
             context.proof.aliceNullifier,

@@ -1,7 +1,7 @@
 import { JoinSplitProofResult, Note, createNote, generateJoinSplitProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json';
-import { darkPool } from "../../darkpool";
+import { DarkPool } from "../../darkpool";
 import { hexlify32, isAddressEquals } from "../../utils/util";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { multiGetMerklePathAndRoot } from "../merkletree";
@@ -61,8 +61,8 @@ class JoinSplitContext extends BaseContext{
 }
 
 export class JoinSplitService extends BaseContractService<JoinSplitContext> {
-    constructor() {
-        super();
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(inNote1: Note, inNote2: Note, outAmount1: bigint, signature: string): Promise<{ context: JoinSplitContext, outNotes: Note[] }> {
@@ -95,7 +95,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const merklePathes = await multiGetMerklePathAndRoot([context.inNote1.note, context.inNote2.note]);
+        const merklePathes = await multiGetMerklePathAndRoot([context.inNote1.note, context.inNote2.note], this._darkPool);
         const path1 = merklePathes[0];
         const path2 = merklePathes[1];
 
@@ -114,12 +114,12 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
         context.proof = proof;
     }
 
-    public async execute(context: JoinSplitContext) {
+    public async execute(context: JoinSplitContext): Promise<string> {
         if (!context || !context.inNote1 || !context.inNote2 || !context.outNote1 || !context.outNote2 || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
 
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, darkPool.signer);
+        const contract = new ethers.Contract(this._darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, this._darkPool.signer);
         const tx = await contract.join(
             context.proof.inNoteNullifier1,
             context.proof.inNoteNullifier2,
@@ -127,7 +127,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             hexlify32(context.outNote2.note),
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
-            context.proof.proof);
-        return tx;
+            context.proof.proof.proof);
+        return tx.hash;
     }
 }

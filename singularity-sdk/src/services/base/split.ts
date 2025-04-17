@@ -1,12 +1,11 @@
 import { Note, SplitProofResult, createNote, generateSplitProof } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json';
-import { darkPool } from "../../darkpool";
 import { hexlify32 } from "../../utils/util";
 import { getMerklePathAndRoot } from "../merkletree";
 import { BaseContext, BaseContractService } from "../BaseService";
 import { DarkpoolError } from "../../entities";
-
+import { DarkPool } from "../../darkpool";
 
 class SplitContext extends BaseContext{
     private _inNote?: Note;
@@ -53,8 +52,8 @@ class SplitContext extends BaseContext{
 }
 
 export class SplitService extends BaseContractService<SplitContext> {
-    constructor() {
-        super();
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(inNote: Note, outAmount1: bigint, signature: string): Promise<{ context: SplitContext, outNotes: Note[] }> {
@@ -77,7 +76,7 @@ export class SplitService extends BaseContractService<SplitContext> {
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.inNote.note);
+        const path = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
         context.merkleRoot = path.root;
 
         const proof = await generateSplitProof({
@@ -92,12 +91,12 @@ export class SplitService extends BaseContractService<SplitContext> {
         context.proof = proof;
     }
 
-    public async execute(context: SplitContext) {
+    public async execute(context: SplitContext): Promise<string> {
         if (!context || !context.inNote || !context.outNote1 || !context.outNote2 || !context.signature || !context.proof) {
             throw new DarkpoolError("Invalid context");
         }
 
-        const contract = new ethers.Contract(darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, darkPool.signer);
+        const contract = new ethers.Contract(this._darkPool.contracts.darkpoolAssetManager, DarkpoolAssetManagerAbi.abi, this._darkPool.signer);
         const tx = await contract.split(
             context.merkleRoot,
             context.proof.inNoteNullifier,
@@ -105,7 +104,7 @@ export class SplitService extends BaseContractService<SplitContext> {
             hexlify32(context.outNote2.note),
             context.proof.outNoteFooter1,
             context.proof.outNoteFooter2,
-            context.proof.proof);
-        return tx;
+            context.proof.proof.proof);
+        return tx.hash;
     }
 }

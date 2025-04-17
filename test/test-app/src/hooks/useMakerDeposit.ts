@@ -1,15 +1,11 @@
-import { EMPTY_NOTE, Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
-import { DefiInfraRequest, DefiInfraService, DepositService, OTCSwapDepositService, Order, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
-import { AbiCoder, solidityPacked } from "ethers"
+import { DarkPool, OTCSwapDepositService, Order, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
+import { useState } from "react"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
-import { networkConfig } from "../constants/networkConfig"
 import { useToast } from "../contexts/ToastContext/hooks"
-import { DarkpoolError, HexData, TokenConfig } from "../types"
-import { useEthersSigner, wagmiConfig } from "../wagmi"
+import { DarkpoolError, TokenConfig } from "../types"
+import { useEthersSigner } from "../wagmi"
 import { useSignMessage } from "./useSignMessage"
-import { waitForTransactionReceipt } from '@wagmi/core'
-import { useState } from "react"
 
 export const useMakerDeposit = () => {
 
@@ -28,7 +24,7 @@ export const useMakerDeposit = () => {
         showPendingToast(undefined, 'Signing Message')
         const signature = await signMessageAsync(address)
 
-        darkPool.init(signer, chainId, [
+        const darkPool = new DarkPool(signer, chainId, [
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
@@ -44,10 +40,12 @@ export const useMakerDeposit = () => {
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
             otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
+            batchJoinSplitAssetManager: config.networkConfig.batchJoinSplitAssetManager,
+            darkpoolSwapAssetManager: config.networkConfig.darkpoolSwapAssetManager,
             drakpoolSubgraphUrl: ''
         })
 
-        const isCompliant = await isAddressCompliant(address)
+        const isCompliant = await isAddressCompliant(address, darkPool)
         if (!isCompliant) {
             throw new DarkpoolError('Address is not compliant')
         }
@@ -60,7 +58,7 @@ export const useMakerDeposit = () => {
             takerAmount: takerAmount,
         }
 
-        const otcSwapDepositService = new OTCSwapDepositService()
+        const otcSwapDepositService = new OTCSwapDepositService(darkPool)
         const { partialSwapSecret,context } = await otcSwapDepositService.prepareMakerAsset(order, address, signature)
         setPartialSwapSecret(partialSwapSecret)
         

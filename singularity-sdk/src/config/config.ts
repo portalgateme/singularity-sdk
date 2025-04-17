@@ -12,6 +12,9 @@ export enum Action {
     UNISWAP_LP_WITHDRAW = 'UNISWAP_LP_WITHDRAW',
     UNISWAP_LP_COLLECT_FEE = 'UNISWAP_LP_COLLECT_FEE',
     WITHDRAW = 'WITHDRAW',
+    AERODROME_SWAP = 'AERODROME_SWAP',
+    AERODROME_LP_DEPOSIT = 'AERODROME_LP_DEPOSIT',
+    AERODROME_LP_WITHDRAW = 'AERODROME_LP_WITHDRAW',
 }
 
 
@@ -27,6 +30,9 @@ export const relayerPathConfig: { [action: string]: string } = {
     [Action.DEFI_INFRA]: '/v1/pgDarkPoolDefiInfra',
     [Action.STAKE]: '/v1/pgDarkPoolZkStake',
     [Action.REDEEM]: '/v1/pgDarkPoolZkRedeem',
+    [Action.AERODROME_SWAP]: '/v1/pgDarkPoolAerodromeSwap',
+    [Action.AERODROME_LP_DEPOSIT]: '/v1/pgDarkPoolAerodromeAddLiquidity',
+    [Action.AERODROME_LP_WITHDRAW]: '/v1/pgDarkPoolAerodromeRemoveLiquidity',
 }
 
 

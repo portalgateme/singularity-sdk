@@ -1,15 +1,15 @@
-import { NftNote, Note, PartialNote, UniswapCollectFeesProofResult, createPartialNote, generateUniswapCollectFeeProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
+import { NftNote, PartialNote, UniswapCollectFeesProofResult, createPartialNote, generateUniswapCollectFeeProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
+import { DarkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
 import { Relayer } from "../../entities/relayer";
 import { UniswapCollectFeesRelayerRequest } from "../../entities/relayerRequestTypes";
 import { Token } from "../../entities/token";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
-import { DarkpoolError } from "../../entities";
 
 export interface UniswapCollectFeesRequest {
     inNote: NftNote;
@@ -61,16 +61,16 @@ class UniswapCollectFeesContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest> {
-    constructor() {
-        super();
+export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectFeesContext, UniswapCollectFeesRelayerRequest, MultiNotesResult> {
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(request: UniswapCollectFeesRequest, signature: string): Promise<{ context: UniswapCollectFeesContext, outPartialNotes: PartialNote[] }> {
         const outPartialNote1 = await createPartialNote(request.outAsset1.address, signature);
         const outPartialNote2 = await createPartialNote(request.outAsset2.address, signature);
 
-        const context = new UniswapCollectFeesContext(darkPool.getRelayer(), signature);
+        const context = new UniswapCollectFeesContext(this._darkPool.getRelayer(), signature);
         context.request = request;
         context.outPartialNote1 = outPartialNote1;
         context.outPartialNote2 = outPartialNote2;
@@ -87,7 +87,7 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.request.inNote.note);
+        const path = await getMerklePathAndRoot(context.request.inNote.note, this._darkPool);
 
         const proof = await generateUniswapCollectFeeProof({
             inNote: context.request.inNote,
@@ -132,7 +132,7 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
         return relayerPathConfig[Action.UNISWAP_LP_COLLECT_FEE];
     }
 
-    protected async postExecute(context: UniswapCollectFeesContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapCollectFeesContext): Promise<MultiNotesResult> {
         if (!context
             || !context.request
             || !context.tx
@@ -146,7 +146,6 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
         if (!outAmount1 || !outAmount2) {
             throw new DarkpoolError("Failed to find the UniswapCollectFees event in the transaction receipt.");
         } else {
-
             const outNote1 = await recoverNoteWithFooter(
                 context.outPartialNote1.rho,
                 context.outPartialNote1.asset,
@@ -160,13 +159,13 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
                 context.signature,
             )
 
-            return [outNote1, outNote2];
+            return { notes: [outNote1, outNote2], txHash: context.tx };
         }
     }
 
     private async getOutAmounts(tx: string) {
         const iface = new ethers.Interface(UniswapLiquidityAssetManagerAbi.abi)
-        const receipt = await darkPool.provider.getTransactionReceipt(tx)
+        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             const log = receipt.logs.find(
                 (log) => log.topics[0] === 'UniswapCollectFees',

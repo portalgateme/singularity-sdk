@@ -1,6 +1,7 @@
-import { EMPTY_NOTE, Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
-import { DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, darkPool, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
-import { AbiCoder, solidityPacked } from "ethers"
+import { Note, NoteType } from "@thesingularitynetwork/darkpool-v1-proof"
+import { DarkPool, DefiInfraRequest, DefiInfraService, DepositService, WithdrawService, isAddressCompliant } from "@thesingularitynetwork/singularity-sdk"
+import { waitForTransactionReceipt } from '@wagmi/core'
+import { solidityPacked } from "ethers"
 import { useAccount } from "wagmi"
 import { config } from "../constants"
 import { networkConfig } from "../constants/networkConfig"
@@ -8,7 +9,6 @@ import { useToast } from "../contexts/ToastContext/hooks"
 import { DarkpoolError, HexData, TokenConfig } from "../types"
 import { useEthersSigner, wagmiConfig } from "../wagmi"
 import { useSignMessage } from "./useSignMessage"
-import { waitForTransactionReceipt } from '@wagmi/core'
 
 export const useDeposit = () => {
 
@@ -26,7 +26,7 @@ export const useDeposit = () => {
         showPendingToast(undefined, 'Signing Message')
         const signature = await signMessageAsync(address)
 
-        darkPool.init(signer, chainId, [
+        const darkPool = new DarkPool(signer, chainId, [
             {
                 relayerName: '',
                 relayerAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
@@ -42,15 +42,17 @@ export const useDeposit = () => {
             stakingAssetManager: config.networkConfig.stakingAssetManager,
             stakingOperator: config.networkConfig.stakingOperator,
             otcSwapAssetManager: config.networkConfig.otcSwapAssetManager,
+            batchJoinSplitAssetManager: config.networkConfig.batchJoinSplitAssetManager,
+            darkpoolSwapAssetManager: config.networkConfig.darkpoolSwapAssetManager,
             drakpoolSubgraphUrl: ''
         })
 
-        const isCompliant = await isAddressCompliant(address)
+        const isCompliant = await isAddressCompliant(address, darkPool)
         if (!isCompliant) {
             throw new DarkpoolError('Address is not compliant')
         }
 
-        const depositService = new DepositService()
+        const depositService = new DepositService(darkPool)
         const { context, outNotes } = await depositService.prepare(asset.address, amount, address, signature)
 
         updatePendingToast(undefined, "Generating Proof")
@@ -89,21 +91,22 @@ export const useDeposit = () => {
             outAsset4: null,
         }
 
-        const infraService = new DefiInfraService()
+        const infraService = new DefiInfraService(darkPool)
         const { context: infraContext, outPartialNotes } = await infraService.prepare(request, signature)
         updatePendingToast(undefined, "Generating Infra Proof")
         await infraService.generateProof(infraContext)
         updatePendingToast(undefined, "Calling defi infra")
-        const notes = await infraService.executeAndWaitForResult(infraContext)
+        const { txHash: infraTxHash, notes } = await infraService.executeAndWaitForResult(infraContext)
 
         console.log(notes)
 
-        const withdrawService = new WithdrawService()
+        const withdrawService = new WithdrawService(darkPool)
         const { context: withdrawContext } = await withdrawService.prepare(notes[0] as Note, address, signature)
         updatePendingToast(undefined, "Generating Withdraw Proof")
         await withdrawService.generateProof(withdrawContext)
         updatePendingToast(undefined, "Withdrawing")
-        await withdrawService.executeAndWaitForResult(withdrawContext)
+        const { txHash: withdrawTxHash } = await withdrawService.executeAndWaitForResult(withdrawContext)
+        console.log(withdrawTxHash)
     }
 
     return {

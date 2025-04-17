@@ -1,15 +1,15 @@
-import { NftNote, Note, PartialNote, UniswapRemoveLiquidProofResult, createPartialNote, generateUniswapRemoveLiquidProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
+import { NftNote, PartialNote, UniswapRemoveLiquidProofResult, createPartialNote, generateUniswapRemoveLiquidProof, recoverNoteWithFooter } from "@thesingularitynetwork/darkpool-v1-proof";
 import { ethers } from "ethers";
 import UniswapLiquidityAssetManagerAbi from '../../abis/UniswapLiquidityAssetManager.json';
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
+import { DarkPool } from "../../darkpool";
+import { DarkpoolError } from "../../entities";
+import { Relayer } from "../../entities/relayer";
 import { UniswapRemoveLiquidityRelayerRequest } from "../../entities/relayerRequestTypes";
 import { Token } from "../../entities/token";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, MultiNotesResult } from "../BaseService";
 import { getMerklePathAndRoot } from "../merkletree";
-import { Relayer } from "../../entities/relayer";
-import { DarkpoolError } from "../../entities";
 
 export interface UniswapRemoveLiquidityRequest {
     inNote: NftNote;
@@ -63,9 +63,9 @@ class UniswapRemoveLiquidityContext extends BaseRelayerContext {
     }
 }
 
-export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRemoveLiquidityContext, UniswapRemoveLiquidityRelayerRequest> {
-    constructor() {
-        super();
+export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRemoveLiquidityContext, UniswapRemoveLiquidityRelayerRequest, MultiNotesResult> {
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
 
@@ -73,7 +73,7 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRem
         const outPartialNote1 = await createPartialNote(request.outAsset1.address, signature);
         const outPartialNote2 = await createPartialNote(request.outAsset2.address, signature);
 
-        const context = new UniswapRemoveLiquidityContext(darkPool.getRelayer(), signature);
+        const context = new UniswapRemoveLiquidityContext(this._darkPool.getRelayer(), signature);
         context.request = request;
         context.outPartialNote1 = outPartialNote1;
         context.outPartialNote2 = outPartialNote2;
@@ -90,7 +90,7 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRem
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.request.inNote.note);
+        const path = await getMerklePathAndRoot(context.request.inNote.note, this._darkPool);
 
         const proof = await generateUniswapRemoveLiquidProof({
             inNote: context.request.inNote,
@@ -144,7 +144,7 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRem
         return relayerPathConfig[Action.UNISWAP_LP_WITHDRAW];
     }
 
-    protected async postExecute(context: UniswapRemoveLiquidityContext): Promise<Note[]> {
+    protected async postExecute(context: UniswapRemoveLiquidityContext): Promise<MultiNotesResult> {
         if (!context
             || !context.request
             || !context.tx
@@ -172,13 +172,13 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRem
                 context.signature,
             )
 
-            return [outNote1, outNote2];
+            return { notes: [outNote1, outNote2], txHash: context.tx };
         }
     }
 
     private async getOutAmounts(tx: string) {
         const iface = new ethers.Interface(UniswapLiquidityAssetManagerAbi.abi)
-        const receipt = await darkPool.provider.getTransactionReceipt(tx)
+        const receipt = await this._darkPool.provider.getTransactionReceipt(tx)
         if (receipt && receipt.logs.length > 0) {
             const log = receipt.logs.find(
                 (log) => log.topics[0] === 'UniswapRemoveLiquidity',

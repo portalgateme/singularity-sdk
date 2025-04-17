@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
-import { Relayer } from './entities/relayer';
 import { ContractConfiguartion, contractConfig } from './config/contractConfig';
-import { ChainId } from './config/chain';
-import { DarkpoolError } from './entities';
 import { StakingConfig, stakingTokenConfig } from './config/stakingConfig';
+import { DarkpoolError } from './entities';
+import { Relayer } from './entities/relayer';
 
 export class DarkPool {
     signer: ethers.Signer;
@@ -13,31 +12,19 @@ export class DarkPool {
     contracts: ContractConfiguartion;
     stakingConfigs: StakingConfig[];
 
-    constructor() {
-        // @ts-ignore
-        this.signer = null;
-        // @ts-ignore
-        this.provider = null;
-        this.chainId = ChainId.MAINNET;
-        this.relayers = [];
-        this.contracts = contractConfig[ChainId.MAINNET];
-        this.stakingConfigs = stakingTokenConfig[ChainId.MAINNET];
-    }
-
-    async init(
+    constructor(
         signer: ethers.Signer,
         chainId: number,
         relayers: Relayer[],
         contracts?: ContractConfiguartion,
         stakingConfigs?: StakingConfig[],
     ) {
+        // @ts-ignore
         this.signer = signer;
-        this.chainId = chainId;
-        this.relayers = relayers;
-
         // @ts-ignore
         this.provider = signer.provider;
-
+        this.chainId = chainId;
+        this.relayers = relayers;
         if (contracts) {
             this.contracts = contracts;
         } else {
@@ -47,7 +34,6 @@ export class DarkPool {
                 throw new DarkpoolError('There is no default contract configuration for the provided chainId');
             }
         }
-
         if (stakingConfigs) {
             this.stakingConfigs = stakingConfigs;
         } else {
@@ -67,6 +53,3 @@ export class DarkPool {
         return this.relayers[index];
     }
 }
-
-
-export const darkPool = new DarkPool();

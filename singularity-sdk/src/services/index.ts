@@ -1,6 +1,6 @@
 export * from './noteService';
 // export * from './curve';
-export * from './darkpool';
+export * from './base';
 export * from './infra';
 export * from './uniswap';
 export * from './BaseService';
@@ -8,3 +8,6 @@ export * from './merkletree';
 export * from './staking';
 export * from './ComplianceService';
 export * from './otcswap';
+export * from './darkpool';
+export * from './order';
+export * from './aerodrome';

@@ -1,14 +1,13 @@
 import { Note, PartialNote, createPartialNote, generateZkRedeemProof, recoverNoteWithFooter, zkRedeemProofResult } from "@thesingularitynetwork/darkpool-v1-proof";
 import StakeAssetManagerAbi from "../../abis/StakingAssetManager.json";
 import { Action, relayerPathConfig } from "../../config/config";
-import { darkPool } from "../../darkpool";
 import { DarkpoolError, RedeemRelayerRequest, Relayer } from "../../entities";
 import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService } from "../BaseService";
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
 import { getOutEvent } from "../EventService";
 import { getMerklePathAndRoot } from "../merkletree";
 import { getOriginalTokenFromZkToken } from "./stakingUtils";
-
+import { DarkPool } from "../../darkpool";
 
 class RedeemContext extends BaseRelayerContext {
     private _inNote?: Note;
@@ -44,20 +43,20 @@ class RedeemContext extends BaseRelayerContext {
     }
 }
 
-export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelayerRequest> {
-    constructor() {
-        super();
+export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelayerRequest, SingleNoteResult> {
+    constructor(_darkPool: DarkPool) {
+        super(_darkPool);
     }
 
     public async prepare(inNote: Note, signature: string): Promise<{ context: RedeemContext, outPartialNotes: PartialNote[] }> {
-        const originalToken = await getOriginalTokenFromZkToken(inNote.asset);
+        const originalToken = await getOriginalTokenFromZkToken(this._darkPool, inNote.asset);
         if (!originalToken) {
             throw new DarkpoolError("The token is not supported in compliant staking: " + inNote.asset);
         }
 
         const outNotePartial = await createPartialNote(originalToken.address, signature);
 
-        const context = new RedeemContext(darkPool.getRelayer(), signature);
+        const context = new RedeemContext(this._darkPool.getRelayer(), signature);
         context.inNote = inNote;
         context.outNotePartial = outNotePartial;
         return { context, outPartialNotes: [outNotePartial] };
@@ -72,7 +71,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
             throw new DarkpoolError("Invalid context");
         }
 
-        const path = await getMerklePathAndRoot(context.inNote.note);
+        const path = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
         context.merkleRoot = path.root;
 
         const proof = await generateZkRedeemProof({
@@ -116,7 +115,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
         return relayerPathConfig[Action.REDEEM];
     }
 
-    public async postExecute(context: RedeemContext): Promise<Note[]> {
+    public async postExecute(context: RedeemContext): Promise<SingleNoteResult> {
         if (!context
             || !context.outNotePartial
             || !context.signature
@@ -127,7 +126,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
         if (!context.tx) {
             throw new DarkpoolError("No transaction hash");
         }
-        const event = await getOutEvent(context.tx, StakeAssetManagerAbi.abi, "Unlocked");
+        const event = await getOutEvent(context.tx, StakeAssetManagerAbi.abi, "Unlocked", this._darkPool);
 
         if (!event || !event.args || !event.args[2]) {
             throw new DarkpoolError("Can not find Unlocked Event from transaction: " + context.tx);
@@ -140,7 +139,7 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
             BigInt(outAmount),
             context.signature,
         )
-        return [outNote];
+        return { note: outNote, txHash: context.tx };
     }
 
     public getRelayerContractCallParameters(context: RedeemContext) {
