@@ -100,8 +100,8 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
         merkleTreeOperator: '0x84026d6f3b6A4cEa7AD00Cd5154a8537129B3742',
         darkpoolAssetManager: '0xa10d309818527C8D8F5164f9D640515d6616bFeE',
         otcSwapAssetManager: '0x549f3bAD265A0383394E0ABEC7b67b4ff750d2ca',
-        batchJoinSplitAssetManager: '0x0',//FIXME
-        darkpoolSwapAssetManager: '0x0',//FIXME
+        batchJoinSplitAssetManager: '0x31816E27809fdc3cF73539d761133a301beEb9B0',
+        darkpoolSwapAssetManager: '0x802ae625C2bdac1873B8bbb709679CC401F57abc',
         drakpoolSubgraphUrl: '',
     },
     [ChainId.BounceBitTestnet]: {
