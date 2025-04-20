@@ -146,6 +146,7 @@ export class OTCSwapService extends BaseContractService<OTCSwapContext> {
             newBobNoteFooter: takerNewNote.footer,
             bobSignature: context.swapMessage.takerSignature,
             bobPubKey: context.swapMessage.takerPubKey,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

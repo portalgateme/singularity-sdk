@@ -110,6 +110,7 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
             note2MerklePath: path2.path,
             note2MerkleIndex: path2.index,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

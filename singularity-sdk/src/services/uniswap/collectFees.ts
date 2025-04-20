@@ -98,6 +98,7 @@ export class UniswapCollectFeeService extends BaseRelayerService<UniswapCollectF
             outNoteFooter2: context.outPartialNote2,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

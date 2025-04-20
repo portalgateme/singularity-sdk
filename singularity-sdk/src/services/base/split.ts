@@ -87,6 +87,7 @@ export class SplitService extends BaseContractService<SplitContext> {
             merklePath: path.path,
             merkleIndex: path.index,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

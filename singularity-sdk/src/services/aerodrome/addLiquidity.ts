@@ -122,6 +122,7 @@ export class AerodromeAddLiquidityService extends BaseRelayerService<AerodromeAd
             outChangePartialNote2: context.outPartialChangeNote2,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.merkleRoot = path1.root;
         context.proof = proof;

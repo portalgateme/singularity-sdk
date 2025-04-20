@@ -105,6 +105,7 @@ export class CreateTakerOrderService extends BaseContractService<CreateTakerOrde
             inNote: context.incomingNote,
             feeAmount: context.feeAmount ?? 0n,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

@@ -73,6 +73,7 @@ export class WithdrawService extends BaseRelayerService<WithdrawContext, Withdra
             merkleIndex: path.index,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

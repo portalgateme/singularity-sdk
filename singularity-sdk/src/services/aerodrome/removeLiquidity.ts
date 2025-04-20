@@ -122,6 +122,7 @@ export class AerodromeRemoveLiquidityService extends BaseRelayerService<Aerodrom
             deadline: context.request.deadline,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.merkleRoot = path.root;
         context.proof = proof;

@@ -156,6 +156,7 @@ export class DefiInfraService extends BaseRelayerService<DefiInfraContext, DefiI
             outNotePartial4: context.outPartialNotes[3],
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

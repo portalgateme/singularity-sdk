@@ -148,6 +148,7 @@ export class MakerSwapService extends BaseContractService<MakerSwapContext> {
             bobMerkleIndex: path2.index,
             bobMerklePath: path2.path,
             bobSwapMessage: context.bobSwapMessage,
+            options: this._darkPool.proofOptions
         }
         )
         context.proof = proof;

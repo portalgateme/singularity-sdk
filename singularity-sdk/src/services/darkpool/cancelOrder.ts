@@ -58,6 +58,7 @@ export class CancelOrderService extends BaseContractService<CancelOrderContext> 
             merkleIndex: merklePath.index,
             outNote: context.outgoingNote,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

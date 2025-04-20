@@ -84,6 +84,7 @@ export class StakeService extends BaseContractService<StakeContext> {
             inAsset: context.inAsset.address,
             outNote: context.outNote,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

@@ -3,6 +3,7 @@ import { ContractConfiguartion, contractConfig } from './config/contractConfig';
 import { StakingConfig, stakingTokenConfig } from './config/stakingConfig';
 import { DarkpoolError } from './entities';
 import { Relayer } from './entities/relayer';
+import { ProofOptions } from '@thesingularitynetwork/darkpool-v1-proof';
 
 export class DarkPool {
     signer: ethers.Signer;
@@ -11,6 +12,8 @@ export class DarkPool {
     relayers: Relayer[];
     contracts: ContractConfiguartion;
     stakingConfigs: StakingConfig[];
+    proofOptions?: ProofOptions;
+
 
     constructor(
         signer: ethers.Signer,
@@ -18,6 +21,7 @@ export class DarkPool {
         relayers: Relayer[],
         contracts?: ContractConfiguartion,
         stakingConfigs?: StakingConfig[],
+        proofOptions?: ProofOptions
     ) {
         // @ts-ignore
         this.signer = signer;
@@ -42,6 +46,9 @@ export class DarkPool {
             } else {
                 this.stakingConfigs = [];
             }
+        }
+        if (proofOptions) {
+            this.proofOptions = proofOptions;
         }
     }
 

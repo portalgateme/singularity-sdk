@@ -61,6 +61,7 @@ export class CreateMakerOrderService extends BaseContractService<CreateMakerOrde
             inAsset: context.outgoingNote.asset,
             inAmount: context.outgoingNote.amount,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

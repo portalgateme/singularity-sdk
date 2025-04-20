@@ -81,7 +81,8 @@ export class RedeemService extends BaseRelayerService<RedeemContext, RedeemRelay
             inNote: context.inNote,
             outNotePartial: context.outNotePartial,
             relayer: context.relayer.relayerAddress,
-            signedMessage: context.signature
+            signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

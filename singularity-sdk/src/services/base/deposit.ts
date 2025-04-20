@@ -68,6 +68,7 @@ export class DepositService extends BaseContractService<DepositContext> {
             note: context.note,
             signedMessage: context.signature,
             address: context.address,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

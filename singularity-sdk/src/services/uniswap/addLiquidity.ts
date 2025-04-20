@@ -138,6 +138,7 @@ export class UniswapAddLiquidityService extends BaseRelayerService<UniswapAddLiq
             feeTier: context.request.feeTier,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

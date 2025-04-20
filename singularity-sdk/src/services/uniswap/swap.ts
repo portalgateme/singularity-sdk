@@ -82,6 +82,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<UniswapSingleSw
             amountOutMin: context.request.minExpectedOutAmount,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

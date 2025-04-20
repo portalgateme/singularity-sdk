@@ -72,6 +72,7 @@ export class TakerSwapService extends BaseContractService<TakerSwapContext> {
             bobMerkleIndex: path2.index,
             bobMerklePath: path2.path,
             bobMessage: context.bobSwapMessage,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }

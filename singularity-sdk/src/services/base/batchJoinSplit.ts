@@ -158,6 +158,7 @@ export class BatchJoinSplitService extends BaseContractService<BatchJoinSplitCon
             note5MerklePath: merklePaths[4].path,
             note5MerkleIndex: merklePaths[4].index,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
         context.merkleRoot = merklePaths[0].root;

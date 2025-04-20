@@ -104,6 +104,7 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<UniswapRem
             deadline: context.request.deadline,
             relayer: context.relayer.relayerAddress,
             signedMessage: context.signature,
+            options: this._darkPool.proofOptions
         });
         context.proof = proof;
     }
