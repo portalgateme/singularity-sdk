@@ -1,5 +1,5 @@
 export type Relayer = {
-    relayerName: string
-    relayerAddress: string
-    hostUrl: string
-}
+  relayerName: string;
+  relayerAddress: string;
+  hostUrl: string;
+};

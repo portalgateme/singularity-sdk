@@ -1,7 +1,6 @@
-
 export enum NoteOnChainStatus {
-    ACTIVE = 'ACTIVE',
-    SPENT = 'SPENT',
-    LOCKED = 'LOCKED',
-    UNKNOWN = 'UNKNOWN'
+  ACTIVE = 'ACTIVE',
+  SPENT = 'SPENT',
+  LOCKED = 'LOCKED',
+  UNKNOWN = 'UNKNOWN'
 }
