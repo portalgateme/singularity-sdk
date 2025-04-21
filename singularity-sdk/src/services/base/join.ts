@@ -85,6 +85,8 @@ export class JoinService extends BaseContractService<JoinContext> {
     const path1 = merklePathes[0];
     const path2 = merklePathes[1];
 
+    context.merkleRoot = path1.root;
+
     const proof = await generateJoinProof({
       inNote1: context.inNote1,
       inNote2: context.inNote2,
@@ -101,7 +103,7 @@ export class JoinService extends BaseContractService<JoinContext> {
   }
 
   public async execute(context: JoinContext): Promise<string> {
-    if (!context || !context.inNote1 || !context.inNote2 || !context.outNote || !context.proof) {
+    if (!context || !context.inNote1 || !context.inNote2 || !context.outNote || !context.proof || !context.merkleRoot) {
       throw new DarkpoolError('Invalid context');
     }
 

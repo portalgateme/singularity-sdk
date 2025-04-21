@@ -91,8 +91,7 @@
         }
       ],
       "name": "approve",
-      "outputs": [
-      ],
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
