@@ -121,7 +121,6 @@
 //         context.proof = proof;
 //     }
 
-
 //     protected async getRelayerRequest(context: CurveRemoveLiquidityContext): Promise<CurveRemoveLiquidityRelayerRequest> {
 //         if (!context
 //             || !context.request

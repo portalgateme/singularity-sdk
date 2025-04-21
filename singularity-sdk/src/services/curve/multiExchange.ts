@@ -92,7 +92,6 @@
 //         context.proof = proof;
 //     }
 
-
 //     protected async getRelayerRequest(context: CurveMultiExchangeContext): Promise<CurveMultiExchangeRelayerRequest> {
 //         if (!context || !context.request || !context.outPartialNote || !context.signature || !context.merkleRoot || !context.proof) {
 //             throw new DarkpoolError("Invalid context");

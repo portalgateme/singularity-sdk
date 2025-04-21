@@ -104,7 +104,6 @@
 //         const booleanFlag = getBooleanFlag(context.request.pool, context.request.isDepositWrapped);
 //         const poolFlag = getPoolFlag(context.request.pool, context.request.isDepositWrapped);
 
-
 //         const proof = await generateCurveAddLiquidityProof({
 //             merkleRoot: root,
 //             merkleIndex1: paths[0].index,
@@ -133,7 +132,6 @@
 //         });
 //         context.proof = proof;
 //     }
-
 
 //     protected async getRelayerRequest(context: CurveAddLiquidityContext): Promise<CurveAddLiquidityRelayerRequest> {
 //         if (!context
