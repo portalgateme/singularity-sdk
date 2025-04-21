@@ -115,6 +115,8 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
     const path1 = merklePathes[0];
     const path2 = merklePathes[1];
 
+    context.merkleRoot = path1.root;
+
     const proof = await generateJoinSplitProof({
       inNote1: context.inNote1,
       inNote2: context.inNote2,
@@ -139,7 +141,8 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
       !context.outNote1 ||
       !context.outNote2 ||
       !context.signature ||
-      !context.proof
+      !context.proof ||
+      !context.merkleRoot
     ) {
       throw new DarkpoolError('Invalid context');
     }
@@ -149,7 +152,8 @@ export class JoinSplitService extends BaseContractService<JoinSplitContext> {
       DarkpoolAssetManagerAbi.abi,
       this._darkPool.signer
     );
-    const tx = await contract.join(
+    const tx = await contract.joinSplit(
+      context.merkleRoot,
       context.proof.inNoteNullifier1,
       context.proof.inNoteNullifier2,
       hexlify32(context.outNote1.note),
