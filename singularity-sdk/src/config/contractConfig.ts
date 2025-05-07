@@ -13,6 +13,7 @@ export type ContractConfiguartion = {
   drakpoolSubgraphUrl: string;
   batchJoinSplitAssetManager: string;
   darkpoolSwapAssetManager: string;
+  nftAssetManager: string;
   uniswapConfig?: {
     swapRouterAddress: string;
     quoterContractAddress: string;
@@ -20,6 +21,14 @@ export type ContractConfiguartion = {
     v3PosNftAddress: string;
     factoryAddress: string;
     subgraphUrl: string;
+  };
+  sablierConfig?: {
+    aliasPrefixLinear: string;
+    aliasPrefixDynamic: string;
+    lockupLinear: string;
+    lockupDynamic: string;
+    sablierDynamicAssetManager: string;
+    sablierLinearAssetManager: string;
   };
 };
 
@@ -36,6 +45,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     stakingAssetManager: '0x1Fa7Cb4925086128f3bb9e26761C9C75dbAC3CD1',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x0', //FIXME
     drakpoolSubgraphUrl:
       'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-subgraph/version/v0.0.1/api',
     uniswapConfig: {
@@ -59,6 +69,8 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     otcSwapAssetManager: '0xcbFA6BB3eb4Bd9BF97866baE75FfB62f3aE897c0',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x0', //FIXME
+
     drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-arb-subgraph/api'
   },
   [ChainId.BounceBit]: {
@@ -73,6 +85,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     otcSwapAssetManager: '0xAa5e02284d1Fd0f6C12AFBDABc28Ed5aC5a6474b',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x0', //FIXME
     drakpoolSubgraphUrl: 'https://bb.subgraph.thesingularity.network/subgraphs/name/singularity/'
   },
   [ChainId.BASE]: {
@@ -87,6 +100,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     otcSwapAssetManager: '0x3D76Fd85FCc2593970d22Aa34bcC4c5444c57c9D',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x0', //FIXME
     drakpoolSubgraphUrl: 'https://subgraph.satsuma-prod.com/1c6a44a9ed6e/pgs-team--611591/singularity-base-subgraph/api'
   },
   [ChainId.SEPOLIA]: {
@@ -101,6 +115,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     otcSwapAssetManager: '0x549f3bAD265A0383394E0ABEC7b67b4ff750d2ca',
     batchJoinSplitAssetManager: '0x31816E27809fdc3cF73539d761133a301beEb9B0',
     darkpoolSwapAssetManager: '0x802ae625C2bdac1873B8bbb709679CC401F57abc',
+    nftAssetManager: '0x0', //FIXME
     drakpoolSubgraphUrl: ''
   },
   [ChainId.BounceBitTestnet]: {
@@ -115,6 +130,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     otcSwapAssetManager: '0x0',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x0', //FIXME
     drakpoolSubgraphUrl: ''
   },
   [ChainId.HARDHAT]: {
@@ -129,6 +145,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     stakingAssetManager: '0xCd9BC6cE45194398d12e27e1333D5e1d783104dD',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    nftAssetManager: '0x886a2A3ABF5B79AA5dFF1C73016BD07CFc817e04',
     drakpoolSubgraphUrl: 'https://34.142.142.240:8080/subgraphs/name/singularity/',
     uniswapConfig: {
       swapRouterAddress: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
@@ -137,6 +154,14 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
       v3PosNftAddress: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
       factoryAddress: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
       subgraphUrl: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3?source=uniswap'
+    },
+    sablierConfig: {
+      aliasPrefixLinear: 'LL2',
+      aliasPrefixDynamic: 'LD2',
+      lockupLinear: '0xAFb979d9afAd1aD27C5eFf4E27226E3AB9e5dCC9',
+      lockupDynamic: '0x7CC7e125d83A581ff438608490Cc0f7bDff79127',
+      sablierDynamicAssetManager: '0x453439300B6C5C645737324b990f2d51137027bC',
+      sablierLinearAssetManager: '0xB90AcF57C3BFE8e0E8215defc282B5F48b3edC74'
     }
   }
 };

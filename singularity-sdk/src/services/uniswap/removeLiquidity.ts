@@ -116,6 +116,7 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<
       options: this._darkPool.proofOptions
     });
     context.proof = proof;
+    context.merkleRoot = path.root;
   }
 
   protected async getRelayerRequest(
@@ -193,8 +194,9 @@ export class UniswapRemoveLiquidityService extends BaseRelayerService<
   private async getOutAmounts(tx: string) {
     const iface = new ethers.Interface(UniswapLiquidityAssetManagerAbi.abi);
     const receipt = await this._darkPool.provider.getTransactionReceipt(tx);
-    if (receipt && receipt.logs.length > 0) {
-      const log = receipt.logs.find(log => log.topics[0] === 'UniswapRemoveLiquidity');
+    const event = iface.getEvent('UniswapRemoveLiquidity');
+    if (receipt && receipt.logs.length > 0 && event) {
+      const log = receipt.logs.find(log => log.topics[0] === event.topicHash);
       if (log) {
         const event = iface.parseLog(log);
         if (event) {

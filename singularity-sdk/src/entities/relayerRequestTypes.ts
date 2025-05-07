@@ -191,3 +191,27 @@ export type AerodromeRemoveLiquidityRelayerRequest = BaseRelayerRequest & {
   refundToken1: string;
   refundToken2: string;
 };
+
+export type StakeRocketPoolRelayerRequest = BaseRelayerRequest & {
+  nullifier: string;
+  amount: string;
+  noteFooterOut: string;
+  refund: string;
+};
+
+export type UnstakeRocketPoolRelayerRequest = BaseRelayerRequest & {
+  nullifier: string;
+  amount: string;
+  noteFooterOut: string;
+  refund: string;
+};
+
+export type ClaimStreamSablierRelayerRequest = BaseRelayerRequest & {
+  nullifier: string;
+  stream: string;
+  streamId: string;
+  assetOut: string;
+  amountOut: string;
+  noteFooterOut: string;
+  refund: string;
+};

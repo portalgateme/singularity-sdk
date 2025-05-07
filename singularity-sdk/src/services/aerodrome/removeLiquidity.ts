@@ -234,8 +234,8 @@ export class AerodromeRemoveLiquidityService extends BaseRelayerService<
 
     if (BigInt(amountsOut[2]) > 0n) {
       const lpTokenChangeNote = await recoverNoteWithFooter(
-        context.outPartialNote1.rho,
-        context.outPartialNote1.asset,
+        context.outChangePartialNote.rho,
+        context.outChangePartialNote.asset,
         BigInt(amountsOut[2]),
         context.signature
       );

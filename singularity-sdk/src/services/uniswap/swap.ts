@@ -99,6 +99,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<
       options: this._darkPool.proofOptions
     });
     context.proof = proof;
+    context.merkleRoot = path.root;
   }
 
   protected async getRelayerRequest(context: UniswapSingleSwapContext): Promise<UniswapSwapRelayerRequest> {
@@ -135,7 +136,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<
     return relayerPathConfig[Action.UNISWAP_SINGLE_SWAP];
   }
 
-  protected async postExecute(context: UniswapSingleSwapContext): Promise<SingleNoteResult> {
+  public async postExecute(context: UniswapSingleSwapContext): Promise<SingleNoteResult> {
     if (
       !context ||
       !context.request ||
@@ -171,8 +172,9 @@ export class UniswapSingleSwapService extends BaseRelayerService<
   private async getOutAmount(tx: string) {
     const iface = new ethers.Interface(UniswapSwapAssetManagerAbi.abi);
     const receipt = await this._darkPool.provider.getTransactionReceipt(tx);
-    if (receipt && receipt.logs.length > 0) {
-      const log = receipt.logs.find(log => log.topics[0] === 'UniswapSwap');
+    const event = iface.getEvent('UniswapSwap');
+    if (receipt && receipt.logs.length > 0 && event) {
+      const log = receipt.logs.find(log => log.topics[0] === event.topicHash);
       if (log) {
         const event = iface.parseLog(log);
         if (event) {

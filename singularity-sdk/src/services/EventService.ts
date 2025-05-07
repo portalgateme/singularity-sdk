@@ -7,7 +7,7 @@ export async function getOutEvent(tx: string, abi: any, eventTopic: string, dark
   if (receipt && receipt.logs.length > 0) {
     for (let i = 0; i < receipt.logs.length; i++) {
       const parsedLog = iface.parseLog(receipt.logs[i]);
-      if (parsedLog && parsedLog.name == eventTopic) {
+      if (parsedLog && parsedLog.name === eventTopic) {
         return parsedLog;
       }
     }
