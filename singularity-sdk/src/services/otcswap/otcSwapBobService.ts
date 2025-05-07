@@ -7,50 +7,10 @@ import {
   getNoteFooter,
   Note
 } from '@thesingularitynetwork/darkpool-v1-proof';
-
-export interface OTCSwapBobRequest {
-  aliceNote: Note;
-  aliceNoteNullier: bigint;
-  aliceNewNoteRho: bigint;
-  aliceNewNoteNote: bigint;
-  aliceNewNoteFooter: bigint;
-  aliceSignedMessage: string;
-
-  bobNote: Note;
-  bobNoteNullifier: bigint;
-  bobNewNoteRho: bigint;
-  bobNewNoteNote: bigint;
-  bobNewNoteFooter: bigint;
-  bobSignature: number[];
-  bobPubKey: any;
-
-  chainId: number;
-}
+import { OTCSwapReturnMessage } from './types';
 
 export class otcSwapBobService {
   constructor() {}
-
-  private swapMessageToString(
-    bobPubKey: { x: bigint; y: bigint },
-    bobOutNote: Note,
-    bobOutNoteNullifer: bigint,
-    newBobNoteFooter: bigint,
-    newBobNoteRho: bigint,
-    bobSignature: number[],
-    aliceSwapMessage: string
-  ) {
-    const aliceMessage = aliceSwapMessage.replace('ONEOFF-SWAP-INIT-', '');
-    let sigString: string = '';
-
-    for (let i = 0; i < bobSignature.length; i++) {
-      sigString = sigString + '-' + bobSignature[i].toString();
-    }
-
-    return (
-      `ONEOFF-SWAP-RETURN-${aliceMessage}-${bobOutNote.asset}-${bobOutNote.amount}-${bobOutNote.rho}-${bobOutNote.note}-${bobOutNoteNullifer}-${newBobNoteFooter}-${newBobNoteRho}-${bobPubKey.x}-${bobPubKey.y}` +
-      `${sigString}`
-    );
-  }
 
   private async getNoteWithPubKey(rho: bigint, asset: string, amount: bigint, pubKey: any): Promise<Note> {
     const note = await createNoteWithPubKey(rho, asset, amount, pubKey, DOMAIN_NOTE);
@@ -64,7 +24,6 @@ export class otcSwapBobService {
   }
 
   public async genBobSwapMessage(
-    aliceSwapMessage: string,
     aliceOutNote: Note,
     aliceOutNoteNullifier: bigint,
     aliceNewNoteFooter: bigint,
@@ -100,15 +59,14 @@ export class otcSwapBobService {
       bobPriKey
     );
 
-    const swapMessage = this.swapMessageToString(
-      bobPubKey,
-      bobOutNote,
-      bobNoteNullifier,
-      newBobNoteFooter,
-      newBobNoteRho,
-      sig,
-      aliceSwapMessage
-    );
+    const swapMessage: OTCSwapReturnMessage = {
+      pubkey: bobPubKey,
+      outNote: bobOutNote,
+      outNoteNullifer: bobNoteNullifier,
+      newNoteFooter: newBobNoteFooter,
+      newNoteRho: newBobNoteRho,
+      signature: sig
+    };
 
     return swapMessage;
   }
