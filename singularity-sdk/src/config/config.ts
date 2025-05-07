@@ -14,7 +14,10 @@ export enum Action {
   WITHDRAW = 'WITHDRAW',
   AERODROME_SWAP = 'AERODROME_SWAP',
   AERODROME_LP_DEPOSIT = 'AERODROME_LP_DEPOSIT',
-  AERODROME_LP_WITHDRAW = 'AERODROME_LP_WITHDRAW'
+  AERODROME_LP_WITHDRAW = 'AERODROME_LP_WITHDRAW',
+  ROCKET_POOL_STAKE = 'ROCKET_POOL_STAKE',
+  ROCKET_POOL_UNSTAKE = 'ROCKET_POOL_UNSTAKE',
+  SABLIER_CLAIM_STREAM = 'SABLIER_CLAIM_STREAM'
 }
 
 export const relayerPathConfig: { [action: string]: string } = {
@@ -31,7 +34,10 @@ export const relayerPathConfig: { [action: string]: string } = {
   [Action.REDEEM]: '/v1/pgDarkPoolZkRedeem',
   [Action.AERODROME_SWAP]: '/v1/pgDarkPoolAerodromeSwap',
   [Action.AERODROME_LP_DEPOSIT]: '/v1/pgDarkPoolAerodromeAddLiquidity',
-  [Action.AERODROME_LP_WITHDRAW]: '/v1/pgDarkPoolAerodromeRemoveLiquidity'
+  [Action.AERODROME_LP_WITHDRAW]: '/v1/pgDarkPoolAerodromeRemoveLiquidity',
+  [Action.ROCKET_POOL_STAKE]: '/v1/pgDarkPoolRocketPoolStake',
+  [Action.ROCKET_POOL_UNSTAKE]: '/v1/pgDarkPoolRocketPoolUnStake',
+  [Action.SABLIER_CLAIM_STREAM]: '/v1/pgDarkPoolSablierClaim'
 };
 
 export const legacyTokenConfig: { [chainId: number]: string[] } = {

@@ -173,3 +173,16 @@ export abstract class BaseRelayerService<T extends BaseRelayerContext, R, S exte
     };
   }
 }
+
+export function transferCodeToNoteFooter(transferCode: string, chainId: number) {
+  const params = transferCode.trim().split('-');
+  if (params.length < 3 || params[0] != 'ONEOFF' || params[1] != 'RECIPIENT' || params[2] != chainId.toString()) {
+    throw new DarkpoolError('Invalid receiver code');
+  }
+  return BigInt(params[3]);
+}
+
+export function validateRecipientCode(code: string) {
+  const codePattern = /^(ONEOFF-RECIPIENT)-(\d+)-(\d+)/gm;
+  return codePattern.test(code);
+}
