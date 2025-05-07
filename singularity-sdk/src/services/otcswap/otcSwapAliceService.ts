@@ -12,25 +12,7 @@ import { DarkPool } from '../../darkpool';
 import { getMerklePathAndRoot } from '../merkletree';
 import { ethers } from 'ethers';
 import OTCSwapAssetManagerAbi from '../../abis/OTCSwapAssetManager.json';
-
-export interface OTCSwapAliceRequest {
-  aliceNote: Note;
-  aliceNoteNullier: bigint;
-  aliceNewNoteRho: bigint;
-  aliceNewNoteNote: bigint;
-  aliceNewNoteFooter: bigint;
-  aliceSignedMessage: string;
-
-  bobNote: Note;
-  bobNoteNullifier: bigint;
-  bobNewNoteRho: bigint;
-  bobNewNoteNote: bigint;
-  bobNewNoteFooter: bigint;
-  bobSignature: number[];
-  bobPubKey: any;
-
-  chainId: number;
-}
+import { OTCSwapAliceRequest, OTCSwapMessage } from './types';
 
 export class otcSwapAliceService {
   private _darkPool: DarkPool;
@@ -39,30 +21,19 @@ export class otcSwapAliceService {
     this._darkPool = _darkPool;
   }
 
-  private swapMessageToString(
-    alicePubKey: { x: bigint; y: bigint },
-    aliceOutNote: Note,
-    aliceOutNoteNullifer: bigint,
-    newAliceNoteFooter: bigint,
-    newAliceNoteRho: bigint,
-    chainId: number
-  ) {
-    return `ONEOFF-SWAP-INIT-${chainId}-${aliceOutNote.asset}-${aliceOutNote.amount}-${aliceOutNote.rho}-${aliceOutNote.note}-${aliceOutNoteNullifer}-${newAliceNoteFooter}-${newAliceNoteRho}-${alicePubKey.x}-${alicePubKey.y}`;
-  }
-
   public async genOtcSwapAliceMessage(note: Note, signedMessage: string) {
     const [makerPubKey] = await generateKeyPair(signedMessage);
     const makerNoteRho = generateRho();
     const makerNoteFooter = getNoteFooter(makerNoteRho, makerPubKey);
     const makerNoteNullifier = calcNullifier(note.rho, makerPubKey);
-    const swapMessage = this.swapMessageToString(
-      makerPubKey,
-      note,
-      makerNoteNullifier,
-      makerNoteFooter,
-      makerNoteRho,
-      this._darkPool.chainId
-    );
+
+    const swapMessage: OTCSwapMessage = {
+      pubkey: makerPubKey,
+      outNote: note,
+      outNoteNullifer: makerNoteNullifier,
+      newNoteFooter: makerNoteFooter,
+      newNoteRho: makerNoteRho
+    };
     return swapMessage;
   }
 
