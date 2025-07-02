@@ -1,145 +1,150 @@
-import { createPartialNote, generateZkStakeProof, Note, PartialNote, recoverNoteWithFooter, zkStakeProofResult } from "@thesingularitynetwork/darkpool-v1-proof";
-import StakeAssetManagerAbi from "../../abis/StakingAssetManager.json";
-import { Action, relayerPathConfig } from "../../config/config";
-import { DarkPool } from "../../darkpool";
-import { DarkpoolError, Relayer, StakeNoteRelayerRequest } from "../../entities";
-import { hexlify32 } from "../../utils/util";
-import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from "../BaseService";
-import { getOutEvent } from "../EventService";
-import { getMerklePathAndRoot } from "../merkletree";
-import { getZkTokenFromOriginalToken } from "./stakingUtils";
-
+import {
+  createPartialNote,
+  generateZkStakeProof,
+  Note,
+  PartialNote,
+  recoverNoteWithFooter,
+  zkStakeProofResult
+} from '@thesingularitynetwork/darkpool-v1-proof';
+import StakeAssetManagerAbi from '../../abis/StakingAssetManager.json';
+import { Action, relayerPathConfig } from '../../config/config';
+import { DarkPool } from '../../darkpool';
+import { DarkpoolError, Relayer, StakeNoteRelayerRequest } from '../../entities';
+import { hexlify32 } from '../../utils/util';
+import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from '../BaseService';
+import { getOutEvent } from '../EventService';
+import { getMerklePathAndRoot } from '../merkletree';
+import { getZkTokenFromOriginalToken } from './stakingUtils';
 
 class StakeNoteContext extends BaseRelayerContext {
-    private _inNote?: Note;
-    private _outNotePartial?: PartialNote;
-    private _proof?: zkStakeProofResult;
+  private _inNote?: Note;
+  private _outNotePartial?: PartialNote;
+  private _proof?: zkStakeProofResult;
 
-    constructor(relayer: Relayer, signature: string) {
-        super(relayer, signature);
-    }
+  constructor(relayer: Relayer, signature: string) {
+    super(relayer, signature);
+  }
 
-    set inNote(inAsset: Note | undefined) {
-        this._inNote = inAsset;
-    }
+  set inNote(inAsset: Note | undefined) {
+    this._inNote = inAsset;
+  }
 
-    get inNote(): Note | undefined {
-        return this._inNote;
-    }
+  get inNote(): Note | undefined {
+    return this._inNote;
+  }
 
-    set outNotePartial(note: PartialNote | undefined) {
-        this._outNotePartial = note;
-    }
+  set outNotePartial(note: PartialNote | undefined) {
+    this._outNotePartial = note;
+  }
 
-    get outNotePartial(): PartialNote | undefined {
-        return this._outNotePartial;
-    }
+  get outNotePartial(): PartialNote | undefined {
+    return this._outNotePartial;
+  }
 
-    set proof(proof: zkStakeProofResult | undefined) {
-        this._proof = proof;
-    }
+  set proof(proof: zkStakeProofResult | undefined) {
+    this._proof = proof;
+  }
 
-    get proof(): zkStakeProofResult | undefined {
-        return this._proof;
-    }
+  get proof(): zkStakeProofResult | undefined {
+    return this._proof;
+  }
 }
 
 export class StakeNoteService extends BaseRelayerService<StakeNoteContext, StakeNoteRelayerRequest, SingleNoteResult> {
-    constructor(_darkPool: DarkPool) {
-        super(_darkPool);
+  constructor(_darkPool: DarkPool) {
+    super(_darkPool);
+  }
+
+  public async prepare(
+    inNote: Note,
+    signature: string
+  ): Promise<{ context: StakeNoteContext; outPartialNotes: PartialNote[] }> {
+    const zkToken = await getZkTokenFromOriginalToken(this._darkPool, inNote.asset);
+    if (!zkToken) {
+      throw new DarkpoolError('The token is not supported in compliant staking: ' + inNote.asset);
     }
 
-    public async prepare(inNote: Note, signature: string): Promise<{ context: StakeNoteContext, outPartialNotes: PartialNote[] }> {
-        const zkToken = await getZkTokenFromOriginalToken(this._darkPool, inNote.asset);
-        if (!zkToken) {
-            throw new DarkpoolError("The token is not supported in compliant staking: " + inNote.asset);
-        }
+    const outNotePartial = await createPartialNote(zkToken.address, signature);
 
-        const outNotePartial = await createPartialNote(zkToken.address, signature);
+    const context = new StakeNoteContext(this._darkPool.getRelayer(), signature);
+    context.inNote = inNote;
+    context.outNotePartial = outNotePartial;
+    return { context, outPartialNotes: [outNotePartial] };
+  }
 
-        const context = new StakeNoteContext(this._darkPool.getRelayer(), signature);
-        context.inNote = inNote;
-        context.outNotePartial = outNotePartial;
-        return { context, outPartialNotes: [outNotePartial] };
+  public async generateProof(context: StakeNoteContext): Promise<void> {
+    if (!context || !context.inNote || !context.outNotePartial || !context.signature) {
+      throw new DarkpoolError('Invalid context');
     }
 
-    public async generateProof(context: StakeNoteContext): Promise<void> {
-        if (
-            !context
-            || !context.inNote
-            || !context.outNotePartial
-            || !context.signature) {
-            throw new DarkpoolError("Invalid context");
-        }
+    const path = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
+    context.merkleRoot = path.root;
 
-        const path = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
-        context.merkleRoot = path.root;
+    const proof = await generateZkStakeProof({
+      merkleRoot: path.root,
+      merklePath: path.path,
+      merkleIndex: path.index,
+      inNote: context.inNote,
+      outNotePartial: context.outNotePartial,
+      relayer: context.relayer.relayerAddress,
+      signedMessage: context.signature,
+      options: this._darkPool.proofOptions
+    });
+    context.proof = proof;
+  }
 
-        const proof = await generateZkStakeProof({
-            merkleRoot: path.root,
-            merklePath: path.path,
-            merkleIndex: path.index,
-            inNote: context.inNote,
-            outNotePartial: context.outNotePartial,
-            relayer: context.relayer.relayerAddress,
-            signedMessage: context.signature
-        });
-        context.proof = proof;
+  public async getRelayerRequest(context: StakeNoteContext): Promise<StakeNoteRelayerRequest> {
+    if (
+      !context ||
+      !context.inNote ||
+      !context.outNotePartial ||
+      !context.signature ||
+      !context.merkleRoot ||
+      !context.proof
+    ) {
+      throw new DarkpoolError('Invalid context');
     }
 
-    public async getRelayerRequest(context: StakeNoteContext): Promise<StakeNoteRelayerRequest> {
-        if (!context
-            || !context.inNote
-            || !context.outNotePartial
-            || !context.signature
-            || !context.merkleRoot
-            || !context.proof) {
-            throw new DarkpoolError("Invalid context");
-        }
+    const relayerRequest: StakeNoteRelayerRequest = {
+      inAmount: hexlify32(context.inNote.amount),
+      inAsset: context.inNote.asset,
+      inNullifier: context.proof.inNullifier,
+      outNoteFooter: hexlify32(context.outNotePartial.footer),
+      refund: hexlify32(0n),
+      proof: context.proof.proof.proof,
+      merkleRoot: context.merkleRoot,
+      relayer: context.relayer.relayerAddress,
+      verifierArgs: context.proof.proof.verifyInputs
+    };
 
-        const relayerRequest: StakeNoteRelayerRequest = {
-            inAmount: hexlify32(context.inNote.amount),
-            inAsset: context.inNote.asset,
-            inNullifier: context.proof.inNullifier,
-            outNoteFooter: hexlify32(context.outNotePartial.footer),
-            refund: hexlify32(0n),
-            proof: context.proof.proof.proof,
-            merkleRoot: context.merkleRoot,
-            relayer: context.relayer.relayerAddress,
-            verifierArgs: context.proof.proof.verifyInputs,
-        };
+    return relayerRequest;
+  }
 
-        return relayerRequest;
+  public getRelayerPath(): string {
+    return relayerPathConfig[Action.STAKE];
+  }
+
+  public async postExecute(context: StakeNoteContext): Promise<SingleNoteResult> {
+    if (!context || !context.outNotePartial || !context.signature) {
+      throw new DarkpoolError('Invalid context');
     }
 
-    public getRelayerPath(): string {
-        return relayerPathConfig[Action.STAKE];
+    if (!context.tx) {
+      throw new DarkpoolError('No transaction hash');
+    }
+    const event = await getOutEvent(context.tx, StakeAssetManagerAbi.abi, 'Locked', this._darkPool);
+
+    if (!event || !event.args || !event.args[3]) {
+      throw new DarkpoolError('Can not find Locked Event from transaction: ' + context.tx);
     }
 
-    public async postExecute(context: StakeNoteContext): Promise<SingleNoteResult> {
-        if (!context
-            || !context.outNotePartial
-            || !context.signature
-        ) {
-            throw new DarkpoolError("Invalid context");
-        }
-
-        if (!context.tx) {
-            throw new DarkpoolError("No transaction hash");
-        }
-        const event = await getOutEvent(context.tx, StakeAssetManagerAbi.abi, "Locked", this._darkPool);
-
-        if (!event || !event.args || !event.args[3]) {
-            throw new DarkpoolError("Can not find Locked Event from transaction: " + context.tx);
-        }
-
-        const outAmount = event.args[3];
-        const outNote = await recoverNoteWithFooter(
-            context.outNotePartial.rho,
-            context.outNotePartial.asset,
-            BigInt(outAmount),
-            context.signature,
-        )
-        return { note: outNote, txHash: context.tx! };
-    }
+    const outAmount = event.args[3];
+    const outNote = await recoverNoteWithFooter(
+      context.outNotePartial.rho,
+      context.outNotePartial.asset,
+      BigInt(outAmount),
+      context.signature
+    );
+    return { note: outNote, txHash: context.tx! };
+  }
 }

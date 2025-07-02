@@ -123,7 +123,6 @@
 //     }
 // }
 
-
 // export function token2AmountFromTick(
 //     token1: Token,
 //     token2: Token,
@@ -167,7 +166,6 @@
 //     if (!bestFeeTier) {
 //         if (isNotNativeCurrency(token1.address) && isNotNativeCurrency(token2.address)) {
 //         }
-
 
 //         throw new DarkpoolError('Could not find pool with this token pair');
 //     }
@@ -343,7 +341,6 @@
 //     )
 //     return result as [amount0: BigNumber, amount1: BigNumber]
 // }
-
 
 // export function estimateAnotherAmount(pool: Pool, tickLower: number, tickUpper: number, token: TokenConfig, amount: bigint) {
 //     if (pool.token0.address == token.address) {

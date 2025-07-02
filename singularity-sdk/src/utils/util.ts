@@ -1,24 +1,33 @@
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
 
 const NATIVE_ASSETS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export function isNativeAsset(asset: string): boolean {
-    return asset.toLowerCase() === NATIVE_ASSETS.toLowerCase();
+  return asset.toLowerCase() === NATIVE_ASSETS.toLowerCase();
 }
 
 export function isAddressEquals(address1: string, address2: string): boolean {
-    if (!address1 || !address2)
-        return false;
-    return address1.toLowerCase() === address2.toLowerCase();
+  if (!address1 || !address2) return false;
+  return address1.toLowerCase() === address2.toLowerCase();
 }
 
 export function hexlify32(value: bigint | number): string {
-    return ethers.zeroPadValue(ethers.toBeHex(value), 32)
+  return ethers.zeroPadValue(ethers.toBeHex(value), 32);
 }
 
+export function hexlify16(value: bigint | number): string {
+  return ethers.zeroPadValue(ethers.toBeHex(value), 16);
+}
+
+export function hexlify8(value: bigint | number): string {
+  return ethers.zeroPadValue(ethers.toBeHex(value), 8);
+}
+
+export function hexlify5(value: bigint | number): string {
+  return ethers.zeroPadValue(ethers.toBeHex(value), 5);
+}
 
 export function isHexEquals(hex1: string, hex2: string): boolean {
-    if (!hex1 || !hex2)
-        return false;
-    return hex1.toLowerCase() === hex2.toLowerCase();
+  if (!hex1 || !hex2) return false;
+  return hex1.toLowerCase() === hex2.toLowerCase();
 }

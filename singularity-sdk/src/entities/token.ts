@@ -1,9 +1,9 @@
 export type SimpleToken = {
-    address: string;
-    decimals: number;
-}
+  address: string;
+  decimals: number;
+};
 
 export type Token = SimpleToken & {
-    symbol: string;
-    name: string;
+  symbol: string;
+  name: string;
 };
