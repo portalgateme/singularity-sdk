@@ -14,6 +14,7 @@ export type ContractConfiguartion = {
   batchJoinSplitAssetManager: string;
   darkpoolSwapAssetManager: string;
   nftAssetManager: string;
+  theDeepAssetManager?: string;
   uniswapConfig?: {
     swapRouterAddress: string;
     quoterContractAddress: string;
@@ -145,6 +146,7 @@ export const contractConfig: { [chainId: number]: ContractConfiguartion } = {
     stakingAssetManager: '0xCd9BC6cE45194398d12e27e1333D5e1d783104dD',
     batchJoinSplitAssetManager: '0x0', //FIXME
     darkpoolSwapAssetManager: '0x0', //FIXME
+    theDeepAssetManager: '0x0', //FIXME
     nftAssetManager: '0x886a2A3ABF5B79AA5dFF1C73016BD07CFc817e04',
     drakpoolSubgraphUrl: 'https://34.142.142.240:8080/subgraphs/name/singularity/',
     uniswapConfig: {

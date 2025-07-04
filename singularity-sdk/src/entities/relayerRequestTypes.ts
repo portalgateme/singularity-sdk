@@ -215,3 +215,15 @@ export type ClaimStreamSablierRelayerRequest = BaseRelayerRequest & {
   noteFooterOut: string;
   refund: string;
 };
+
+export type TheDeepWithdrawRelayerRequest = BaseRelayerRequest & {
+  inNullifier: string;
+  inAsset: string;
+  inAmount: string;
+  outAsset1: string;
+  outAsset2: string;
+  outNoteFooter1: string;
+  outNoteFooter2: string;
+  refund1: string;
+  refund2: string;
+};

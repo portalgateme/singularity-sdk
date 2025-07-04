@@ -13,3 +13,4 @@ export * from './order';
 export * from './aerodrome';
 export * from './sablier';
 export * from './rocketpool';
+export * from './thedeep';
