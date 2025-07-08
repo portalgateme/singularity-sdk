@@ -115,9 +115,9 @@ export class TheDeepWithdrawService extends BaseRelayerService<TheDeepWithdrawCo
         }
 
         const relayerRequest: TheDeepWithdrawRelayerRequest = {
-            inAmount: hexlify32(context.inNote.amount),
-            inAsset: context.inNote.asset,
-            inNullifier: context.proof.inNullifier,
+            amount: hexlify32(context.inNote.amount),
+            vaultAddress: context.inNote.asset,
+            nullifier: context.proof.inNullifier,
             outAsset1: context.outNotePartial1.asset,
             outAsset2: context.outNotePartial2.asset,
             outNoteFooter1: hexlify32(context.outNotePartial1.footer),
@@ -134,7 +134,7 @@ export class TheDeepWithdrawService extends BaseRelayerService<TheDeepWithdrawCo
     }
 
     public getRelayerPath(): string {
-        return relayerPathConfig[Action.REDEEM];
+        return relayerPathConfig[Action.THE_DEEP_WITHDRAW];
     }
 
     public async postExecute(context: TheDeepWithdrawContext): Promise<MultiNotesResult> {

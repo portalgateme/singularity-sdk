@@ -217,9 +217,9 @@ export type ClaimStreamSablierRelayerRequest = BaseRelayerRequest & {
 };
 
 export type TheDeepWithdrawRelayerRequest = BaseRelayerRequest & {
-  inNullifier: string;
-  inAsset: string;
-  inAmount: string;
+  nullifier: string;
+  vaultAddress: string;
+  amount: string;
   outAsset1: string;
   outAsset2: string;
   outNoteFooter1: string;
