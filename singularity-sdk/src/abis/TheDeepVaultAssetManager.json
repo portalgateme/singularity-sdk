@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "TheDeepVaultAssetManager",
-  "sourceName": "contracts/defi/thedeep/TheDeepAssetManager.sol",
+  "sourceName": "contracts/defi/thedeep/TheDeepVaultAssetManager.sol",
   "abi": [
     {
       "inputs": [
