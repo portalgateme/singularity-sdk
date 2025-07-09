@@ -147,12 +147,12 @@ export class TheDeepWithdrawService extends BaseRelayerService<TheDeepWithdrawCo
         }
         const event = await getOutEvent(context.tx, TheDeepVaultAssetManagerAbi.abi, 'TheDeepWithdrawal', this._darkPool);
 
-        if (!event || !event.args || !event.args[2]) {
+        if (!event || !event.args || !event.args[2] ) {
             throw new DarkpoolError('Can not find TheDeepWithdrawal Event from transaction: ' + context.tx);
         }
 
-        const outAmount1 = event.args[2];
-        const outAmount2 = event.args[3];
+        const outAmount1 = event.args[2][0];
+        const outAmount2 = event.args[2][1];
         const outNote1 = await recoverNoteWithFooter(
             context.outNotePartial1.rho,
             context.outNotePartial1.asset,
