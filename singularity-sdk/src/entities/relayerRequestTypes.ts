@@ -216,6 +216,21 @@ export type ClaimStreamSablierRelayerRequest = BaseRelayerRequest & {
   refund: string;
 };
 
+export type TheDeepNoteDepositRelayerRequest = BaseRelayerRequest & {
+  asset1: string;
+  amount1: string;
+  asset2: string;
+  amount2: string;
+  inNullifier1: string;
+  inNullifier2: string;
+  noteFooter: string;
+  vaultAddress: string;
+  volatility: string;
+  refund1: string;
+  refund2: string;
+};
+
+
 export type TheDeepWithdrawRelayerRequest = BaseRelayerRequest & {
   nullifier: string;
   vaultAddress: string;

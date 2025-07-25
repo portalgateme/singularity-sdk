@@ -18,6 +18,7 @@ export enum Action {
   ROCKET_POOL_STAKE = 'ROCKET_POOL_STAKE',
   ROCKET_POOL_UNSTAKE = 'ROCKET_POOL_UNSTAKE',
   SABLIER_CLAIM_STREAM = 'SABLIER_CLAIM_STREAM',
+  THE_DEEP_NOTE_DEPOSIT = 'THE_DEEP_NOTE_DEPOSIT',
   THE_DEEP_WITHDRAW = 'THE_DEEP_WITHDRAW'
 }
 
@@ -39,6 +40,7 @@ export const relayerPathConfig: { [action: string]: string } = {
   [Action.ROCKET_POOL_STAKE]: '/v1/pgDarkPoolRocketPoolStake',
   [Action.ROCKET_POOL_UNSTAKE]: '/v1/pgDarkPoolRocketPoolUnStake',
   [Action.SABLIER_CLAIM_STREAM]: '/v1/pgDarkPoolSablierClaim',
+  [Action.THE_DEEP_NOTE_DEPOSIT]: '/v1/pgDarkPoolTheDeepNoteDeposit',
   [Action.THE_DEEP_WITHDRAW]: '/v1/pgDarkPoolTheDeepWithdraw'
 };
 

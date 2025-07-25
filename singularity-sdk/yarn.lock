@@ -1560,10 +1560,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@thesingularitynetwork/darkpool-v1-proof@^0.2.43":
-  version "0.2.43"
-  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.43.tgz#3113c58ccf00ca4984c1fe472a1f5c56a9e6d352"
-  integrity sha512-pjk3fSX7ElYNPv2+0IKPFPJEyZwuTMbr7UMYgDULBYV+0DKy9HMs4x2+lV+JGyleyLlSVDrE6nHaC+SBtOg6Rw==
+"@thesingularitynetwork/darkpool-v1-proof@^0.2.45":
+  version "0.2.45"
+  resolved "https://registry.yarnpkg.com/@thesingularitynetwork/darkpool-v1-proof/-/darkpool-v1-proof-0.2.45.tgz#51faaf47a2ddb646657daea55faccdc8b0a8b1ca"
+  integrity sha512-nygOYOffPYx7BxO9uWlqkK633Y9C5wNsQJi5apmrlhDh/Ncxtz0lyU2Nykyquj49Cw0TG+hRRtMxZhTY9WmEAQ==
   dependencies:
     "@aztec/bb.js" "^0.30.0"
     "@ethersproject/abi" "^5.7.0"
