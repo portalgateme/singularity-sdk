@@ -220,10 +220,7 @@ export type TheDeepWithdrawRelayerRequest = BaseRelayerRequest & {
   nullifier: string;
   vaultAddress: string;
   amount: string;
-  outAsset1: string;
-  outAsset2: string;
-  outNoteFooter1: string;
-  outNoteFooter2: string;
+  receipt: string;
   refund1: string;
   refund2: string;
 };

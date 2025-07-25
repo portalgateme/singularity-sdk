@@ -60,6 +60,10 @@ export interface BaseRelayerResult {
   txHash: string;
 }
 
+export interface MultiWithdrawResult extends BaseRelayerResult {
+  outAmounts: bigint[];
+}
+
 export interface SingleNoteResult extends BaseRelayerResult {
   note: Note;
 }

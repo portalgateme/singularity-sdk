@@ -204,6 +204,7 @@ export class TheDeepDepositService {
                 context.inAsset2.address,
                 hexlify32(context.inAmount2),
                 context.proof.outNoteFooter,
+                context.proof.outNullifier,
                 context.vault,
                 hexlify32(context.volatility)
             ],
