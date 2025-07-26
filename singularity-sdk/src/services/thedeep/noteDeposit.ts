@@ -95,7 +95,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             || !context.inNote1
             || !context.inNote2
             || !context.outNotePartial
-            || !context.volatility
+            || context.volatility === undefined
             || !context.signature) {
             throw new DarkpoolError('Invalid context');
         }
@@ -145,7 +145,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             !context.inNote1 ||
             !context.inNote2 ||
             !context.outNotePartial ||
-            !context.volatility ||
+            context.volatility === undefined ||
             !context.signature ||
             !context.merkleRoot ||
             !context.proof
