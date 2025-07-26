@@ -19,7 +19,6 @@ class TheDeepNoteDepositContext extends BaseRelayerContext {
     private _inNote1?: Note;
     private _inNote2?: Note;
     private _outNotePartial?: PartialNote;
-    private _vaultAddress?: string;
     private _volatility?: bigint;
     private _proof?: TheDeepNoteDepositProofResult;
 
@@ -51,14 +50,6 @@ class TheDeepNoteDepositContext extends BaseRelayerContext {
         return this._outNotePartial;
     }
 
-    set vaultAddress(vaultAddress: string | undefined) {
-        this._vaultAddress = vaultAddress;
-    }
-
-    get vaultAddress(): string | undefined {
-        return this._vaultAddress;
-    }
-
     set volatility(volatility: bigint | undefined) {
         this._volatility = volatility;
     }
@@ -86,6 +77,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
         inNote1: Note,
         inNote2: Note,
         vault: string,
+        volatility: bigint,
         signature: string
     ): Promise<{ context: TheDeepNoteDepositContext; outPartialNotes: PartialNote[] }> {
         const outNotePartial = await createPartialNote(vault, signature);
@@ -94,6 +86,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
         context.inNote1 = inNote1;
         context.inNote2 = inNote2;
         context.outNotePartial = outNotePartial;
+        context.volatility = volatility;
         return { context, outPartialNotes: [outNotePartial] };
     }
 
@@ -152,7 +145,6 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             !context.inNote1 ||
             !context.inNote2 ||
             !context.outNotePartial ||
-            !context.vaultAddress ||
             !context.volatility ||
             !context.signature ||
             !context.merkleRoot ||
@@ -169,7 +161,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             inNullifier1: context.proof.inNullifier1,
             inNullifier2: context.proof.inNullifier2,
             noteFooter: context.proof.outNoteFooter,
-            vaultAddress: context.vaultAddress,
+            vaultAddress: context.outNotePartial.asset,
             volatility: hexlify32(context.volatility),
             refund1: hexlify32(0n),
             refund2: hexlify32(0n),
