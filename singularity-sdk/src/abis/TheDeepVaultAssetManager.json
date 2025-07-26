@@ -734,6 +734,11 @@
               "internalType": "address",
               "name": "relayer",
               "type": "address"
+            },
+            {
+              "internalType": "uint256[2]",
+              "name": "gasRefund",
+              "type": "uint256[2]"
             }
           ],
           "internalType": "struct TheDeepVaultAssetManager.TheDeepNoteDepositArgs",
