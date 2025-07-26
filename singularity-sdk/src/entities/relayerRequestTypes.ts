@@ -224,6 +224,7 @@ export type TheDeepNoteDepositRelayerRequest = BaseRelayerRequest & {
   inNullifier1: string;
   inNullifier2: string;
   noteFooter: string;
+  nullifier: string;
   vaultAddress: string;
   volatility: string;
   refund1: string;

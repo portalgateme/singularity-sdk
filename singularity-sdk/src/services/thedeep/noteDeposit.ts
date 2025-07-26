@@ -161,6 +161,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             inNullifier1: context.proof.inNullifier1,
             inNullifier2: context.proof.inNullifier2,
             noteFooter: context.proof.outNoteFooter,
+            nullifier: context.proof.outNullifier,
             vaultAddress: context.outNotePartial.asset,
             volatility: hexlify32(context.volatility),
             refund1: hexlify32(0n),
