@@ -54,11 +54,6 @@
           "internalType": "address",
           "name": "initialOwner",
           "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "volatilityCheckAddress",
-          "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
@@ -312,19 +307,6 @@
     },
     {
       "inputs": [],
-      "name": "VolatilityCheck",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "getAssetPoolERC20",
       "outputs": [
         {
@@ -510,19 +492,6 @@
     {
       "inputs": [
         {
-          "internalType": "bool",
-          "name": "allow",
-          "type": "bool"
-        }
-      ],
-      "name": "setAllowWithdrawals",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address",
           "name": "assetPoolERC20",
           "type": "address"
@@ -614,7 +583,30 @@
     {
       "inputs": [
         {
+          "internalType": "uint8",
+          "name": "_vaultType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setVolatilityCheck",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "components": [
+            {
+              "internalType": "uint8",
+              "name": "vaultType",
+              "type": "uint8"
+            },
             {
               "internalType": "address",
               "name": "asset1",
@@ -638,11 +630,6 @@
             {
               "internalType": "bytes32",
               "name": "noteFooter",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "nullifier",
               "type": "bytes32"
             },
             {
@@ -675,6 +662,11 @@
       "inputs": [
         {
           "components": [
+            {
+              "internalType": "uint8",
+              "name": "vaultType",
+              "type": "uint8"
+            },
             {
               "internalType": "bytes32",
               "name": "merkleRoot",
@@ -713,11 +705,6 @@
             {
               "internalType": "bytes32",
               "name": "noteFooter",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "nullifier",
               "type": "bytes32"
             },
             {
@@ -817,6 +804,25 @@
       "name": "transferOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "vault",
+          "type": "uint8"
+        }
+      ],
+      "name": "volatilityCheck",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {

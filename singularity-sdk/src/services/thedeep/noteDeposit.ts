@@ -19,6 +19,7 @@ class TheDeepNoteDepositContext extends BaseRelayerContext {
     private _inNote1?: Note;
     private _inNote2?: Note;
     private _outNotePartial?: PartialNote;
+    private _vaultType?: bigint;
     private _volatility?: bigint;
     private _proof?: TheDeepNoteDepositProofResult;
 
@@ -50,6 +51,14 @@ class TheDeepNoteDepositContext extends BaseRelayerContext {
         return this._outNotePartial;
     }
 
+    set vaultType(vaultType: bigint | undefined) {
+        this._vaultType = vaultType;
+    }
+
+    get vaultType(): bigint | undefined {
+        return this._vaultType;
+    }
+
     set volatility(volatility: bigint | undefined) {
         this._volatility = volatility;
     }
@@ -77,6 +86,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
         inNote1: Note,
         inNote2: Note,
         vault: string,
+        vaultType: bigint,
         volatility: bigint,
         signature: string
     ): Promise<{ context: TheDeepNoteDepositContext; outPartialNotes: PartialNote[] }> {
@@ -86,6 +96,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
         context.inNote1 = inNote1;
         context.inNote2 = inNote2;
         context.outNotePartial = outNotePartial;
+        context.vaultType = vaultType;
         context.volatility = volatility;
         return { context, outPartialNotes: [outNotePartial] };
     }
@@ -146,6 +157,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             !context.inNote2 ||
             !context.outNotePartial ||
             context.volatility === undefined ||
+            context.vaultType === undefined ||
             !context.signature ||
             !context.merkleRoot ||
             !context.proof
@@ -154,6 +166,7 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
         }
 
         const relayerRequest: TheDeepNoteDepositRelayerRequest = {
+            vaultType: hexlify32(context.vaultType),
             asset1: context.inNote1.asset,
             amount1: hexlify32(context.inNote1.amount),
             asset2: context.inNote2.asset,
@@ -161,7 +174,6 @@ export class TheDeepNoteDepositService extends BaseRelayerService<TheDeepNoteDep
             inNullifier1: context.proof.inNullifier1,
             inNullifier2: context.proof.inNullifier2,
             noteFooter: context.proof.outNoteFooter,
-            nullifier: context.proof.outNullifier,
             vaultAddress: context.outNotePartial.asset,
             volatility: hexlify32(context.volatility),
             refund1: hexlify32(0n),

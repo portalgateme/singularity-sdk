@@ -9,7 +9,7 @@ import { ethers } from 'ethers';
 import TheDeepVaultAssetManagerAbi from '../../abis/TheDeepVaultAssetManager.json';
 import { DarkPool } from '../../darkpool';
 import { DarkpoolError, Token } from '../../entities';
-import { hexlify32, isNativeAsset } from '../../utils/util';
+import { hexlify1, hexlify32, isNativeAsset } from '../../utils/util';
 import { allowance } from '../base/allowanceUtil';
 import { BaseContext, SingleNoteResult } from '../BaseService';
 import { getOutEvent } from '../EventService';
@@ -21,6 +21,7 @@ class TheDeepDepositContext extends BaseContext {
     private _inAsset2?: Token;
     private _inAmount2?: bigint;
     private _vault?: string;
+    private _vaultType?: bigint;
     private _volatility?: bigint;
     private _outNotePartial?: PartialNote;
     private _proof?: TheDeepDepositProofResult;
@@ -77,6 +78,14 @@ class TheDeepDepositContext extends BaseContext {
         return this._vault;
     }
 
+    set vaultType(vaultType: bigint | undefined) {
+        this._vaultType = vaultType;
+    }
+
+    get vaultType(): bigint | undefined {
+        return this._vaultType;
+    }
+
     set volatility(volatility: bigint | undefined) {
         this._volatility = volatility;
     }
@@ -115,6 +124,7 @@ export class TheDeepDepositService {
         inAmount2: bigint,
         inAsset2: Token,
         vault: string,
+        vaultType: bigint,
         volatility: bigint,
         signature: string
     ): Promise<{ context: TheDeepDepositContext; outPartialNote: PartialNote }> {
@@ -127,6 +137,7 @@ export class TheDeepDepositService {
         context.inAsset2 = inAsset2;
         context.inAmount2 = inAmount2;
         context.vault = vault;
+        context.vaultType = vaultType;
         context.volatility = volatility;
         context.outNotePartial = outNotePartial;
         return { context, outPartialNote: outNotePartial };
@@ -174,6 +185,7 @@ export class TheDeepDepositService {
             || context.inAmount1 === undefined
             || context.inAmount2 === undefined
             || context.volatility === undefined
+            || context.vaultType === undefined
             || !context.outNotePartial
         ) {
             throw new DarkpoolError('Invalid context');
@@ -199,12 +211,12 @@ export class TheDeepDepositService {
 
         const tx = await contract.theDeepDeposit(
             [
+                hexlify1(context.vaultType),
                 context.inAsset1.address,
                 hexlify32(context.inAmount1),
                 context.inAsset2.address,
                 hexlify32(context.inAmount2),
                 context.proof.outNoteFooter,
-                context.proof.outNullifier,
                 context.vault,
                 hexlify32(context.volatility)
             ],
@@ -222,7 +234,10 @@ export class TheDeepDepositService {
     }
 
     private async postExecute(context: TheDeepDepositContext): Promise<SingleNoteResult> {
-        if (!context || !context.outNotePartial || !context.signature) {
+        if (!context 
+            || !context.outNotePartial 
+            || !context.signature
+        ) {
             throw new DarkpoolError('Invalid context');
         }
 

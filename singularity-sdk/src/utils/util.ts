@@ -27,6 +27,10 @@ export function hexlify5(value: bigint | number): string {
   return ethers.zeroPadValue(ethers.toBeHex(value), 5);
 }
 
+export function hexlify1(value: bigint | number): string {
+  return ethers.toBeHex(value);
+}
+
 export function isHexEquals(hex1: string, hex2: string): boolean {
   if (!hex1 || !hex2) return false;
   return hex1.toLowerCase() === hex2.toLowerCase();

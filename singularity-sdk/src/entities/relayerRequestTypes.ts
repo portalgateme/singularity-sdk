@@ -217,6 +217,7 @@ export type ClaimStreamSablierRelayerRequest = BaseRelayerRequest & {
 };
 
 export type TheDeepNoteDepositRelayerRequest = BaseRelayerRequest & {
+  vaultType: string;
   asset1: string;
   amount1: string;
   asset2: string;
@@ -224,7 +225,6 @@ export type TheDeepNoteDepositRelayerRequest = BaseRelayerRequest & {
   inNullifier1: string;
   inNullifier2: string;
   noteFooter: string;
-  nullifier: string;
   vaultAddress: string;
   volatility: string;
   refund1: string;
