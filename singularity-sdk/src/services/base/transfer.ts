@@ -2,19 +2,20 @@ import {
   Note,
   TransferProofResult,
   generateTransferProof,
-  createNoteWithFooter
+  createNoteWithFooter,
+  BobTransferMessage
 } from '@thesingularitynetwork/darkpool-v1-proof';
 
 import { hexlify32 } from '../../utils/util';
-import { BaseContext, BaseContractService, transferCodeToNoteFooter } from '../BaseService';
+import { BaseContext, BaseContractService } from '../BaseService';
 import { ethers } from 'ethers';
 import { DarkpoolError, Token } from '../../entities';
 import { DarkPool } from '../../darkpool';
 import { getMerklePathAndRoot } from '../merkletree';
-import DarkpoolAssetManagerAbi from '../../abis/DarkpoolAssetManager.json';
+import TransferAssetManagerAbi from '../../abis/TransferAssetManager.json';
 
 class TransferContext extends BaseContext {
-  private _outNoteFooter?: bigint;
+  private _bobTransferMessage?: BobTransferMessage;
   private _inNote?: Note;
   private _proof?: TransferProofResult;
 
@@ -30,12 +31,12 @@ class TransferContext extends BaseContext {
     return this._inNote;
   }
 
-  set outNoteFooter(note: bigint | undefined) {
-    this._outNoteFooter = note;
+  set bobTransferMessage(bobTransferMessage: BobTransferMessage | undefined) {
+    this._bobTransferMessage = bobTransferMessage;
   }
 
-  get outNoteFooter(): bigint | undefined {
-    return this._outNoteFooter;
+  get bobTransferMessage(): BobTransferMessage | undefined {
+    return this._bobTransferMessage;
   }
 
   set proof(proof: TransferProofResult | undefined) {
@@ -59,30 +60,31 @@ export class TransferService extends BaseContractService<TransferContext> {
 
   public async prepare(
     inNote: Note,
-    transferCode: string,
+    bobTransferMessage: BobTransferMessage,
     signature: string
   ): Promise<{ context: TransferContext; outNotes: Note[] }> {
-    const outNoteFooter = await transferCodeToNoteFooter(transferCode, this._darkPool.chainId);
     const context = new TransferContext(signature);
     context.inNote = inNote;
-    context.outNoteFooter = outNoteFooter;
+    context.bobTransferMessage = bobTransferMessage;
 
     return { context, outNotes: [] };
   }
 
   public async generateProof(context: TransferContext): Promise<void> {
-    if (!context || !context.outNoteFooter || !context.signature || !context.inNote) {
+    if (!context || !context.bobTransferMessage || !context.signature || !context.inNote) {
       throw new DarkpoolError('Invalid context');
     }
 
     const path = await getMerklePathAndRoot(context.inNote.note, this._darkPool);
     const proof = await generateTransferProof({
-      inNote: context.inNote,
-      outNoteFooter: context.outNoteFooter,
-      signedMessage: context.signature,
-      merkleRoot: path.root,
-      merklePath: path.path,
-      merkleIndex: path.index,
+      aliceInNote: context.inNote,
+      aliceSignedMessage: context.signature,
+      aliceMerkleRoot: path.root,
+      aliceMerklePath: path.path,
+      aliceMerkleIndex: path.index,
+      bobOutNote: context.bobTransferMessage.note,
+      bobPubKey: context.bobTransferMessage.pubKey,
+      bobSignature: context.bobTransferMessage.signature,
       options: this._darkPool.proofOptions
     });
     context.proof = proof;
@@ -90,31 +92,9 @@ export class TransferService extends BaseContractService<TransferContext> {
   }
 
   public async execute(context: TransferContext): Promise<string> {
-    const contractParam = this.getContractCallParameters(context);
-    const signer = this._darkPool.signer;
-    const contract = new ethers.Contract(
-      this._darkPool.contracts.darkpoolAssetManager,
-      DarkpoolAssetManagerAbi.abi,
-      signer
-    );
-
-    const tx = await contract.transfer(
-      contractParam.merkleRoot,
-      contractParam.inNoteNullifier,
-      contractParam.asset,
-      contractParam.amount,
-      contractParam.outNote,
-      contractParam.outNoteFooter,
-      contractParam.proof.proof
-    );
-
-    return tx.hash;
-  }
-
-  public getContractCallParameters(context: TransferContext) {
     if (
       !context ||
-      !context.outNoteFooter ||
+      !context.bobTransferMessage ||
       !context.signature ||
       !context.proof ||
       !context.merkleRoot ||
@@ -123,14 +103,21 @@ export class TransferService extends BaseContractService<TransferContext> {
       throw new DarkpoolError('Invalid context');
     }
 
-    return {
-      merkleRoot: context.merkleRoot,
-      inNoteNullifier: context.proof.inNoteNullifier,
-      asset: context.inNote.asset,
-      amount: context.inNote.amount,
-      outNote: context.proof.outNote,
-      outNoteFooter: hexlify32(context.outNoteFooter),
-      proof: context.proof.proof
-    };
+    const signer = this._darkPool.signer;
+    const contract = new ethers.Contract(
+      this._darkPool.contracts.transferAssetManager,
+      TransferAssetManagerAbi.abi,
+      signer
+    );
+
+    const tx = await contract.transfer(
+      context.merkleRoot,
+      context.proof.aliceInNoteNullifier,
+      hexlify32(context.bobTransferMessage.note.note),
+      context.proof.bobOutNoteFooter,
+      context.proof.proof.proof
+    );
+
+    return tx.hash;
   }
 }
