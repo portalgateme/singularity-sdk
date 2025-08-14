@@ -196,8 +196,8 @@ export class AerodromeSwapService extends BaseRelayerService<
       command: context.request.command,
       routes: context.request.routes.map((route) => {
         return {
-          amountIn: route.amountIn,
-          amountOutMin: route.amountOutMin,
+          amountIn: hexlify32(route.amountIn),
+          amountOutMin: hexlify32(route.amountOutMin),
           hops: route.path,
           isUni: route.isUniswapPool
         }

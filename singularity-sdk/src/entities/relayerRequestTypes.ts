@@ -142,8 +142,8 @@ export type RedeemRelayerRequest = BaseRelayerRequest & {
 };
 
 export type AerodromeSwapSwapCommandDataForRelayer = {
-  amountIn: bigint;
-  amountOutMin: bigint;
+  amountIn: string;
+  amountOutMin: string;
   hops: string;
   isUni: boolean;
 }
