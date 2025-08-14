@@ -1,5 +1,3 @@
-import { AerodromeSwapRoute } from '@thesingularitynetwork/darkpool-v1-proof';
-
 type BaseRelayerRequest = {
   proof: string;
   relayer: string;
@@ -143,11 +141,20 @@ export type RedeemRelayerRequest = BaseRelayerRequest & {
   refund: string;
 };
 
+export type AerodromeSwapSwapCommandDataForRelayer = {
+  amountIn: bigint;
+  amountOutMin: bigint;
+  hops: string;
+  isUni: boolean;
+}
+
 export type AerodromeSwapRelayerRequest = BaseRelayerRequest & {
   inNullifier: string;
   inAsset: string;
   inAmount: string;
-  routes: AerodromeSwapRoute[];
+  outAsset: string;
+  command: string;
+  routes: AerodromeSwapSwapCommandDataForRelayer[];
   routeHash: string;
   minExpectedAmountOut: string;
   deadline: string;

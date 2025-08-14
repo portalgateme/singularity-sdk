@@ -1,16 +1,16 @@
 import {
   AerodromeSwapProofResult,
-  AerodromeSwapRoute,
+  AerodromeSwapCommandData,
   Note,
   PartialNote,
   createPartialNote,
   generateAerodromeSwapProof,
   recoverNoteWithFooter
 } from '@thesingularitynetwork/darkpool-v1-proof';
-import AerodromeSwapAssetManagerAbi from '../../abis/AerodromeSwapAssetManager.json';
+import AerodromeUniversalSwapAssetManagerAbi from '../../abis/AerodromeUniversalSwapAssetManager.json';
 import { Action, relayerPathConfig } from '../../config/config';
 import { Token } from '../../entities/token';
-import { hexlify32, isAddressEquals } from '../../utils/util';
+import { hexlify3, hexlify32, isAddressEquals } from '../../utils/util';
 import { BaseRelayerContext, BaseRelayerService, SingleNoteResult } from '../BaseService';
 import { getMerklePathAndRoot } from '../merkletree';
 import { Relayer } from '../../entities/relayer';
@@ -18,12 +18,70 @@ import { AerodromeSwapRelayerRequest, DarkpoolError } from '../../entities';
 import { DarkPool } from '../../darkpool';
 import { getOutEvent } from '../EventService';
 
+const V2_STABLE_POOL = '01';
+const V2_VOLATILE_POOL = '00';
+
+export const V2_EXACT_IN = '08';
+export const V3_EXACT_IN = '00';
+
+export type AerodromeV2Route = {
+  from: string,
+  to: string,
+  stable: boolean,
+}
+
+export type AerodromeV3Route = {
+  from: string,
+  to: string,
+  tickSpacing: bigint
+}
+
+export function encodeV2Path(routes: AerodromeV2Route[]) {
+  let encoded = routes[0].from;
+  let lastTo = routes[0].from;
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
+    if (isAddressEquals(lastTo, route.from)) {
+      encoded += route.stable ? V2_STABLE_POOL : V2_VOLATILE_POOL;
+      encoded += route.to.slice(2)
+    } else {
+      throw new DarkpoolError("Invalid hops, the From is not the same as last To");
+    }
+  }
+
+  return encoded.toLowerCase()
+}
+
+export function encodeV3Path(routes: AerodromeV3Route[]) {
+  let encoded = routes[0].from;
+  let lastTo = routes[0].from;
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
+    if (isAddressEquals(lastTo, route.from)) {
+      encoded += hexlify3(route.tickSpacing);
+      encoded += route.to.slice(2)
+    } else {
+      throw new DarkpoolError("Invalid hops, the From is not the same as last To");
+    }
+  }
+
+  return encoded.toLowerCase()
+}
+
+export function getCommand(actions: string[]) {
+  if (!actions.every(action => action === V2_EXACT_IN || action === V3_EXACT_IN)) {
+    throw new DarkpoolError("Invalid command");
+  }
+  return '0x' + actions.join("");
+}
+
 export interface AerodromeSwapRequest {
   inNote: Note;
   outAsset: Token;
   minExpectedOutAmount: bigint;
   deadline: number;
-  routes: AerodromeSwapRoute[];
+  command: string;
+  routes: AerodromeSwapCommandData[];
   gasRefundInOutToken: bigint;
 }
 
@@ -93,6 +151,7 @@ export class AerodromeSwapService extends BaseRelayerService<
       merkleRoot: path.root,
       inNoteMerklePath: path.path,
       inNoteMerkleIndex: path.index,
+      command: context.request.command,
       routes: context.request.routes,
       minOutAmount: context.request.minExpectedOutAmount,
       outNotePartial: context.outPartialNote,
@@ -123,7 +182,16 @@ export class AerodromeSwapService extends BaseRelayerService<
       inNullifier: hexlify32(context.proof.inNoteNullifier),
       inAsset: context.request.inNote.asset,
       inAmount: hexlify32(context.request.inNote.amount),
-      routes: context.request.routes,
+      outAsset: context.outPartialNote.asset,
+      command: context.request.command,
+      routes: context.request.routes.map((route) => {
+        return {
+          amountIn: route.amountIn,
+          amountOutMin: route.amountOutMin,
+          hops: route.path,
+          isUni: route.isUniswapPool
+        }
+      }),
       routeHash: context.proof.routeHash,
       minExpectedAmountOut: hexlify32(context.request.minExpectedOutAmount),
       deadline: hexlify32(context.request.deadline),
@@ -157,7 +225,7 @@ export class AerodromeSwapService extends BaseRelayerService<
       throw new DarkpoolError('No transaction hash');
     }
 
-    const event = await getOutEvent(context.tx, AerodromeSwapAssetManagerAbi.abi, 'AerodromeSwap', this._darkPool);
+    const event = await getOutEvent(context.tx, AerodromeUniversalSwapAssetManagerAbi.abi, 'AerodromeSwap', this._darkPool);
 
     if (!event || !event.args || !event.args[2]) {
       throw new DarkpoolError('Can not find AerodromeSwap Event from transaction: ' + context.tx);

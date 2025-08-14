@@ -27,6 +27,10 @@ export function hexlify5(value: bigint | number): string {
   return ethers.zeroPadValue(ethers.toBeHex(value), 5);
 }
 
+export function hexlify3(value: bigint | number): string {
+  return ethers.zeroPadValue(ethers.toBeHex(value), 3);
+}
+
 export function hexlify1(value: bigint | number): string {
   return ethers.toBeHex(value);
 }
