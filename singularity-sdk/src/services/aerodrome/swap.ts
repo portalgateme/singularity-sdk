@@ -60,7 +60,7 @@ export function encodeV3Path(routes: AerodromeV3Route[]) {
     const route = routes[i];
     if (isAddressEquals(lastTo, route.from)) {
       lastTo = route.to;
-      encoded += hexlify3(route.tickSpacing);
+      encoded += hexlify3(route.tickSpacing).slice(2);
       encoded += route.to.slice(2);
     } else {
       throw new DarkpoolError("Invalid hops, the From is not the same as last To");
