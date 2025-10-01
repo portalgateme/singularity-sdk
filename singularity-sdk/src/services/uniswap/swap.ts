@@ -72,7 +72,11 @@ export class UniswapSingleSwapService extends BaseRelayerService<
     request: UniswapSingleSwapRequest,
     signature: string
   ): Promise<{ context: UniswapSingleSwapContext; outPartialNotes: PartialNote[] }> {
-    const outPartialNote = await createPartialNote(request.outAsset.address, signature);
+    let processedOutAsset = request.outAsset.address;
+    if (isAddressEquals(request.outAsset.address, this._darkPool.contracts.nativeWrapper)) {
+      processedOutAsset = this._darkPool.contracts.ethAddress;
+    }
+    const outPartialNote = await createPartialNote(processedOutAsset, signature);
     const context = new UniswapSingleSwapContext(this._darkPool.getRelayer(), signature);
     context.request = request;
     context.outPartialNote = outPartialNote;
@@ -120,7 +124,7 @@ export class UniswapSingleSwapService extends BaseRelayerService<
       asset: context.request.inNote.asset,
       amount: hexlify32(context.request.inNote.amount),
       nullifier: context.proof.inNullifier,
-      assetOut: context.request.outAsset.address,
+      assetOut: context.outPartialNote.asset,
       amountOutMin: hexlify32(context.request.minExpectedOutAmount),
       noteFooterOut: hexlify32(context.outPartialNote.footer),
       relayer: context.relayer.relayerAddress,
