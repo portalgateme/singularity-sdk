@@ -73,8 +73,8 @@ export class UniswapSingleSwapService extends BaseRelayerService<
     signature: string
   ): Promise<{ context: UniswapSingleSwapContext; outPartialNotes: PartialNote[] }> {
     let processedOutAsset = request.outAsset.address;
-    if (isAddressEquals(request.outAsset.address, this._darkPool.contracts.nativeWrapper)) {
-      processedOutAsset = this._darkPool.contracts.ethAddress;
+    if (isAddressEquals(request.outAsset.address, this._darkPool.contracts.ethAddress)) {
+      processedOutAsset = this._darkPool.contracts.nativeWrapper;
     }
     const outPartialNote = await createPartialNote(processedOutAsset, signature);
     const context = new UniswapSingleSwapContext(this._darkPool.getRelayer(), signature);
