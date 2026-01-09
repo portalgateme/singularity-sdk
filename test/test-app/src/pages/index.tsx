@@ -14,11 +14,11 @@ const DemoPage: NextPage = () => {
 
   const tabComponents: TabConfig = {
     DemoSwapMakerCard: { element: <DemoSwapMakerCard />, tabTitle: '1.Maker' },
-    // DemoSwapTakerCard: { element: <DemoSwapTakerCard />, tabTitle: '2.Taker' },
-    // DemoSwapMakerFinalCard: { element: <DemoSwapMakerFinalCard />, tabTitle: '3.Maker Swap' },
-    // DemoSwapTakerWithdrawCard: { element: <DemoSwapTakerWithdrawCard />, tabTitle: '4.Taker Withdraw' },
-    DemoAerodromeSwapCard: { element: <DemoAerodromeSwapCard />, tabTitle: '5.Aerodrome Swap' },
-    DemoAerodromeAddLpCard: { element: <DemoAerodromeAddLpCard />, tabTitle: '6.Aerodrome Add LP' },
+    DemoSwapTakerCard: { element: <DemoSwapTakerCard />, tabTitle: '2.Taker' },
+    DemoSwapMakerFinalCard: { element: <DemoSwapMakerFinalCard />, tabTitle: '3.Maker Swap' },
+    DemoSwapTakerWithdrawCard: { element: <DemoSwapTakerWithdrawCard />, tabTitle: '4.Taker Withdraw' },
+    //DemoAerodromeSwapCard: { element: <DemoAerodromeSwapCard />, tabTitle: '5.Aerodrome Swap' },
+    //DemoAerodromeAddLpCard: { element: <DemoAerodromeAddLpCard />, tabTitle: '6.Aerodrome Add LP' },
     // DemoCard: { element: <DemoCard />, tabTitle: 'Demo Infra' },
     // DemoStakeCard: { element: <DemoStakeCard />, tabTitle: 'Stake' },
   }
