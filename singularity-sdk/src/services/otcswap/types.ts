@@ -1,4 +1,4 @@
-import { Note } from '@thesingularitynetwork/darkpool-v1-proof';
+import { Note, SchnorrSignature } from '@thesingularitynetwork/darkpool-v1-proof';
 
 export interface OTCSwapAliceRequest {
   aliceNote: Note;
@@ -13,7 +13,7 @@ export interface OTCSwapAliceRequest {
   bobNewNoteRho: bigint;
   bobNewNoteNote: bigint;
   bobNewNoteFooter: bigint;
-  bobSignature: number[];
+  bobSignature: SchnorrSignature;
   bobPubKey: any;
 
   chainId: number;
@@ -32,7 +32,7 @@ export interface OTCSwapBobRequest {
   bobNewNoteRho: bigint;
   bobNewNoteNote: bigint;
   bobNewNoteFooter: bigint;
-  bobSignature: number[];
+  bobSignature: SchnorrSignature;
   bobPubKey: any;
 
   chainId: number;
@@ -47,5 +47,5 @@ export interface OTCSwapMessage {
 }
 
 export interface OTCSwapReturnMessage extends OTCSwapMessage {
-  signature: number[];
+  signature: SchnorrSignature;
 }

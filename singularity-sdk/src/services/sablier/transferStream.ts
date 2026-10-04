@@ -1,7 +1,7 @@
 import {
   NftNote,
   Note,
-  TransferProofResult,
+  TransferNftProofResult,
   createPartialNote,
   generateTransferNftProof
 } from '@thesingularitynetwork/darkpool-v1-proof';
@@ -17,7 +17,7 @@ import { getMerklePathAndRoot } from '../merkletree';
 
 export class TransferStreamSablierContext extends BaseContext {
   private _address?: string;
-  private _proof?: TransferProofResult;
+  private _proof?: TransferNftProofResult;
   private _nftNote?: NftNote;
   private _outNoteFooter?: bigint;
 
@@ -49,11 +49,11 @@ export class TransferStreamSablierContext extends BaseContext {
     return this._address;
   }
 
-  set proof(proof: TransferProofResult | undefined) {
+  set proof(proof: TransferNftProofResult | undefined) {
     this._proof = proof;
   }
 
-  get proof(): TransferProofResult | undefined {
+  get proof(): TransferNftProofResult | undefined {
     return this._proof;
   }
 }
