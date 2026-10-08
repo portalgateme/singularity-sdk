@@ -5,7 +5,9 @@ import {
   DOMAIN_NOTE,
   generateKeyPair,
   generateOTCSwapSignature,
-  Note
+  hexStringToSignature,
+  Note,
+  signatureToHexString
 } from '@thesingularitynetwork/darkpool-v1-proof';
 import { DarkpoolError, Order, OTCSwapFullMessage, OTCSwapMakerMessage } from '../../entities';
 import { isAddressEquals } from '../../utils/util';
@@ -117,7 +119,7 @@ function partialSwapSecretFromString(chainId: number, messageString: string): OT
 }
 
 function fullSwapSecretToString(finalSwapSecret: OTCSwapFullMessage): string {
-  let sigString: string = finalSwapSecret.takerSignature.join('-');
+  const sigString: string = signatureToHexString(finalSwapSecret.takerSignature);
 
   const messageArray = [
     'ONEOFF-SWAP-RETURN',
@@ -175,11 +177,7 @@ export function fullSwapSecretFromString(chainId: number, messageString: string)
   const takerPubKeyY = messageArray[20];
   const takerSignatureString = messageArray[21];
 
-  const takerSignatureStringArray = takerSignatureString.split('-');
-  const takerSignature: number[] = [];
-  for (let i = 0; i < takerSignatureStringArray.length; i++) {
-    takerSignature.push(parseInt(takerSignatureStringArray[i]));
-  }
+  const takerSignature = hexStringToSignature(takerSignatureString);
 
   const result = {
     chainId,

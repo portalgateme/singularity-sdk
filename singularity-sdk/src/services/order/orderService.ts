@@ -1,7 +1,6 @@
-import { DarkPoolTakerSwapMessage } from '@thesingularitynetwork/darkpool-v1-proof';
+import { DarkPoolTakerSwapMessage, Point } from '@thesingularitynetwork/darkpool-v1-proof';
 import * as crypto from 'crypto';
 import { hexlify32 } from '../../utils/util';
-import { Fr } from '@aztec/bb.js';
 
 export function encryptWithPublicKey(publicKey: string, data: string): string {
   const buffer = Buffer.from(data, 'utf8');
@@ -37,11 +36,7 @@ export function serializeDarkPoolTakerSwapMessage(message: DarkPoolTakerSwapMess
 }
 
 function deserializePublicKey(publicKeyString: string): any {
-  const buffer = Buffer.from(publicKeyString.replace(/^0x/i, ''), 'hex');
-  return {
-    x: Fr.fromBuffer(buffer.subarray(0, 32)),
-    y: Fr.fromBuffer(buffer.subarray(32, 64))
-  };
+  return Point.fromString(publicKeyString);
 }
 
 export function deserializeDarkPoolTakerSwapMessage(serializedMessage: string): DarkPoolTakerSwapMessage {

@@ -1,4 +1,4 @@
-import { Note } from '@thesingularitynetwork/darkpool-v1-proof';
+import { Note, SchnorrSignature } from '@thesingularitynetwork/darkpool-v1-proof';
 
 export type Order = {
   orderId: string;
@@ -24,5 +24,5 @@ export type OTCSwapFullMessage = OTCSwapMakerMessage & {
   takerNewFooter: bigint;
   takerNewRho: bigint;
   takerPubKey: { x: bigint; y: bigint };
-  takerSignature: number[];
+  takerSignature: SchnorrSignature;
 };
