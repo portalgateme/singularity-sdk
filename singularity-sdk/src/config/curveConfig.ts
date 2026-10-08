@@ -163,34 +163,6 @@ export const CURVE_POOL: { [chainId: number]: CurvePoolConfig[] } = {
       wrappedDecimals: [18, 18],
       useLending: [false, false]
     },
-    {
-      id: 'tricrypto2',
-      name: 'tricrypto2',
-      address: '0xd51a44d3fae010294c616388b506acda1bfaae46',
-      lpToken: '0xc4ad29ba4b3c580e6d59105fff484999997675ff',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'crv3crypto',
-      isLegacy: 7,
-      isPlain: false,
-      isLending: false,
-      isMeta: false,
-      isCrypto: true,
-      underlyingCoins: ['USDT', 'WBTC', 'ETH'],
-      wrappedCoins: ['USDT', 'WBTC', 'WETH'],
-      underlyingAddresses: [
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-      ],
-      wrappedAddresses: [
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-      ],
-      underlyingDecimals: [6, 8, 18],
-      wrappedDecimals: [6, 8, 18],
-      useLending: [false, false, false]
-    },
 
     {
       id: 'fraxusdc',
@@ -688,56 +660,6 @@ export const CURVE_POOL: { [chainId: number]: CurvePoolConfig[] } = {
       wrappedCoins: ['USDe', 'crvUSD'],
       underlyingAddresses: ['0x4c9edd5852cd905f086c759e8383e09bff1e68b3', '0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'],
       wrappedAddresses: ['0x4c9edd5852cd905f086c759e8383e09bff1e68b3', '0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'],
-      underlyingDecimals: [18, 18],
-      wrappedDecimals: [18, 18],
-      useLending: [false, false]
-    },
-    {
-      id: 'susd',
-      name: 'susd',
-      address: '0xa5407eae9ba41422680e2e00537571bcc53efbfd',
-      lpToken: '0xc25a3a3b969415c80451098fa907ec722572917f',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'crvPlain3andSUSD',
-      isLegacy: 2,
-      isPlain: true,
-      isLending: false,
-      isMeta: false,
-      isCrypto: false,
-      disableWithdrawOneCoin: true,
-      underlyingCoins: ['DAI', 'USDC', 'USDT', 'sUSD'],
-      wrappedCoins: ['DAI', 'USDC', 'USDT', 'sUSD'],
-      underlyingAddresses: [
-        '0x6b175474e89094c44da98b954eedeac495271d0f',
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
-      ],
-      wrappedAddresses: [
-        '0x6b175474e89094c44da98b954eedeac495271d0f',
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
-      ],
-      underlyingDecimals: [18, 6, 6, 18],
-      wrappedDecimals: [18, 6, 6, 18],
-      useLending: [false, false, false, false]
-    },
-    {
-      id: 'seth',
-      name: 'seth',
-      address: '0xc5424b857f758e906013f3555dad202e4bdb4567',
-      lpToken: '0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'eCRV',
-      isPlain: true,
-      isLending: false,
-      isMeta: false,
-      isCrypto: false,
-      underlyingCoins: ['ETH', 'sETH'],
-      wrappedCoins: ['ETH', 'sETH'],
-      underlyingAddresses: ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb'],
-      wrappedAddresses: ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb'],
       underlyingDecimals: [18, 18],
       wrappedDecimals: [18, 18],
       useLending: [false, false]
@@ -896,34 +818,6 @@ export const CURVE_POOL: { [chainId: number]: CurvePoolConfig[] } = {
       wrappedDecimals: [18, 18],
       useLending: [false, false]
     },
-    {
-      id: 'tricrypto2',
-      name: 'tricrypto2',
-      address: '0xd51a44d3fae010294c616388b506acda1bfaae46',
-      lpToken: '0xc4ad29ba4b3c580e6d59105fff484999997675ff',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'crv3crypto',
-      isLegacy: 7,
-      isPlain: false,
-      isLending: false,
-      isMeta: false,
-      isCrypto: true,
-      underlyingCoins: ['USDT', 'WBTC', 'ETH'],
-      wrappedCoins: ['USDT', 'WBTC', 'WETH'],
-      underlyingAddresses: [
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
-      ],
-      wrappedAddresses: [
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-      ],
-      underlyingDecimals: [6, 8, 18],
-      wrappedDecimals: [6, 8, 18],
-      useLending: [false, false, false]
-    },
 
     {
       id: 'fraxusdc',
@@ -1421,56 +1315,6 @@ export const CURVE_POOL: { [chainId: number]: CurvePoolConfig[] } = {
       wrappedCoins: ['USDe', 'crvUSD'],
       underlyingAddresses: ['0x4c9edd5852cd905f086c759e8383e09bff1e68b3', '0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'],
       wrappedAddresses: ['0x4c9edd5852cd905f086c759e8383e09bff1e68b3', '0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'],
-      underlyingDecimals: [18, 18],
-      wrappedDecimals: [18, 18],
-      useLending: [false, false]
-    },
-    {
-      id: 'susd',
-      name: 'susd',
-      address: '0xa5407eae9ba41422680e2e00537571bcc53efbfd',
-      lpToken: '0xc25a3a3b969415c80451098fa907ec722572917f',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'crvPlain3andSUSD',
-      isLegacy: 2,
-      isPlain: true,
-      isLending: false,
-      isMeta: false,
-      isCrypto: false,
-      disableWithdrawOneCoin: true,
-      underlyingCoins: ['DAI', 'USDC', 'USDT', 'sUSD'],
-      wrappedCoins: ['DAI', 'USDC', 'USDT', 'sUSD'],
-      underlyingAddresses: [
-        '0x6b175474e89094c44da98b954eedeac495271d0f',
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
-      ],
-      wrappedAddresses: [
-        '0x6b175474e89094c44da98b954eedeac495271d0f',
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
-        '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
-      ],
-      underlyingDecimals: [18, 6, 6, 18],
-      wrappedDecimals: [18, 6, 6, 18],
-      useLending: [false, false, false, false]
-    },
-    {
-      id: 'seth',
-      name: 'seth',
-      address: '0xc5424b857f758e906013f3555dad202e4bdb4567',
-      lpToken: '0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c',
-      lpTokenDecimal: 18,
-      lpTokenSymbol: 'eCRV',
-      isPlain: true,
-      isLending: false,
-      isMeta: false,
-      isCrypto: false,
-      underlyingCoins: ['ETH', 'sETH'],
-      wrappedCoins: ['ETH', 'sETH'],
-      underlyingAddresses: ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb'],
-      wrappedAddresses: ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb'],
       underlyingDecimals: [18, 18],
       wrappedDecimals: [18, 18],
       useLending: [false, false]
