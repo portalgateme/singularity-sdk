@@ -1,5 +1,4 @@
 export * from './noteService';
-// export * from './curve';
 export * from './base';
 export * from './infra';
 export * from './uniswap';
@@ -8,8 +7,8 @@ export * from './merkletree';
 export * from './staking';
 export * from './ComplianceService';
 export * from './otcswap';
-export * from './darkpool';
 export * from './order';
 export * from './aerodrome';
 export * from './sablier';
 export * from './rocketpool';
+export * from './thedeep';
